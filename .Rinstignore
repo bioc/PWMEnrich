@@ -1,0 +1,5 @@
+inst/doc/Makefile
+inst/doc/PWMEnrich.tex
+inst/doc/references.bib
+inst/doc/PWMEnrich-plots.pdf
+.roxygen

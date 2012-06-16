@@ -1,0 +1,15 @@
+\name{logNormPvalSequenceSet}
+\alias{logNormPvalSequenceSet}
+\title{Lognormal P-value for a set of sequences...}
+\usage{logNormPvalSequenceSet(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.len)
+}
+\description{Lognormal P-value for a set of sequences}
+\value{P-value}
+\arguments{\item{scores}{a matrix of per-sequence affinity scores}
+\item{seq.len}{lengths of sequences}
+\item{pwm.len}{lengths of pwms}
+\item{bg.mean}{mean background at length of bg.len}
+\item{bg.sd}{standard deviation of background at length of bg.len}
+\item{bg.len}{the length for which mean and sd are calculated}
+}
+

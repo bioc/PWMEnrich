@@ -1,0 +1,134 @@
+library(PWMEnrich)
+library(testthat)
+library(BSgenome.Dmelanogaster.UCSC.dm3)
+
+# check if two things are numerically equal, e.g. to precision of 1e-8
+numEqual = function(x, y, prec=1e-8){
+	all(abs(x-y) < prec)
+}
+
+motifs.denovo = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="example.transfac"), remove.acc=TRUE)
+
+# test that motif reading in works properly
+test_that("readMotifs", {
+	expect_equal(length(motifs.denovo), 2)
+	expect_equal(names(motifs.denovo), c("tin_like_motif", "gata_like_motif"))	
+})
+
+# create a GATA motif ACGT 
+gata = rbind("A"=c(0, 10, 0, 10), "C"= c(0, 0, 0, 0), "G"=c(10, 0, 0, 0), "T"=c(0, 0, 10, 0) )
+gata = t(apply(gata, 1, as.integer))
+
+# GATA PWM and example sequence
+gata.pwm = PFMtoPWM(gata)
+s = DNAString("AAAAGATAAA")
+s1 = DNAString("AAAAAAAAAGATA")
+
+sequences = list(s, s1)
+
+scores = motifScores(s, gata.pwm, raw.scores=T)
+scores.count = motifScores(s, gata.pwm, cutoff=log2(exp(5)))
+
+scores2 = motifScores(list(s,s1), gata.pwm)
+
+test_that("motifScores works properly", {
+	expect_true(numEqual( scores[[1]][5,1], 2^(gata.pwm$pwm["G",1]*4))) #  hand-calculate PWM score
+	expect_equal(nrow(scores[[1]]), 20)
+	
+	# one significant motif hit
+	expect_true( all( scores.count == matrix(1) ) )
+	
+	expect_equal(dim(scores2), c(2,1))
+})
+
+# now do something else
+res.affinity = motifEnrichment(s, gata.pwm)
+res.cutoff = motifEnrichment(s, gata.pwm, cutoff=log2(exp(5)), score="cutoff")
+
+# check affinity and cutoff scores
+test_that("motifEnrichment for raw affinity and cutoff", {
+	# check if the affinity is right
+	expect_true( numEqual( mean(scores[[1]], na.rm=TRUE), res.affinity$group.nobg[1] ))
+	expect_equal( res.cutoff$group.nobg[1], 1)
+})
+
+###
+# make backgrounds and check scores
+
+# set of background sequences
+promoters = Dmelanogaster$upstream1000
+promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
+select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
+
+bg.seq = Dmelanogaster$upstream1000[select.one[seq(1, length(select.one), length.out=10)]]
+
+## make diferent background distributions and use them to scan
+
+bg.logn = makePWMLognBackground(bg.seq, gata.pwm)
+bg.z5 = makePWMCutoffBackground(bg.seq, gata.pwm, cutoff=log2(exp(5)))
+
+# check if the Z-score calculation works, on background the z-score should be 0 for the group
+res.bg.z5 = motifEnrichment(bg.seq, bg.z5)
+res.z5 = motifEnrichment(sequences, bg.z5)
+test_that("motifEnrichment Z-score", {
+	expect_true(numEqual(res.bg.z5$group.bg,0))
+	# both sequence have one binding site
+	expect_equal(as.vector(res.z5$sequence.nobg), c(1,1))
+	# both have 1 binding site, but first sequence is longer
+	expect_true(res.z5$sequence.bg[1,1] > res.z5$sequence.bg[2,1]) 
+})
+
+# check lognormal results 
+res.logn = motifEnrichment(sequences, bg.logn)
+
+# calculate lognormal p-value by hand
+mx = bg.logn$bg.mean
+sx = bg.logn$bg.sd * sqrt(1000-3) / sqrt(10-3) # first sequence is 10-4+1 = 7bp long
+
+ml = 2*log(mx) - 0.5*log(mx^2+sx^2)
+sl = sqrt(-2*log(mx) + log(mx^2+sx^2))
+
+# compare lognormal P-value 
+test_that("motifEnrichment P-value", {
+	expect_true(numEqual(res.logn$sequence.bg[1,1], plnorm(res.logn$sequence.nobg[1,], meanlog=ml, sdlog=sl, lower.tail=FALSE)))
+})
+
+## other backgrounds
+test_that("other background produce no error", {
+	bg.p = makePWMEmpiricalBackground(bg.seq, gata.pwm)
+	
+	expect_equal(nrow(bg.p$bg.fwd), 10000)
+	expect_equal(nrow(bg.p$bg.rev), 10000)
+
+	bg.1e2 = makePWMPvalCutoffBackground(bg.p, 1e-2)
+	expect_equal(length(bg.1e2$bg.cutoff), 1)
+	expect_equal(length(bg.1e2$bg.P), 1)
+	
+	res.bg.1e2 = motifEnrichment(bg.seq, gata.pwm, cutoff=bg.1e2$bg.cutoff, score="cutoff")
+})
+
+bg.gev = makePWMGEVBackground(bg.seq, gata.pwm, bg.len=seq(200, 1000, 200))
+test_that("GEV", {
+	expect_equal(length(bg.gev$bg.loc), 1)
+	expect_equal(class(bg.gev$bg.loc[[1]]), "lm")
+	expect_equal(class(bg.gev$bg.scale[[1]]), "lm")		
+	expect_equal(class(bg.gev$bg.shape[[1]]), "lm")		
+})
+
+####
+## Differential enrichment
+
+diff.logn = motifDiffEnrichment(s, s1, bg.logn)
+diff.z5 = motifDiffEnrichment(s, s1, bg.z5)	
+test_that("motifDiffEnrichment", {	
+	expect_true(diff.logn$group.bg > 0)
+	expect_equal(diff.z5$group.nobg, 0)
+	expect_true(diff.z5$group.bg > 0)
+})
+
+### test priors calculation
+prior = makePriors(list(DNAString(c("AAAACCCCCC"))), 1)
+test_that("makePriors", {
+	expect_equal(prior, c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2))
+})
+

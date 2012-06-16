@@ -1,0 +1,15 @@
+\name{cutoffZscore}
+\alias{cutoffZscore}
+\title{Z-score calculation for cutoff hits...}
+\usage{cutoffZscore(scores, seq.len, pwm.len, bg.P)
+}
+\description{Z-score calculation for cutoff hits}
+\details{The Z-score is calculated separately for each sequence}
+\value{Z-score}
+\arguments{\item{scores}{the hit counts for the sequences}
+\item{seq.len}{the length distribution of sequences}
+\item{pwm.len}{the length distribution of the PWMs}
+\item{bg.P}{background probabilities of observing a motif hit at nucleotide resolution 
+(scaled to sequence length, not 2 * length)}
+}
+

@@ -1,0 +1,30 @@
+\name{makePWMGEVBackground}
+\alias{makePWMGEVBackground}
+\title{Make a GEV background distribution...}
+\usage{makePWMGEVBackground(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(200, 2000, 200),
+    bg.source="", verbose=TRUE, fit.log=TRUE)
+}
+\description{Make a GEV background distribution}
+\details{Construct a lognormal background distribution for a set of sequences. 
+Sequences concatenated are binned in 'bg.len' chunks and lognormal distribution 
+fitted to them.}
+\arguments{\item{bg.seq}{a set of background sequences, either a list of DNAString object or DNAStringSet object}
+\item{motifs}{a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
+frequency matrices are given, the background distribution fitted from bg.seq. 
+Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 nucleotides.}
+\item{bg.pseudo.count}{the pseudo count which is shared between nucleotides when frequency matrices are given}
+\item{bg.len}{the length range of background chunks}
+\item{bg.source}{a free-form textual description of how the background was generated}
+\item{verbose}{if to produce verbose output}
+\item{fit.log}{if to fit log odds (instead of odds)}
+}
+\examples{\dontrun{
+if(require("PWMEnrich.Dmelanogaster.background")){
+data(jaspar.insects.PFM)
+
+# make background for JASPAR motifs using 2kb promoters of all D. melanogaster transcripts 
+if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+makePWMGEVBackground(Dmelanogaster$upstream2000, jaspar.insects.PFM)
+}
+}}
+

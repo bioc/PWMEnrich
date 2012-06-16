@@ -1,0 +1,27 @@
+Package: PWMEnrich
+Imports: seqLogo, gdata, evd
+Maintainer: Robert Stojnic <robert.stojnic@gmail.com>
+License: GPL-3
+Title: PWM enrichment analysis
+Type: Package
+LazyLoad: yes
+Author: Robert Stojnic
+Description: Asses the enrichment of already known PWMs (e.g. from
+    JASPAR) in DNA sequences. Motif hits in a sequence or DNA region
+    are considered together and P-values derived for their joint
+    pattern. The package implements multiple algorithms, including
+    fixed-threshold (Z-score) and threshold-free (Lognormal
+    normalization and Clover) methods. The main goal is to identify a
+    set of transcription factors that most likely bind to a single
+    sequence, group of sequences, or show significantly different
+    binding affinity between two sets of sequences.
+Version: 1.0.0
+biocViews: Bioinformatics, SequenceMatching
+Date: 2012-05-23
+Depends: methods, Biostrings, foreach, doMC, grid
+Suggests: BSgenome.Dmelanogaster.UCSC.dm3,
+        PWMEnrich.Dmelanogaster.background, testthat, gtools
+Collate: 'AllDataClasses.R' 'background.R' 'clover.R' 'diff.R' 'misc.R'
+        'parallel.R' 'plot.R' 'PWMBackground-methods.R' 'PWM-methods.R'
+        'pwm.R' 'readData.R' 'seqLogoSupp.R' 'similarity.R'
+Packaged: 2012-05-23 12:09:32 UTC; rainman

@@ -1,4 +1,7 @@
 PWMEnrich package
 
+Version 1.0.1:
+	o Fix a typo in test cases and remove doMC as build dependency
+
 Version 1.0.0:
 	o Initial release of the package

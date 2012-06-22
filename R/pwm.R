@@ -335,11 +335,8 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 
 	# either do it parallel or serial
 	if(!is.null(.PWMEnrich.Parallel[["numCores"]])){
-		i = NA # need to do this so that R CMD check doesn't complain that no "i" is visible in dopar... 
 		# do it in parallel
-		res <- foreach(i = 1:length(sequences)) %dopar% {
-			motifScoresLoop(i)
-		}
+		res = mclapply(1:length(sequences), motifScoresLoop, mc.cores = .PWMEnrich.Parallel[["numCores"]])
 		
 		if(is.list(res)){
 			if( any(sapply(res, is.null)) ){

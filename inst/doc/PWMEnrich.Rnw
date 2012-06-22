@@ -180,16 +180,16 @@ head(sort(res.diff$group.bg))
 
 \section{Parallel execution}
 
-Motif scanning is the most time consuming operation in all algorithms. Because of this, the package has a support for parallel motif scanning using the \Rpackage{foreach} and \Rpackage{doMC} packages. To turn on parallel scanning, simply register a number of cores available to the package:
+Motif scanning is the most time consuming operation in all algorithms. Because of this, the package has a support for parallel motif scanning using the \Rpackage{parallel} core package. Note that parallel execution is currently not supported on Windows. To turn on parallel scanning, simply register a number of cores available to the package:
 
 <<parallel,echo=TRUE>>=
 registerCoresPWMEnrich(4)
 @
 
-After this command is executed, all further calls to \Rpackage{PWMEnrich} functions are going to be run in parallel using 4 cores (if possible). To turn off parallel execution call the function without any parameters:
+After this command is executed, all further calls to \Rpackage{PWMEnrich} functions are going to be run in parallel using 4 cores (if possible). To turn off parallel execution call the function with parameter NULL:
 
 <<parallel-stop,echo=TRUE>>=
-registerCoresPWMEnrich()
+registerCoresPWMEnrich(NULL)
 @
 
 \section{Using a custom set of PWMs}\label{sec:custom-pwm}

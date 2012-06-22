@@ -15,12 +15,12 @@ Description: Asses the enrichment of already known PWMs (e.g. from
     set of transcription factors that most likely bind to a single
     sequence, group of sequences, or show significantly different
     binding affinity between two sets of sequences.
-Version: 1.0.1
+Version: 1.0.2
 biocViews: Bioinformatics, SequenceMatching
-Date: 2012-06-19
-Depends: methods, Biostrings, foreach, grid
+Date: 2012-06-22
+Depends: methods, Biostrings, grid
 Suggests: BSgenome.Dmelanogaster.UCSC.dm3,
-        PWMEnrich.Dmelanogaster.background, testthat, gtools, doMC
+        PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel
 Collate: 'AllDataClasses.R' 'background.R' 'clover.R' 'diff.R' 'misc.R'
         'parallel.R' 'plot.R' 'PWMBackground-methods.R' 'PWM-methods.R'
         'pwm.R' 'readData.R' 'seqLogoSupp.R' 'similarity.R'

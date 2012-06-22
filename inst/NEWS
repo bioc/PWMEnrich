@@ -1,5 +1,8 @@
 PWMEnrich package
 
+Version 1.0.2:
+	o Use core package parallel instead of doMC
+
 Version 1.0.1:
 	o Fix a typo in test cases and remove doMC as build dependency
 

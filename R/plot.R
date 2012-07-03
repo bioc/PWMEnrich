@@ -34,6 +34,9 @@ setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...)
 #' interface for the \code{seqLogoGrid} function that deals with viewpoint placement in a 
 #' matrix-like grid layout. 
 #'
+#' By default will try to make a square grid plot that would fit all the motifs and use
+#' list names as captions. 
+#'
 #' @param pwms a list of PWM objects or frequency matrices
 #' @param titles a characater vector of titles for each of the plots
 #' @param rows number of rows in the grid
@@ -42,7 +45,8 @@ setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...)
 #' @param ymargin.scale the scaling parameter for the Y-axis margin. Useful when plotting more than one log on a page
 #' @param ... other parameters passed to seqLogoGrid()
 #' @export
-plotMultipleMotifs = function(pwms, titles, rows, cols, xmargin.scale=1/cols, ymargin.scale=1/rows, ...){
+plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length(pwms))), 
+	cols=ceiling(sqrt(length(pwms))), xmargin.scale=1/cols, ymargin.scale=1/rows, ...){
 	if(!is.list(pwms))
 		pwms = list(pwms)
 		

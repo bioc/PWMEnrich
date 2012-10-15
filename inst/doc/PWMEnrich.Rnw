@@ -102,13 +102,13 @@ library(PWMEnrich.Dmelanogaster.background)
 data(PWMLogn.dm3.jaspar.insects)
 
 # scan two sequences from a FASTA file for motif enrichment
-sequences = read.DNAStringSet(system.file(package="PWMEnrich", 
+sequences = readDNAStringSet(system.file(package="PWMEnrich", 
   dir="extdata", file="example.fa"))
 sequences  
 res = motifEnrichment(sequences, PWMLogn.dm3.jaspar.insects)
 @
 
-We read FASTA sequences using \Rpackage{Biostrings} function \Robj{read.DNAStringSet}. Alternatively, sequence can be specified as a list of \Robj{DNAString} objects. See the package \Rpackage{Biostrings} for more information on handling FASTA sequences in R. 
+We read FASTA sequences using \Rpackage{Biostrings} function \Robj{readDNAStringSet}. Alternatively, sequence can be specified as a list of \Robj{DNAString} objects. See the package \Rpackage{Biostrings} for more information on handling FASTA sequences in R. 
 
 The function \Rfun{motifEnrichment} is the top-level function for motif enrichment in single sequences and groups of sequences. It takes at least two input arguments: a set of sequences, and a set of PWMs. In this example, we used a lognormal background correction object \Robj{PWMLogn.dm3.jaspar.insects} in place of PWMs so that lognormal correction is performed. The background correction object contains the background lognormal distribution parameters for 126 JASPAR insects PWMs fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters. 
 

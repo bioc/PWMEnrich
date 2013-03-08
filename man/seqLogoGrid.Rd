@@ -1,7 +1,7 @@
 \name{seqLogoGrid}
 \alias{seqLogoGrid}
 \title{Draw a motif logo on an existing viewport...}
-\usage{seqLogoGrid(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=15, yfontsize=15,
+\usage{seqLogoGrid(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10, yfontsize=10,
     xmargin.scale=1, ymargin.scale=1, title="", titlefontsize=15)
 }
 \description{Draw a motif logo on an existing viewport}
@@ -16,8 +16,8 @@ content. Otherwise, all columns have the same height.}
 \item{yaxis}{logical If TRUE, a Y-axis will be plotted.}
 \item{xfontsize}{numeric Font size to be used for the X-axis.}
 \item{yfontsize}{numeric Font size to be used for the Y-axis.}
-\item{xmargin.scale}{the scaling parameter for the X-axis margin. Useful when plotting more than one log on a page}
-\item{ymargin.scale}{the scaling parameter for the Y-axis margin. Useful when plotting more than one log on a page}
+\item{xmargin.scale}{the scaling parameter for the X-axis margin. Useful when plotting more than one logo on a page}
+\item{ymargin.scale}{the scaling parameter for the Y-axis margin. Useful when plotting more than one logo on a page}
 \item{title}{to be shown on the top}
 \item{titlefontsize}{the fontsize of the title}
 }

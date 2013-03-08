@@ -21,9 +21,9 @@ The function by default returns the score in log2 following the package \code{Bi
 \item{strand.fun}{which function to use to summarise values over two strands (default is "mean")}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects)
+data(MotifDb.Dmel)
 
-scanWithPWM(jaspar.insects$ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
-scanWithPWM(jaspar.insects$ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
+scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
+scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
 }}
 

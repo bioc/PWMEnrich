@@ -33,3 +33,15 @@ DNAStringSetToList = function(x){
 	
 	return(res)
 }
+
+#' Concatenata DNA sequences into a single character object
+#'
+#' @param sequences either a list of DNAString objects, or a DNAStringSet
+#' @return a single character string
+concatenateSequences = function(sequences){
+	if(is.list(sequences)){
+		paste(unlist(sapply(sequences, toString)), collapse="")
+	} else{
+		paste(sequences, collapse="")
+	}
+}

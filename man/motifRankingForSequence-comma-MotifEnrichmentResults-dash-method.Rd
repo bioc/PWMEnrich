@@ -1,0 +1,43 @@
+\name{motifRankingForSequence,MotifEnrichmentResults-method}
+\alias{motifRankingForSequence,MotifEnrichmentResults-method}
+\alias{motifRankingForSequence}
+\title{Get a ranking of motifs by their enrichment in one specific sequence...}
+\usage{\S4method{motifRankingForSequence}{MotifEnrichmentResults}(obj, seq.id, bg=TRUE, id=FALSE, order=FALSE, rank=FALSE, unique=FALSE,
+    ...)
+}
+\description{Get a ranking of motifs by their enrichment in one specific sequence}
+\value{a vector of P-values or raw enrichments sorted such that the first motif is most enriched}
+\arguments{\item{obj}{a MotifEnrichmentResults object}
+\item{seq.id}{either the sequence number or sequence name}
+\item{bg}{if to use background P-values to do the ranking (if available)}
+\item{id}{if to show PWM IDs instead of target TF names}
+\item{order}{if to output the ordering of PWMs instead of actual P-values or raw values}
+\item{rank}{if the output should be rank of a PWM instead of actual P-values or raw values}
+\item{unique}{if TRUE, only the best rank is taken for each TF (only when id = FALSE, order = FALSE)}
+\item{...}{currently unused}
+}
+\examples{if(require("PWMEnrich.Dmelanogaster.background")){
+###
+# load the pre-compiled lognormal background
+data(PWMLogn.dm3.MotifDb.Dmel)
+
+# scan two sequences for motif enrichment
+sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
+
+# most enriched in the second sequences (sorted by lognormal background P-value)
+head(motifRankingForSequence(res, 2))
+
+# return unique TFs enriched in sequence 2
+head(motifRankingForSequence(res, 2, unique=TRUE))
+
+# sorted by raw affinity instead of P-value
+head(motifRankingForSequence(res, 2, bg=FALSE))
+
+# show IDs instead of target TF names
+head(motifRankingForSequence(res, 2, id=TRUE))
+
+# output the rank instead of P-value
+head(motifRankingForSequence(res, 2, rank=TRUE))
+}}
+

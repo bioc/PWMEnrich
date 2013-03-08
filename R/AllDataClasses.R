@@ -1,6 +1,8 @@
 
 #' A class that represents a Position Weight Matrix (PWM)
 #'
+#' @slot id a systematic ID given to this PWM, could include the source, version, etc
+#' @slot name the name of the transcription factor (TF) to which the PWM corresponds to
 #' @slot pfm Position Frequency Matrix (PFM) from which the PWM is derived
 #' @slot prior.params Defines prior frequencies of the four bases (A,C,G,T), a named vector. These will be added 
 #'                    to individual values for the PFM and at the same time used as background probabilities
@@ -8,6 +10,8 @@
 #' @export
 setClass("PWM", 
 	representation = representation(
+		id = "character",
+		name = "character",
 		pfm = "matrix",
 		prior.params = "vector",
 		pwm = "matrix"
@@ -87,6 +91,19 @@ setClass("PWMGEVBackground",
 		bg.shape = "list",
 		pwms = "list"				
 	)	
+)
+
+#' A wrapper class for results of motifEnrichment() that should make it easier to access the results. 
+#'
+#' Note that this is only a wrapper around a list which is the return value in PWMEnrich 1.3 and as such it
+#' provides the same interface as a list (for backward compatibility), with some additional methods. 
+#'
+#' @slot res a list of old results with elements such as: sequence.bg, sequence.nobg, group.bg, group.nobg
+#' @export
+setClass("MotifEnrichmentResults",
+	representation = representation(
+		res = "list"
+	)
 )
 
 

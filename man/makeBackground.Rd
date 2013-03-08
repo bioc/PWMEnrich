@@ -6,8 +6,10 @@
 \description{Make a background for a set of position frequency matrices}
 \details{This is a convenience front-end function to compile new backgrounds for a set of PFMs. 
 Currently only supports D. melanogaster, but in the future should support other common organisms as well.}
+\author{Robert Stojnic, Diego Diez}
 \arguments{\item{motifs}{a list of position frequency matrices (4xL matrices)}
-\item{organism}{name of the organisms for which the background should be compiled. Supported names: "dm3" for Drosophila Melanogaster.}
+\item{organism}{either a name of the organisms for which the background should be compiled 
+(currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).}
 \item{type}{the type of background to be compiled. Possible types are: 
 \itemize{
 \item "logn" - estimate a lognormal background
@@ -29,6 +31,10 @@ motifs = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="exampl
 \dontrun{
 # construct lognormal background
 bg.logn = makeBackground(motifs, organism="dm3", type="logn")
+
+# alternatively, any BSgenome object can also be used
+if(require("BSgenome.Dmelanogaster.UCSC.dm3"))
+bg.logn = makeBackground(motifs, organism=Dmelanogaster, type="logn")
 
 # construct a Z-score of hits with P-value background
 bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)

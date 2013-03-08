@@ -24,11 +24,11 @@ Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 
 }
 \examples{\dontrun{
 if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects.PFM)
+data(MotifDb.Dmel.PFM)
 
 # make empirical background by saving raw scores for each bp in the sequence - this can be very large in memory!
 if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], jaspar.insects.PFM)
+makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 }
 }}
 

@@ -11,10 +11,10 @@
 \item{bycol}{if to return values separately for each column}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects)
-data(jaspar.insects.PFM)
+data(MotifDb.Dmel)
+data(MotifDb.Dmel.PFM)
 
-motifIC(jaspar.insects$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
-motifIC(jaspar.insects.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
+motifIC(MotifDb.Dmel$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
+motifIC(MotifDb.Dmel.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
 }}
 

@@ -1,7 +1,7 @@
 # managing parallel execution of code
 
-# this global variable records options for parallel execution of code
-.PWMEnrich.Parallel = new.env(parent=emptyenv())
+# this global variable records options, e.g. for parallel execution etc
+.PWMEnrich.Options = new.env(parent=emptyenv())
 
 #' Register than PWMEnrich can use parallel CPU cores
 #'
@@ -19,7 +19,7 @@
 #' \dontrun{
 #' registerCoresPWMEnrich(4) # use 4 CPU cores in PWMEnrich
 #' registerCoresPWMEnrich() # use maximal number of CPUs
-#' registerCoresPWMEnrich(NULL) # stop parallel execution
+#' registerCoresPWMEnrich(NULL) # do not use parallel execution
 #' }
 registerCoresPWMEnrich = function(numCores=NA){
 	if (!require("parallel"))
@@ -28,5 +28,19 @@ registerCoresPWMEnrich = function(numCores=NA){
 	if(!is.null(numCores) && is.na(numCores))
 		numCores = detectCores()
 	
-	assign("numCores", numCores, pos=.PWMEnrich.Parallel)
+	assign("numCores", numCores, pos=.PWMEnrich.Options)
+}
+
+#' If to use a faster implementation of motif scanning that requires abount 5 to 10 times more memory
+#'
+#' @param useBigMemory a boolean value denoting if to use big memory implementation
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' useBigMemoryPWMEnrich(TRUE) # switch to big memory implementation globally
+#' useBigMemoryPWMEnrich(FALSE) # switch back to default implementation
+#' }
+useBigMemoryPWMEnrich = function(useBigMemory=FALSE){
+	assign("useBigMemory", useBigMemory, pos=.PWMEnrich.Options)
 }

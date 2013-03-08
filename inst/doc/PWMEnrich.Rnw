@@ -53,7 +53,7 @@
 
 The purpose of this package is to asses the enrichment of already known Position Weight Matrices (PWMs) in a set of DNA sequences. Note that this is not the same as \textit{de-novo} motif finding which discovers novel motifs, and motif comparison which aligns motifs. The main difference to traditional PWM-based sequence scanning is that PWM hits are considered \textit{together} in a sequence or DNA region of certain length, instead of being given individual P-values for individual motif hits. One example of such an approach which we re-implement in the package is Clover \citep{frith_detection_2004}. 
 
-The package is useful both for hypothesis verification, e.g. testing if a ChIP-chip/seq dataset is enriched for a target TF, and for hypothesis generation, e.g. finding novel co-factors (with already existing PWMs) in an already defined regulatory region. A variety of algorithms has been implemented to asses enrichment using both motif hit-count based metrics and threshold-free metrics. Enrichments can be normalized to a background distribution and P-values derived. 
+The package is useful both for hypothesis verification, e.g. testing if a ChIP-chip/seq dataset is enriched for a target TF, and for hypothesis generation, e.g. finding novel co-factors (with already existing PWMs) in an already defined regulatory region(s). A variety of algorithms has been implemented to asses enrichment using both motif hit-count based metrics and threshold-free metrics. Enrichments can be normalized to a background (e.g. genomic) distribution and P-values derived. 
 
 \subsection{Implemented algorithms}
 
@@ -90,93 +90,91 @@ The package also introduces a number of classes that represent different backgro
 
 \section{Motif enrichment}
 
-For \textit{D. melanogaster} and the JASPAR motif database \citep{portales2010jaspar} the package provides a set of already compiled background correction objects. Sections \ref{sec:custom-pwm} and \ref{sec:custom-bg} describe how to create custom background correction objects.
+For \textit{D. melanogaster} and the Bioconductor MotifDb motif database the package provides a set of already compiled background correction objects. See the documentation for MotifDb for more information on sources for these motifs. Sections \ref{sec:custom-pwm} and \ref{sec:custom-bg} describe how to create custom background correction objects.
 
-We will load two DNA sequences from a FASTA file and then perform motif enrichment of the 126 JASPAR insects PWMs using lognormal background correction. The first sequence is known to bind Tin, and the second is known to bind Twi.  
+We will load two DNA sequences from a FASTA file and then perform motif enrichment of the 740 \textit{D. melanogaster} PWMs using lognormal background correction. The first sequence is known to bind Tin, and the second is known to bind Twi.  
 
 <<simple,echo=TRUE>>=
 library(PWMEnrich)
 library(PWMEnrich.Dmelanogaster.background)
 
 # load the pre-compiled lognormal background
-data(PWMLogn.dm3.jaspar.insects)
+data(PWMLogn.dm3.MotifDb.Dmel)
 
 # scan two sequences from a FASTA file for motif enrichment
 sequences = readDNAStringSet(system.file(package="PWMEnrich", 
   dir="extdata", file="example.fa"))
 sequences  
-res = motifEnrichment(sequences, PWMLogn.dm3.jaspar.insects)
+res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 @
 
 We read FASTA sequences using \Rpackage{Biostrings} function \Robj{readDNAStringSet}. Alternatively, sequence can be specified as a list of \Robj{DNAString} objects. See the package \Rpackage{Biostrings} for more information on handling FASTA sequences in R. 
 
-The function \Rfun{motifEnrichment} is the top-level function for motif enrichment in single sequences and groups of sequences. It takes at least two input arguments: a set of sequences, and a set of PWMs. In this example, we used a lognormal background correction object \Robj{PWMLogn.dm3.jaspar.insects} in place of PWMs so that lognormal correction is performed. The background correction object contains the background lognormal distribution parameters for 126 JASPAR insects PWMs fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters. 
+The function \Rfun{motifEnrichment} is the top-level function for motif enrichment in single sequences and groups of sequences. It takes at least two input arguments: a set of sequences, and a set of PWMs. In this example, we used a lognormal background correction object \Robj{PWMLogn.dm3.MotifDb.Dmel} in place of PWMs so that lognormal correction is performed. The background correction object contains the background lognormal distribution parameters for 740 \textit{D. melanogaster} MotifDb PWMs fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters. 
 
-The output of \Rfun{motifEnrichment} is a list that contains the individual scores for each sequence, and the group (both sequences together). 
+The output of \Rfun{motifEnrichment} is an object of class \Robj{MotifEnrichmentResults} that contains the scores for both sequences together (the "group") and individual sequences. 
 
 <<simple-affinity,echo=TRUE>>=
-# PWMs enriched in first sequence (Lognormal P-values)
-head(sort(res$sequence.bg[1,]))
-# PWMs enriched in second sequence (Lognormal P-values)
-head(sort(res$sequence.bg[2,]))
+res
 
-# most enriched in the group of two sequences (Lognormal P-value)
-head(sort(res$group.bg))
+# PWMs enriched in both sequences (Lognormal P-value)
+head(motifRankingForGroup(res))
+
+# PWMs enriched in the first sequence (Lognormal P-values)
+head(motifRankingForSequence(res, 1))
+# PWMs enriched in the second sequence (Lognormal P-values)
+head(motifRankingForSequence(res, 2))
+@
+
+Some transcription factors have PWMs from multiple sources (which are sometimes identical, sometimes not) and from different multimers. We can refer back to the \Robj{MotifDb} package to find out more about the enriched motifs. We do this by looking at the original IDs of top ranked motifs:
+
+<<simple-affinity,echo=TRUE>>=
+head(motifRankingForGroup(res, id=TRUE))
+
+library(MotifDb)
+db = values(MotifDb)
+
+db[db$providerName == "dimm_da_SANGER_5_FBgn0000413", "dataSource"]
+db[db$providerName == "dimm_da_SANGER_5_FBgn0023091", "dataSource"]
 @
 %$
 
-We can visualise the most enriched motifs through the package \Rpackage{seqLogo}. We plot the top 6 motifs in the group:
+The first two motifs comes from FlyFactorSurvey and correspond to a heterodimer of Da and Dimm. We can further visualise the most enriched motifs through the package \Rpackage{seqLogo}. We plot the same 6 motifs:
 
 \begin{center}
-\setkeys{Gin}{width=12cm, height=9cm}
+\setkeys{Gin}{width=16cm, height=7cm}
 <<plots,echo=TRUE,fig=TRUE>>=
-sorted.motif.names = names(sort(res$group.bg))
-pwms = PWMLogn.dm3.jaspar.insects$pwms
-plotMultipleMotifs(pwms[sorted.motif.names], sorted.motif.names, 3, 2, 
-	xmargin.scale=0.8, ymargin.scale=0.8, xfontsize=11, yfontsize=11,
-	titlefontsize=14)
+plotTopMotifsGroup(res, 6, rows=2, cols=3, xmargin.scale=0.7)
 @
+
+% ymargin.scale=0.8, xfontsize=11, yfontsize=11, titlefontsize=14)
 
 \end{center}
 
-As we can see, in top three we recover the two expected motifs: tin and twi, together with an additional motif (vnd) which is almost identical to tin. 
+In the top 6 we recover the know motifs: twi and tin together with da and dimm that have similar motifs to twi. 
 
-Since background correction is performed after the raw individual scores are calculated, the resulting object always contains the raw values as well. We will illustrate this using a fixed-threshold background. We will use a fixed P-value threshold, which will recover both the number of motif hits with better P-values and the associated Z-score. 
+Since background correction is performed after the raw individual scores are calculated, the resulting object always contains the raw values as well. We will illustrate this using a fixed-threshold background. Using a P-value threshold (e.g. $10^{-4}$) we recover both the number of motif hits (with P-value $<10^{-4}$) and the associated Z-score. 
 
 <<counts,echo=TRUE>>=
-data(PWMPvalueCutoff1e3.dm3.jaspar.insects)
+data(PWMPvalueCutoff1e4.dm3.MotifDb.Dmel)
 
-res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.jaspar.insects)
+res.count = motifEnrichment(sequences, PWMPvalueCutoff1e4.dm3.MotifDb.Dmel)
 
-# First sequence, PWMs sorted by number of motif hits with P-value < 0.001
-head(sort(res.count$sequence.nobg[1,], decreasing=TRUE))
+#  PWMs sorted by number of motifs hits (P-value < 0.0001) in both sequences
+head(motifRankingForGroup(res.count, bg=FALSE))
+
+#  PWMs sorted by the Z-score of motif enrichment
+head(motifRankingForGroup(res.count))
+
+# First sequence, PWMs sorted by number of motif hits (P-value < 0.0001)
+head(motifRankingForSequence(res.count, 1, bg=FALSE))
 
 # Second sequence
-head(sort(res.count$sequence.nobg[2,], decreasing=TRUE))
-
-# the whole group, PWMs sorted by Z-score for the number of motif hits
-head(sort(res.count$group.bg, decreasing=TRUE), 8)
+head(motifRankingForSequence(res.count, 2, bg=FALSE))
 @
 %$
 
-Using the fixed-threshold approach also recovers the tin and twi motifs but also a number of likely false-positives.
-
-\section{Differential motif enrichment}
-
-Using background normalization we can compare PWM enrichment in two groups of sequences. This is either achieved by calculating the difference in Z-scores or difference in lognormal-normalized affinity values. 
-
-In the following examples, we compare the enrichment of motifs in the two example sequences using lognormal normalization:
-
-<<diff,echo=TRUE>>=
-res.diff = motifDiffEnrichment(sequences[1], sequences[2], 
-    PWMLogn.dm3.jaspar.insects)
-
-# motifs differentially enriched in the first sequence (large positive values)
-head(sort(res.diff$group.bg, decreasing=TRUE))
-
-# motifs differentially enriched in the second sequence (large negative values)
-head(sort(res.diff$group.bg))
-@
+Using the fixed-threshold approach also recovers the tin and twi motifs.
 
 \section{Parallel execution}
 
@@ -205,7 +203,7 @@ motifs.denovo
 bg.denovo = makeBackground(motifs.denovo, organism="dm3", type="logn", quick=TRUE)
 
 res.denovo = motifEnrichment(sequences, bg.denovo)
-head(sort(res.denovo$group.bg))
+head(motifRankingForGroup(res.denovo))
 @
 %$
 

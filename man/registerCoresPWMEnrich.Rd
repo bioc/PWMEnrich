@@ -1,7 +1,7 @@
 \name{registerCoresPWMEnrich}
 \alias{registerCoresPWMEnrich}
 \title{Register than PWMEnrich can use parallel CPU cores...}
-\usage{registerCoresPWMEnrich(numCores)
+\usage{registerCoresPWMEnrich(numCores=NA)
 }
 \description{Register than PWMEnrich can use parallel CPU cores}
 \details{Certain functions (like motif scanning) can be parallelized in PWMEnrich. This function
@@ -16,6 +16,6 @@ function by passing NULL.}
 \examples{\dontrun{
 registerCoresPWMEnrich(4) # use 4 CPU cores in PWMEnrich
 registerCoresPWMEnrich() # use maximal number of CPUs
-registerCoresPWMEnrich(NULL) # stop parallel execution
+registerCoresPWMEnrich(NULL) # do not use parallel execution
 }}
 

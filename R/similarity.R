@@ -115,13 +115,13 @@ tryAllMotifAlignments = function(m1, m2, min.align=2, exclude.zero=FALSE){
 #' @examples
 #' 
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
 #'    # calculate the similarity of tin and vnd motifs (which are almost identical)
-#'    motifSimilarity(jaspar.insects.PFM$tin, jaspar.insects.PFM$vnd)
+#'    motifSimilarity(MotifDb.Dmel.PFM$tin, MotifDb.Dmel.PFM$vnd)
 #'
 #'    # similarity of two unrelated motifs
-#'    motifSimilarity(jaspar.insects.PFM$tin, jaspar.insects.PFM$ttk)
+#'    motifSimilarity(MotifDb.Dmel.PFM$tin, MotifDb.Dmel.PFM$ttk)
 #' }
 motifSimilarity = function(m1, m2, trim=0.4, self.sim=FALSE){
 	# check input types

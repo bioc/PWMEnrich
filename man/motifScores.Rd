@@ -18,16 +18,16 @@ strand are concatenated into a single long vector of scores (twice the length of
 Can either be one value, or a vector of values for each of the motifs.}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects)
+data(MotifDb.Dmel)
 
-affinity = motifScores(DNAString("CGTAGGATAAAGTAACT"), jaspar.insects) # affinity scores
-counts = motifScores(DNAString("CGTAGGATAAAGTAACT"), jaspar.insects, cutoff=log2(exp(4))) # motif hit count at Patser score of 4
+affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel) # affinity scores
+counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, cutoff=log2(exp(4))) # motif hit count with Patser score of 4
 print(affinity)
 print(counts)
 
 # scanning multiple sequences
-sequences = list(DNAString("CGTAGGATAAAGTAACT"), DNAString("TGAGACGAAGGGGATGAGATGC"))
-affinity2 = motifScores(sequences, jaspar.insects)
+sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
+affinity2 = motifScores(sequences, MotifDb.Dmel)
 print(affinity2)
 }}
 

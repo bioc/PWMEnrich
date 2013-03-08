@@ -13,11 +13,11 @@ cutoff for each motif based on P-value cutoff for individual sites.}
 }
 \examples{\dontrun{
 if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects.PFM)
+data(MotifDb.Dmel.PFM)
 
 # make empirical background - here we use only 100 sequences for illustrative purposes
 if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-bg.p = makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], jaspar.insects.PFM)
+bg.p = makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 
 # use the empirical background to pick a threshold and make cutoff background
 makePWMPvalCutoffBackground(bg.p, 0.001)

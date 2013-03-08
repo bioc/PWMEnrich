@@ -17,11 +17,11 @@ Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 
 }
 \examples{\dontrun{
 if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects.PFM)
+data(MotifDb.Dmel.PFM)
 
-# make background for JASPAR motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
+# make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
 if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-makePWMCutoffBackground(Dmelanogaster$upstream2000, jaspar.insects.PFM, cutoff=log2(exp(5)))
+makePWMCutoffBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM, cutoff=log2(exp(5)))
 }
 }}
 

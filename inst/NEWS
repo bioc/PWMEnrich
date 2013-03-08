@@ -1,5 +1,20 @@
 PWMEnrich package
 
+Version 2.0.0:
+    o General cleanup of the code with various small optimisations
+    o A FASTA file name is now also taken as input to motifEnrichment()
+    o The output of motifEnrichment() is now wrapped into a class MotifEnrichmentResults
+      that provides a number of convenience methods for common tasks like ranking and
+      plotting motifs
+    o Functions makeBackground() and getBackgroundFrequencies() can now take BSgenome 
+      objects as input. Thanks to Diego Diaz for suggesting this and providing the code. 
+    o Another version of motifScores() has been implemented that requires large amounts
+      of memory, but is at least 2 times faster than the old motifScores() implementation.
+      Use a new option useBigMemoryPWMEnrich() to switch to this implementation.     
+    
+Version 1.3.0:
+	o Bioconductor 2.11 release version    
+
 Version 1.0.2:
 	o Use core package parallel instead of doMC
 

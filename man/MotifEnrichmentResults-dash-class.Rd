@@ -1,0 +1,10 @@
+\name{MotifEnrichmentResults-class}
+\alias{MotifEnrichmentResults-class}
+\alias{MotifEnrichmentResults}
+\title{A wrapper class for results of motifEnrichment() that should make it easier to access the results.}
+\description{A wrapper class for results of motifEnrichment() that should make it easier to access the results.}
+\details{Note that this is only a wrapper around a list which is the return value in PWMEnrich 1.3 and as such it
+provides the same interface as a list (for backward compatibility), with some additional methods.}
+\section{Slots}{\describe{\item{\code{res}:}{(\code{\link{list}}) a list of old results with elements such as: sequence.bg, sequence.nobg, group.bg, group.nobg}}}
+\section{Methods}{\describe{\item{\code{\link[=names,MotifEnrichmentResults-method]{names}}}{\code{signature(x = "MotifEnrichmentResults")}: Name of different pieces of information associated with MotifEnrichmentResults}\item{\code{\link[=$,MotifEnrichmentResults-method]{$}}}{\code{signature(x = "MotifEnrichmentResults")}: Access a property by name}\item{\code{\link[=show,MotifEnrichmentResults-method]{show}}}{\code{signature(object = "MotifEnrichmentResults")}: show method for MotifEnrichmentResults}\item{\code{\link[=motifRankingForGroup,MotifEnrichmentResults-method]{motifRankingForGroup}}}{\code{signature(obj = "MotifEnrichmentResults")}: Get a ranking of motifs by their enrichment in the whole set of sequences}\item{\code{\link[=motifRankingForSequence,MotifEnrichmentResults-method]{motifRankingForSequence}}}{\code{signature(obj = "MotifEnrichmentResults")}: Get a ranking of motifs by their enrichment in one specific sequence}\item{\code{\link[=plotTopMotifsGroup,MotifEnrichmentResults-method]{plotTopMotifsGroup}}}{\code{signature(obj = "MotifEnrichmentResults")}: Plot the top N enrichment motifs in a group of sequences}\item{\code{\link[=plotTopMotifsSequence,MotifEnrichmentResults-method]{plotTopMotifsSequence}}}{\code{signature(obj = "MotifEnrichmentResults")}: Plot the top N enrichment motifs in a single sequence}}}
+

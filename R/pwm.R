@@ -64,6 +64,8 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #'
 #' @title Create a PWM from PFM
 #' @param x the integer count matrix representing the motif, rows as nucleotides
+#' @param id a systematic ID given to this PWM, could include the source, version, etc
+#' @param name the name of the transcription factor (TF) to which the PWM corresponds to
 #' @param type the type of PWM calculation, either as log2-odds, or posterior probability (frequency matrix)
 #' @param prior.params the pseudocounts for each of the nucleotides 
 #' @param pseudo.count the pseudo-count values if different from priors
@@ -73,16 +75,16 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' @examples
 #'
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    PWMUnscaled(jaspar.insects.PFM$ttk) # make a PWM with uniform background
-#'    PWMUnscaled(jaspar.insects.PFM$ttk, prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
+#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
+#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
 #'
 #'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-#'    PWMUnscaled(jaspar.insects.PFM$ttk, prior=prior) # convert using genomic background
+#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
 #' }
 #'
-PWMUnscaled = function(x, type=c("log2probratio", "prob"), prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), pseudo.count=prior.params, 
+PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), pseudo.count=prior.params, 
 	unit.scale=FALSE){
 	
 	# match input params
@@ -115,7 +117,7 @@ PWMUnscaled = function(x, type=c("log2probratio", "prob"), prior.params=c(A=0.25
 	   	ans = unitScale(ans)
 	   	
 	# return an object 
-	new("PWM", pfm=x, prior.params=prior.params, pwm=ans)
+	new("PWM", id=id, name=name, pfm=x, prior.params=prior.params, pwm=ans)
 }
 
 #' Scan the whole sequence on both strands
@@ -139,13 +141,20 @@ PWMUnscaled = function(x, type=c("log2probratio", "prob"), prior.params=c(A=0.25
 #' @examples
 #' 
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects)
+#'    data(MotifDb.Dmel)
 #'
-#'   scanWithPWM(jaspar.insects$ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
-#'   scanWithPWM(jaspar.insects$ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
+#'   scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
+#'   scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
 #' }
 #' 
 scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FALSE, strand.fun="mean"){
+	if(is.character(dna))
+		dna = DNAString(dna)
+
+	if(!(class(dna) %in% c("DNAString", "DNAStringSet")))
+		stop("The input sequence needs to be either of type DNAString or DNAStringSet")
+	
+
 	if(is.null(pwm.rev))
 		pwm.rev = reverseComplement(pwm)
 		
@@ -186,28 +195,47 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 #' Convert frequencies into motifs using PWMUnscaled
 #'
 #' @param motifs a list of motifs represented as matrices of frequencies (PFM)
+#' @param id the set of IDs for the motifs (defaults to names of the 'motifs' list)
+#' @param name the set of names for the motifs (defaults to names of the 'motifs' list)
 #' @param ... other parameters to PWMUnscaled
 #'
 #' @export
 #' @examples
 #'
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    PFMtoPWM(jaspar.insects.PFM) # convert to PWM with uniform background
+#'    PFMtoPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
 #'
 #'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-#'    PFMtoPWM(jaspar.insects.PFM, prior=prior) # convert with genomic background 
+#'    PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior) # convert with genomic background 
 #' }
-PFMtoPWM = function(motifs, ...){
+PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), ...){
 	if(!is.list(motifs)){
 		was.list = FALSE
 		motifs = list(motifs)
 	} else {
 		was.list = TRUE
 	}
-		
-	res = lapply(motifs, PWMUnscaled, ...)
+	
+	if(is.null(id))
+		id = rep("", length(motifs))
+	if(is.null(name))
+		name = rep("", length(motifs))
+	
+	if(length(id) != length(motifs))
+		stop("The number of IDs (parameter 'id') need to be the same as number of motifs (parameter 'motifs')")
+
+	if(length(name) != length(motifs))
+		stop("The number of names (parameter 'name') need to be the same as number of motifs (parameter 'motifs')")
+	
+	# call PWMUnscaled
+	res = list()
+	for(i in 1:length(motifs)){
+		res[[i]] = PWMUnscaled(motifs[[i]], id=id[i], name=name[i], ...)
+	}
+	
+	names(res) = names(motifs)
 	
 	# convert back to single object if that's how the input was
 	if(!was.list){
@@ -241,12 +269,15 @@ PFMtoPWM = function(motifs, ...){
 #'
 #' @param sequences a set of sequences to be scanned, a list of DNAString or other scannable objects
 .inputParamSequences = function(sequences){
+	if(is.character(sequences)){
+		sequences = readDNAStringSet(sequences)
+	}
 	# make sure sequences are in the right formar
 	if(!is.list(sequences) & class(sequences) != "DNAStringSet")
 		sequences = list(sequences)
-
-	if(class(sequences) == "DNAStringSet")
-		sequences = DNAStringSetToList(sequences)
+		
+	#if(class(sequences) == "DNAStringSet")
+	#	sequences = DNAStringSetToList(sequences)
 		
 	return(sequences)
 }
@@ -270,19 +301,22 @@ PFMtoPWM = function(motifs, ...){
 #' @examples
 #'
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects)
+#'    data(MotifDb.Dmel)
 #'
-#'    affinity = motifScores(DNAString("CGTAGGATAAAGTAACT"), jaspar.insects) # affinity scores
-#'    counts = motifScores(DNAString("CGTAGGATAAAGTAACT"), jaspar.insects, cutoff=log2(exp(4))) # motif hit count at Patser score of 4
+#'    affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel) # affinity scores
+#'    counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, cutoff=log2(exp(4))) # motif hit count with Patser score of 4
 #'    print(affinity)
 #'    print(counts)
 #'
 #'    # scanning multiple sequences
-#'    sequences = list(DNAString("CGTAGGATAAAGTAACT"), DNAString("TGAGACGAAGGGGATGAGATGC"))
-#'    affinity2 = motifScores(sequences, jaspar.insects)
+#'    sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
+#'    affinity2 = motifScores(sequences, MotifDb.Dmel)
 #'    print(affinity2)
 #' }
 motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff=NULL){	
+	if(!is.null(.PWMEnrich.Options[["useBigMemory"]]) && .PWMEnrich.Options[["useBigMemory"]])
+		return(motifScoresBigMemory(sequences, motifs, raw.scores, verbose, cutoff))
+
 	# check motifs format and convert to PWM
 	pwms = .inputParamMotifs(motifs)
 	sequences = .inputParamSequences(sequences)
@@ -332,11 +366,14 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 		
 		r
 	}
+	
+	####################################### END OF INNER LOOP ################
 
 	# either do it parallel or serial
-	if(!is.null(.PWMEnrich.Parallel[["numCores"]])){
+	if(!is.null(.PWMEnrich.Options[["numCores"]])){
+		cat("Parallel scanning with", .PWMEnrich.Options[["numCores"]], "cores\n")
 		# do it in parallel
-		res = mclapply(1:length(sequences), motifScoresLoop, mc.cores = .PWMEnrich.Parallel[["numCores"]])
+		res = mclapply(1:length(sequences), motifScoresLoop, mc.cores = .PWMEnrich.Options[["numCores"]])
 		
 		if(is.list(res)){
 			if( any(sapply(res, is.null)) ){
@@ -352,12 +389,190 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 	if(raw.scores){
 		return(res)
 	} else {
-		if(length(pwms) == 1)
+		if(length(pwms) == 1){
 			return( matrix(sapply(res, identity), ncol=1, dimnames=list(NULL, names(pwms))) )
-		else
-			return( t(sapply(res, identity)) )
+		} else {
+			r = t(sapply(res, identity))
+			rownames(r) = names(sequences)
+			colnames(r) = names(pwms)
+			return( r )
+		}
 	}
 }
+
+#' This is a memory intensive version of motifScore() which is abount 2 times faster
+#'
+#' The parameters and functionality are the same as \code{\link{motifScores}}. Please refer to documentation of this function
+#' for detailed explanation of functionality. 
+#'
+#' This function is not meant to be called directly, but is indirectly called by motifScores() once a global parameters useBigMemory is set. 
+#'
+#' @param sequences set of input sequences
+#' @param motifs set of input PWMs or PFMs
+#' @param raw.scores if to return scores for each base-pair
+#' @param verbose if to produce verbose output
+#' @param cutoff the cutoff for calling binding sites (in base 2 log). 
+#'
+#' @seealso \code{\link{motifScores}}
+motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff=NULL){	
+	# check motifs format and convert to PWM
+	pwms = .inputParamMotifs(motifs)
+	sequences = .inputParamSequences(sequences)
+		
+	pwms.rev = lapply(pwms, reverseComplement)
+	pwms.len = sapply(pwms, length)
+	min.pwm.len = min(pwms.len)
+	
+	# always unfold cutoff into a vector of values
+	if(!is.null(cutoff)){
+		if(length(cutoff) == 1){
+			cutoff = rep(cutoff, length(pwms))
+		} else if(length(cutoff) != length(pwms)) {
+			stop("The lengths of 'cutoff' and 'pwms' do not match. Either provide one values for 'cutoff' or a vector of values, one for each PWM")
+		} 
+		
+		# cutoff in odds space
+		cutoff.2 = 2^cutoff
+	}
+	
+	# work on a single sequence that is all concatenated together because it's faster
+	seq.all = DNAString(concatenateSequences(sequences))
+	seq.len = sapply(sequences, length)
+	
+	# a common error with shorter sequences
+	shorter.seq = which(seq.len < min.pwm.len)
+	if(length(shorter.seq)>0){
+		stop(paste(length(shorter.seq), "sequence(s) have length shorter than the shortest PWM (", min.pwm.len, "), please identify and remove these sequences."))
+	}
+	
+	# a grouping data frame
+	seq.len.sum = cumsum(seq.len)
+	seq.group = data.frame("from"=rep(0, length(sequences)), "to"=0)
+	seq.group$from = c(1, 1+seq.len.sum[-length(seq.len.sum)])
+	seq.group$to = seq.len.sum
+	
+	# inner loop function to use for parallel processing
+	#
+	# @param motif.start the index of the first motif
+	# @param motif.end the index of the last motif 
+	motifScoresLoop = function(input.params){
+		motif.start = input.params[[1]]
+		motif.end = input.params[[2]]
+	
+		if(verbose){
+			if(motif.start == motif.end){
+				message(paste("Starting scanning with motif", names(pwms)[motif.start]))
+			} else {
+				message(paste("Starting scanning with motifs from", motif.start, "to", motif.end))
+			}
+		}
+		# local copy of the sequences and motifs used in the function
+		s = seq.all
+		s.group = seq.group
+		pwms.l = pwms[motif.start:motif.end]
+		pwms.rev.l = pwms.rev[motif.start:motif.end]
+		pwms.len.l = pwms.len[motif.start:motif.end]
+		if(!is.null(cutoff))
+			cutoff.2.l = cutoff.2[motif.start:motif.end]
+		
+		# create the output structure
+		res = list()
+		for(i in 1:nrow(s.group)){
+			if(raw.scores){			
+				r = matrix(0, nrow=seq.len[i]*2, ncol=length(pwms.l))
+				colnames(r) = names(pwms.l)
+				res[[i]] = r		
+			} else {
+				r = rep(0, length(pwms.l))
+				names(r) = names(pwms.l)		
+				res[[i]] = r
+			}
+		}
+		
+		### do the scanning, convert back to individual sequences and do the post-processing
+		for(j in 1:length(pwms.l)){
+			if(verbose){
+				message(paste("Scanning all sequences with motif", j, "/", length(pwms.l)))
+			}
+			raw = as.vector(scanWithPWM(pwms.l[[j]], s, pwms.rev.l[[j]], odds.score=TRUE, both.strands=TRUE))
+			
+			### split the raw results by sequence
+			for(i in 1:nrow(s.group)){
+				# selector for this sequence
+				from = seq.group$from[i]
+				to = seq.group$to[i]
+				from.rev = length(raw)/2 + seq.group$from[i]
+				to.rev = length(raw)/2 + seq.group$to[i]
+				sel = c(from:to, from.rev:to.rev)
+			
+				r = raw[sel]
+				
+				# fwd strand
+				r[((seq.len[i]-pwms.len.l[j])+2):seq.len[i]] = NA
+				# rev strand
+				r[((2*seq.len[i]-pwms.len.l[j])+2):(2*seq.len[i])] = NA
+
+				# save the values				
+				if(raw.scores){
+					res[[i]][,j] = r
+				} else if(!is.null(cutoff)){
+					# count number of hits on both strands 
+					res[[i]][j] = sum(r >= cutoff.2.l[j], na.rm=TRUE)
+				} else {
+					# MeanAffinity
+					res[[i]][j] = mean(r, na.rm=TRUE)
+				}
+				
+			}
+		}
+				
+		res
+	}
+	######################################## END OF INNER LOOP ######################################
+
+	# either do it parallel or serial
+	if(!is.null(.PWMEnrich.Options[["numCores"]])){
+		cores = .PWMEnrich.Options[["numCores"]]
+		sel = round(seq(0, length(pwms), length.out=cores+1))
+		start = sel[1:cores]+1
+		end = sel[2:(cores+1)]
+		input = lapply(1:cores, function(i) list(start[i], end[i]))
+		# do it in parallel
+		res.parallel = mclapply(input, motifScoresLoop, mc.cores = cores)
+		
+		if(is.list(res.parallel)){
+			if( any(sapply(res.parallel, is.null)) ){
+				stop("Parallel scanning failed for some sequences. This could be due to a number of reasons including not enough memory.")
+			}
+		}	
+
+		# concatenate results for different motifs		
+		if(raw.scores)
+			res = lapply(1:length(sequences), function(i) do.call("cbind", lapply(res.parallel, function(x) x[[i]])))	
+		else
+			res = lapply(1:length(sequences), function(i) do.call("c", lapply(res.parallel, function(x) x[[i]])))
+	} else {
+		# do it serial
+		res = motifScoresLoop(list(1, length(pwms)))
+	}
+	
+	
+	
+	## return either raw scores, or counts or means
+	if(raw.scores){
+		return(res)
+	} else {
+		if(length(pwms) == 1){
+			return( matrix(sapply(res, identity), ncol=1, dimnames=list(names(sequences), names(pwms))) )
+		} else {
+			r = t(sapply(res, identity))
+			rownames(r) = names(sequences)
+			colnames(r) = names(pwms)
+			return( r )
+		}
+	}
+}
+
 
 #' Information content for a PWM or PFM
 #'
@@ -369,18 +584,18 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 #' @examples
 #'
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects)
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    motifIC(jaspar.insects$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
-#'    motifIC(jaspar.insects.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
+#'    motifIC(MotifDb.Dmel$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
+#'    motifIC(MotifDb.Dmel.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
 #' }
 motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=FALSE){
 	if(class(motif) == "PWM"){
-		p = PWMUnscaled(motif$pfm, "prob", prior.params=motif$prior.params)
+		p = PWMUnscaled(motif$pfm, type="prob", prior.params=motif$prior.params)
 		bg = motif$prior.params
 	} else {
-		p = PWMUnscaled(motif, "prob", prior.params=prior.params)
+		p = PWMUnscaled(motif, type="prob", prior.params=prior.params)
 		bg = prior.params
 	}
 		
@@ -467,11 +682,13 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' @param group.only if to produce statistical only for the group of sequences, not individual sequences. This is useful
 #'                   when one wants to calculate the empirical P-value for the whole group, but not individual sequences
 #'                   (which might take quite a long time). 
-#' @return a list containing a subset following elements:
+#' @return a MotifEnrichmentResults object containing a subset following elements:
 #'         \itemize{
 #'           \item "score" - scoring scheme used
 #'           \item "bg" - background correction used
 #'           \item "params" - any additional parameters
+#'			 \item "sequences" - the set of sequences used
+#'           \item "pwms" - the set of pwms used
 #'           \item "sequence.nobg" - per-sequence scores without any background correction. 
 #'                   For "affinity" and "clover" a matrix of mean affinity scores; for
 #'                   "cutoff" number of significant hits above a cutoff 
@@ -496,39 +713,40 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.jaspar.insects)
+#'    data(PWMLogn.dm3.MotifDb.Dmel)
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGT"), DNAString("AGGTAGATAGAACAGTAGGCAATGG"))
-#'    res = motifEnrichment(sequences, PWMLogn.dm3.jaspar.insects)
-#'
-#'    # most enriched motifs in the first sequence (raw affinity, no background)
-#'    head(sort(res$sequence.nobg[1,], decreasing=TRUE))
-#'
-#'    # most enriched motifs in the first sequence (lognormal background P-value)
-#'    head(sort(res$sequence.bg[1,]))
-#'
-#'    # most enriched in both sequences (raw affinity, no background)
-#'    head(sort(res$group.nobg, decreasing=TRUE))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
+#'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
 #'    # most enriched in both sequences (lognormal background P-value)
-#'    head(sort(res$group.bg))
+#'    head(motifRankingForGroup(res))
+#'
+#'    # most enriched in both sequences (raw affinity, no background)
+#'    head(motifRankingForGroup(res, bg=FALSE))
+#'
+#'    # most enriched in the first sequence (lognormal background P-value)
+#'    head(motifRankingForSequence(res, 1))
+#'
+#'    # most enriched in the first sequence (raw affinity, no background)
+#'    head(motifRankingForSequence(res, 1, bg=FALSE))
 #'
 #'    ###
 #'    # Load the pre-compiled background for hit-based motif counts with cutoff of P-value = 0.001 
-#'    data(PWMPvalueCutoff1e3.dm3.jaspar.insects)
+#'    data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
 #'
-#'    res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.jaspar.insects)
+#'    res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
+#'
+#'    # Enrichment in the whole group, z-score for the number of motif hits
+#'    head(motifRankingForGroup(res))
 #'
 #'    # First sequence, sorted by number of motif hits with P-value < 0.001
-#'    head(sort(res.count$sequence.nobg[1,], decreasing=TRUE))
-#'
-#'    # the whole group, z-score for the number of motif hits
-#'    head(sort(res.count$group.bg, decreasing=TRUE))
+#'    head(motifRankingForSequence(res, 1, bg=FALSE))
 #'    
 #' }
 motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect", cutoff=NULL, verbose=TRUE, motif.shuffles=30, B=1000,
 	group.only=FALSE){
+	
 	# detect scoring method
 	if(score == "autodetect"){
 		if(class(pwms) == "PWMLognBackground"){
@@ -575,7 +793,7 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 	sequences = .inputParamSequences(sequences)
 	
 	# return list
-	res = list(score=score, bg=bg, params=list())
+	res = list(score=score, bg=bg, pwms=pwms, sequences=sequences, params=list())
 	
 	# apply no-bg scoring
 	if(score == "affinity"){
@@ -660,7 +878,7 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		stop(paste("Uknown background correction algorithm: '", bg, "', Please select one of: 'none', 'logn', 'z', 'pval', 'ms'", sep=""))
 	}
 	
-	return(res)
+	return(new("MotifEnrichmentResults", res=res))
 		
 }
 
@@ -1035,3 +1253,49 @@ affinitySequenceSet = function(scores, seq.len, pwm.len){
 	
 	return(final)
 }
+
+#' Calculate Recovery-AUC for motifs ranked according to some scoring scheme
+#'
+#' Note that this function asssumes that smaller values are better!
+#' 
+#' @param seq.res a matrix where each column represents a PWM and each row a result for a different sequence. 
+motifRecoveryAUC = function(seq.res){
+	# calculate the ranks
+	r = t(apply(seq.res, 1, rank))
+	
+	# previous point needed to calculate AUC-ROC
+	auc = rep(0, ncol(r))
+	names(auc) = colnames(r)
+	
+	# do it for all whole steps
+	rec = t(sapply(1:ncol(r), function(i) colSums(r<=i)))
+	
+	list("rec"=rec, "auc"=colSums(rec))
+}
+
+#' Calculate PR-AUC for motifs ranked according to some scoring scheme
+#'
+#' Note that this function asssumes that smaller values are better!
+#' 
+#' @param seq.res a matrix where each column represents a PWM and each row a result for a different sequence. 
+motifPrAUC = function(seq.res){
+	# calculate the ranks
+	r = t(apply(seq.res, 1, rank))
+	
+	# previous point needed to calculate AUC-ROC
+	auc = rep(0, ncol(r))
+	names(auc) = colnames(r)
+	
+	# do it for all whole steps
+	rec = t(sapply(1:ncol(r), function(i) colSums(r<=i)))
+	
+	recall = rec / nrow(r)
+	prec = recall / 1:nrow(rec)
+	
+	list("prec"=prec, "recall"=recall)
+}
+
+
+
+
+

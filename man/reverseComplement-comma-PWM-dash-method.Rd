@@ -11,8 +11,8 @@
 \item{...}{unused}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects.PFM)
+data(MotifDb.Dmel.PFM)
 
-reverseComplement(jaspar.insects.PFM$ttk) # reverse complement of the ttk PWM
+reverseComplement(MotifDb.Dmel.PFM$ttk) # reverse complement of the ttk PWM
 }}
 

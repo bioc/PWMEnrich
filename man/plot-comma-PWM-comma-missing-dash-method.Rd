@@ -11,9 +11,9 @@
 \item{...}{other parameters to pass to seqLogo's \code{plot} function}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
-data(jaspar.insects)
+data(MotifDb.Dmel)
 
-# plot the tinman motif from JASPAR
-plot(jaspar.insects$tin)
+# plot the tinman motif from MotifDb
+plot(MotifDb.Dmel$tin)
 }}
 

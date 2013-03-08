@@ -37,22 +37,24 @@ setMethod("length", signature=signature(x="PWM"), function(x){
 #' @examples
 #'
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    reverseComplement(jaspar.insects.PFM$ttk) # reverse complement of the ttk PWM
+#'    reverseComplement(MotifDb.Dmel.PFM$ttk) # reverse complement of the ttk PWM
 #' }
 #' 
 setMethod("reverseComplement", signature=signature(x="PWM"), function (x, ...) {
 	pfm = reverseComplement(x@pfm)
 	pwm = reverseComplement(x@pwm)
 	
-	new("PWM", pfm=pfm, prior.params=x@prior.params, pwm=pwm)
+	new("PWM", id=paste(x@id, "-- reverse complement"), name=x@name, pfm=pfm, prior.params=x@prior.params, pwm=pwm)
 })
 
 #' show method for PWM
 #' @param object the PWM object
 setMethod("show", signature=signature(object="PWM"), function(object){
 	cat("An object of class 'PWM'\n")
+	cat("ID:", object$id, "\n")
+	cat("Target name:", object$name, "\n")
 	cat("Frequency matrix:\n")
 	cat("$pfm\n")
 	print(object$pfm)

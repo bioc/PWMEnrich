@@ -23,11 +23,13 @@ scheme and background correction are automatically determined.
 There are additional packages with already pre-computed background (e.g. see package \code{PWMEnrich.Dmelanogaster.background}).
 
 Please refer to (Stojnic & Adryan, 2012) for more details on the algorithms.}
-\value{a list containing a subset following elements:
+\value{a MotifEnrichmentResults object containing a subset following elements:
 \itemize{
 \item "score" - scoring scheme used
 \item "bg" - background correction used
 \item "params" - any additional parameters
+\item "sequences" - the set of sequences used
+\item "pwms" - the set of pwms used
 \item "sequence.nobg" - per-sequence scores without any background correction. 
 For "affinity" and "clover" a matrix of mean affinity scores; for
 "cutoff" number of significant hits above a cutoff 
@@ -101,35 +103,35 @@ when one wants to calculate the empirical P-value for the whole group, but not i
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
 ###
 # load the pre-compiled lognormal background
-data(PWMLogn.dm3.jaspar.insects)
+data(PWMLogn.dm3.MotifDb.Dmel)
 
 # scan two sequences for motif enrichment
-sequences = list(DNAString("GAAGTATCAAGTGACCAGT"), DNAString("AGGTAGATAGAACAGTAGGCAATGG"))
-res = motifEnrichment(sequences, PWMLogn.dm3.jaspar.insects)
-
-# most enriched motifs in the first sequence (raw affinity, no background)
-head(sort(res$sequence.nobg[1,], decreasing=TRUE))
-
-# most enriched motifs in the first sequence (lognormal background P-value)
-head(sort(res$sequence.bg[1,]))
-
-# most enriched in both sequences (raw affinity, no background)
-head(sort(res$group.nobg, decreasing=TRUE))
+sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
+res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 
 # most enriched in both sequences (lognormal background P-value)
-head(sort(res$group.bg))
+head(motifRankingForGroup(res))
+
+# most enriched in both sequences (raw affinity, no background)
+head(motifRankingForGroup(res, bg=FALSE))
+
+# most enriched in the first sequence (lognormal background P-value)
+head(motifRankingForSequence(res, 1))
+
+# most enriched in the first sequence (raw affinity, no background)
+head(motifRankingForSequence(res, 1, bg=FALSE))
 
 ###
 # Load the pre-compiled background for hit-based motif counts with cutoff of P-value = 0.001 
-data(PWMPvalueCutoff1e3.dm3.jaspar.insects)
+data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
 
-res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.jaspar.insects)
+res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
+
+# Enrichment in the whole group, z-score for the number of motif hits
+head(motifRankingForGroup(res))
 
 # First sequence, sorted by number of motif hits with P-value < 0.001
-head(sort(res.count$sequence.nobg[1,], decreasing=TRUE))
-
-# the whole group, z-score for the number of motif hits
-head(sort(res.count$group.bg, decreasing=TRUE))
+head(motifRankingForSequence(res, 1, bg=FALSE))
 
 }}
 

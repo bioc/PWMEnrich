@@ -5,22 +5,23 @@ License: GPL-3
 Title: PWM enrichment analysis
 Type: Package
 LazyLoad: yes
-Author: Robert Stojnic
-Description: Asses the enrichment of already known PWMs (e.g. from
-    JASPAR) in DNA sequences. Motif hits in a sequence or DNA region
-    are considered together and P-values derived for their joint
-    pattern. The package implements multiple algorithms, including
-    fixed-threshold (Z-score) and threshold-free (Lognormal
-    normalization and Clover) methods. The main goal is to identify a
-    set of transcription factors that most likely bind to a single
-    sequence, group of sequences, or show significantly different
-    binding affinity between two sets of sequences.
-Version: 1.3.0
-biocViews: Bioinformatics, SequenceMatching
-Date: 2012-06-22
-Depends: methods, Biostrings, grid
-Suggests: BSgenome.Dmelanogaster.UCSC.dm3,
-        PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel
-Collate: 'AllDataClasses.R' 'background.R' 'clover.R' 'diff.R' 'misc.R'
-        'parallel.R' 'plot.R' 'PWMBackground-methods.R' 'PWM-methods.R'
-        'pwm.R' 'readData.R' 'seqLogoSupp.R' 'similarity.R'
+Author: Robert Stojnic, with contributions from Diego Diez
+Description: Asses the enrichment of already known PWMs (from JASPAR
+    and MotifDb) in DNA sequences. The package implements multiple
+    algorithms, including fixed-threshold (Z-score) and threshold-free
+    (Lognormal normalization and Clover) methods. These can be applied
+    to a single sequence (e.g. enhancer of interest) or a group of
+    sequences (e.g. a set of ChIP-chip/seq peaks). The output is a
+    ranked list of PWMs according to their level of enrichment compared
+    to genomic background. Custom sets of PWMs and genomic background
+    are also supported.
+Version: 2.0.0
+biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software
+Date: 2013-03-08
+Depends: methods, grid, BiocGenerics, Biostrings,
+Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
+    PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel
+Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
+    'diff.R' 'misc.R' 'MotifEnrichmentResults-methods.R' 'options.R'
+    'plot.R' 'PWMBackground-methods.R' 'PWM-methods.R' 'pwm.R'
+    'readData.R' 'seqLogoSupp.R' 'similarity.R'

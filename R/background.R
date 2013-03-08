@@ -12,9 +12,9 @@
 		} else {
 			stop("bg.seq needs to be a list of DNAString objects or a DNAStringSet object")
 		}
-	} else {
-		bg.seq = DNAStringSetToList(bg.seq)
-	}
+	} #else {
+		#bg.seq = DNAStringSetToList(bg.seq)
+	#}
 	
 	return(bg.seq)
 }
@@ -74,11 +74,11 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #' @examples
 #' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    # make background for JASPAR motifs using 2kb promoters of all D. melanogaster transcripts 
+#'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 #' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-#'      makePWMLognBackground(Dmelanogaster$upstream2000, jaspar.insects.PFM)
+#'      makePWMLognBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 #' }
 #' }
 makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000, bg.source="", verbose=TRUE){
@@ -90,7 +90,7 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 		motifs = list(motifs)
 
 	# concatenate all the background sequences into a single long sequence
-	bg.seq.all = paste(unlist(sapply(bg.seq, toString)), collapse="")
+	bg.seq.all = concatenateSequences(bg.seq)
 	# generate start and end positions
 	bg.seq.start = seq(1, nchar(bg.seq.all)+1, bg.len)
 	bg.seq.end = bg.seq.start - 1
@@ -99,6 +99,9 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 	
 	# split into bn.len sequences
 	bg = DNAStringSet(bg.seq.all, start=bg.seq.start, end=bg.seq.end)
+	
+	if(length(bg)<1000)
+		warnings(paste("The number of chunks of size", bg.len, "is smaller than 1000. This might lead to an non-robust estimate of lognormal distribution parameters."))
 	
 	# convert motifs to PWM format if neccessary
 	if(class(motifs[[1]]) != "PWM"){
@@ -136,11 +139,11 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 #' @examples
 #' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    # make background for JASPAR motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
+#'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
 #' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-#'      makePWMCutoffBackground(Dmelanogaster$upstream2000, jaspar.insects.PFM, cutoff=log2(exp(5)))
+#'      makePWMCutoffBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM, cutoff=log2(exp(5)))
 #' }
 #' }
 makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseudo.count=1, bg.source="", verbose=TRUE){
@@ -201,11 +204,11 @@ makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseud
 #' @examples
 #' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make empirical background by saving raw scores for each bp in the sequence - this can be very large in memory!
 #' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-#'      makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], jaspar.insects.PFM)
+#'      makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 #' }
 #' }
 makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.source="", verbose=TRUE, ...){
@@ -225,7 +228,7 @@ makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.sour
 	}
 	
 	# scan one very long sequence that is formed by concatenating all sequences
-	bg.seq.all = DNAString(paste(unlist(sapply(bg.seq, toString)), collapse=""))
+	bg.seq.all = DNAString(concatenateSequences(bg.seq))
 	
 	bg.res = motifScores(bg.seq.all, pwms, raw.scores=TRUE, verbose=verbose)
 	
@@ -254,11 +257,11 @@ makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.sour
 #' @examples
 #' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make empirical background - here we use only 100 sequences for illustrative purposes
 #' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-#'      bg.p = makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], jaspar.insects.PFM)
+#'      bg.p = makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 #'
 #'    # use the empirical background to pick a threshold and make cutoff background
 #'    makePWMPvalCutoffBackground(bg.p, 0.001)
@@ -333,11 +336,11 @@ makeStartEndPos = function(total.len, len){
 #' @examples
 #' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'    data(jaspar.insects.PFM)
+#'    data(MotifDb.Dmel.PFM)
 #'
-#'    # make background for JASPAR motifs using 2kb promoters of all D. melanogaster transcripts 
+#'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 #' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
-#'      makePWMGEVBackground(Dmelanogaster$upstream2000, jaspar.insects.PFM)
+#'      makePWMGEVBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 #' }
 #' }
 makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(200,2000,200), bg.source="", verbose=TRUE, fit.log=TRUE){
@@ -355,7 +358,7 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 
 
 	# concatenate all the background sequences into a single long sequence
-	bg.seq.all = paste(unlist(sapply(bg.seq, toString)), collapse="")
+	bg.seq.all = concatenateSequences(bg.seq)
 	
 	# convert motifs to PWM format if neccessary
 	if(class(motifs[[1]]) != "PWM"){
@@ -415,6 +418,24 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 	new("PWMGEVBackground", bg.source=bg.source, bg.loc=bg.loc, bg.scale=bg.scale, bg.shape=bg.shape, pwms=pwms)
 }
 
+#' A helper function to pick a genome for an organism
+#' 
+#' @param organism either organism name (such as "dm3") or a BSgenome object
+#' @return a BSgenome object
+pickGenome = function(organism){
+	# pick the genome object based on the 
+	if(is(organism, "BSgenome")){ 
+		genome = organism
+	} else if(organism == "dm3"){
+		if(!require("BSgenome.Dmelanogaster.UCSC.dm3"))
+			stop("This functions requires the BSgenome.Dmelanogaster.UCSC.dm3 package to build background for D. melanogaster")
+		genome = Dmelanogaster
+	} else {
+		stop("Please pick one of the valid organisms: \"dm3\" or provide a BSgenome object of the target genome.")
+	}
+	
+	genome
+}
 
 #' Make a background for a set of position frequency matrices
 #'
@@ -422,7 +443,8 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 #' Currently only supports D. melanogaster, but in the future should support other common organisms as well. 
 #'
 #' @param motifs a list of position frequency matrices (4xL matrices)
-#' @param organism name of the organisms for which the background should be compiled. Supported names: "dm3" for Drosophila Melanogaster. 
+#' @param organism either a name of the organisms for which the background should be compiled 
+#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package). 
 #' @param type the type of background to be compiled. Possible types are: 
 #'             \itemize{
 #'                 \item "logn" - estimate a lognormal background
@@ -438,6 +460,7 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 #'              Usage of this parameter is recommended only for testing and rough estimates. 
 #' @param ... other named parameters that backend function makePWM***Background functions take.
 #' @export
+#' @author Robert Stojnic, Diego Diez
 #' @examples
 #' 
 #' # load in the two example de-novo motifs
@@ -446,6 +469,10 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 #' \dontrun{
 #'   # construct lognormal background
 #'   bg.logn = makeBackground(motifs, organism="dm3", type="logn")
+#'
+#'   # alternatively, any BSgenome object can also be used
+#'   if(require("BSgenome.Dmelanogaster.UCSC.dm3"))
+#'     bg.logn = makeBackground(motifs, organism=Dmelanogaster, type="logn")
 #'
 #'   # construct a Z-score of hits with P-value background
 #'   bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)
@@ -465,36 +492,34 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 	if(!exists("bg.source"))
 		bg.source = NULL
 
-	# pick the set of background sequences
-	if(organism == "dm3"){
-		if(!require("BSgenome.Dmelanogaster.UCSC.dm3"))
-			stop("This functions requires the BSgenome.Dmelanogaster.UCSC.dm3 package to build background for D. melanogaster")
+	genome = pickGenome(organism)
 	
-		# take only a single promoter from each of the genes
-		promoters = Dmelanogaster$upstream2000
+	# take only a single promoter from each of the genes (this works only for Drosophila)
+	promoters = genome$upstream2000
+	if(organism(genome) == "Drosophila melanogaster"){
 		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
 		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-		
-		if(quick){
-			bg.seq = Dmelanogaster$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
-			if(is.null(bg.source))
-				bg.source = "D.melanogaster (dm3) 100 unique 2kb promoters"
-		} else {
-			if(type %in% c("empirical", "pval")){
-				bg.seq = Dmelanogaster$upstream2000[select.one[seq(1, length(select.one), length.out=1000)]]
-				if(is.null(bg.source))
-					bg.source = "D.melanogaster (dm3) 1000 unique 2kb promoters"
-			} else {
-				bg.seq = Dmelanogaster$upstream2000[select.one]
-				if(is.null(bg.source))
-					bg.source = paste("D.melanogaster (dm3)", length(select.one), "unique 2kb promoters")
-			}
-		}
-	} else {
-		stop("Please pick one of the valid organisms: \"dm3\" (more to come soon).")
+	} else{
+		select.one = 1:length(promoters)
 	}
 	
-	bg.seq = DNAStringSetToList(bg.seq)
+	if(quick){
+		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
+		if(is.null(bg.source))
+			bg.source = "D.melanogaster (dm3) 100 unique 2kb promoters"
+	} else {
+		if(type %in% c("empirical", "pval")){
+			bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=500)]]
+			if(is.null(bg.source))
+				bg.source = "D.melanogaster (dm3) 500 unique 2kb promoters"
+		} else {
+			bg.seq = genome$upstream2000[select.one]
+			if(is.null(bg.source))
+				bg.source = paste("D.melanogaster (dm3)", length(select.one), "unique 2kb promoters")
+		}
+	}
+	
+	#bg.seq = DNAStringSetToList(bg.seq)
 	
 	## now run the appropriate backend function
 	if(type == "logn"){
@@ -517,36 +542,33 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 #'
 #' Estimate the background frequencies of A,C,G,T on a set of promoters from an organism
 #'
-#' @param organism name of the organisms for which the background should be compiled. Supported names: "dm3" for Drosophila Melanogaster. 
+#' @param organism either a name of the organisms for which the background should be compiled 
+#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).
 #' @param pseudo.count the number to which the frequencies sum up to, by default 1
 #' @param quick if to preform fitting on a reduced set of 100 promoters. This will not give as good results but is much quicker than fitting to all the promoters (~10k). 
 #'              Usage of this parameter is recommended only for testing and rough estimates.
 #' @export
+#' @author Robert Stojnic, Diego Diez
 #' @examples
 #' \dontrun{
 #'   getBackgroundFrequencies("dm3")
 #' }
 getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE){
 	# pick the set of background sequences
-	if(organism == "dm3"){
-		if(!require("BSgenome.Dmelanogaster.UCSC.dm3"))
-			stop("This functions requires the BSgenome.Dmelanogaster.UCSC.dm3 package to build background for D. melanogaster")
+	genome = pickGenome(organism)
+
+	# take only a single promoter from each of the genes
+	promoters = genome$upstream2000
+	promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
+	select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
 	
-		# take only a single promoter from each of the genes
-		promoters = Dmelanogaster$upstream2000
-		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
-		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-		
-		if(quick){
-			bg.seq = Dmelanogaster$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
-		} else {
-			bg.seq = Dmelanogaster$upstream2000[select.one]
-		}
+	if(quick){
+		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
 	} else {
-		stop("Please pick one of the valid organisms: \"dm3\" (more to come soon).")
+		bg.seq = genome$upstream2000[select.one]
 	}
 	
-	bg.seq = DNAStringSetToList(bg.seq)
+	#bg.seq = DNAStringSetToList(bg.seq)
 	
 	makePriors(bg.seq, pseudo.count)
 }

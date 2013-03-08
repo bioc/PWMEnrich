@@ -17,10 +17,10 @@ plotPFM = function(pfm, ...){
 #' @export
 #' @examples
 #' if(require("PWMEnrich.Dmelanogaster.background")){
-#'   data(jaspar.insects)
+#'   data(MotifDb.Dmel)
 #'
-#'   # plot the tinman motif from JASPAR
-#'   plot(jaspar.insects$tin)
+#'   # plot the tinman motif from MotifDb
+#'   plot(MotifDb.Dmel$tin)
 #' }
 setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...){
 	pfm = x$pfm
@@ -41,12 +41,12 @@ setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...)
 #' @param titles a characater vector of titles for each of the plots
 #' @param rows number of rows in the grid
 #' @param cols number or cols in the grid
-#' @param xmargin.scale the scaling parameter for the X-axis margin. Useful when plotting more than one log on a page
-#' @param ymargin.scale the scaling parameter for the Y-axis margin. Useful when plotting more than one log on a page
+#' @param xmargin.scale the scaling parameter for the X-axis margin. Useful when plotting more than one logo on a page
+#' @param ymargin.scale the scaling parameter for the Y-axis margin. Useful when plotting more than one logo on a page
 #' @param ... other parameters passed to seqLogoGrid()
 #' @export
 plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length(pwms))), 
-	cols=ceiling(sqrt(length(pwms))), xmargin.scale=1/cols, ymargin.scale=1/rows, ...){
+	cols=ceiling(sqrt(length(pwms))), xmargin.scale=1, ymargin.scale=1, ...){
 	if(!is.list(pwms))
 		pwms = list(pwms)
 		
@@ -93,12 +93,12 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 #' @param yaxis logical If TRUE, a Y-axis will be plotted.
 #' @param xfontsize numeric Font size to be used for the X-axis.
 #' @param yfontsize numeric Font size to be used for the Y-axis.
-#' @param xmargin.scale the scaling parameter for the X-axis margin. Useful when plotting more than one log on a page
-#' @param ymargin.scale the scaling parameter for the Y-axis margin. Useful when plotting more than one log on a page
+#' @param xmargin.scale the scaling parameter for the X-axis margin. Useful when plotting more than one logo on a page
+#' @param ymargin.scale the scaling parameter for the Y-axis margin. Useful when plotting more than one logo on a page
 #' @param title to be shown on the top
 #' @param titlefontsize the fontsize of the title
 #' @export
-seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=15, yfontsize=15, xmargin.scale=1, ymargin.scale=1, title="",
+seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10, yfontsize=10, xmargin.scale=1, ymargin.scale=1, title="",
 	titlefontsize=15){
 
   if (class(pwm) == "pwm"){

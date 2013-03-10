@@ -81,6 +81,11 @@ rankingProcessAndReturn = function(res, r, id, order, rank, unique, decreasing){
 			ret = tapply(ret, names(ret), max)
 		else
 			ret = tapply(ret, names(ret), min)
+			
+		if(rank){
+			# re-rank the ranks... 
+			ret = rank(ret) 
+		}
 		
 		# unique names with correct ordering
 		uniq.names = c()

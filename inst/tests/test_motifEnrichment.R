@@ -132,3 +132,44 @@ test_that("makePriors", {
 	expect_equal(prior, c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2))
 })
 
+
+#### Test MotifEnrichmentResults
+
+pfm.all = list(tin_like_motif=motifs.denovo[[1]], gata_like_motif=motifs.denovo[[2]], gata=gata)
+motifs.all = PFMtoPWM(pfm.all, name=c("tin", "GATA", "GATA"))
+
+test_that("PFMtoPWM names", {
+	expect_equal(sapply(motifs.all, function(x) x$name), c(tin_like_motif="tin", gata_like_motif="GATA", gata="GATA"))
+})
+
+# setup stuff for motifEnrichment
+
+bg.logn = makePWMLognBackground(bg.seq, motifs.all)
+bg.z5 = makePWMCutoffBackground(bg.seq, motifs.all, cutoff=log2(exp(4)))
+
+sequences = list(DNAString("AAATTTAAGATAAAATTGCGT"), DNAString("AAAAAGATAAAAAAAA"))
+
+res.logn = motifEnrichment(sequences, bg.logn)
+res.z5 = motifEnrichment(sequences, bg.z5)
+
+### test new methods for motifEnrichmentResults
+
+test_that("MotifEnrichmentResults methods for logn", {
+	expect_equal(names(motifRankingForGroup(res.logn)), c("GATA", "GATA", "tin"))
+	expect_equal(names(motifRankingForGroup(res.logn, id=TRUE)), c("gata", "gata_like_motif", "tin_like_motif"))
+	expect_equal(motifRankingForGroup(res.logn, rank=TRUE), c("tin"=3, "GATA"=2, "GATA"=1))
+	expect_equal(motifRankingForGroup(res.logn, order=TRUE, id=TRUE), c("gata"=3, "gata_like_motif"=2, "tin_like_motif"=1))
+	expect_equal(names(motifRankingForGroup(res.logn, unique=TRUE)), c("GATA", "tin"))
+	expect_equal(motifRankingForGroup(res.logn, rank=TRUE, unique=TRUE), c("tin"=2, "GATA"=1))
+	expect_error(motifRankingForGroup(res.logn, order=TRUE, unique=TRUE))
+})
+
+test_that("MotifEnrichmentResults methods for z5", {
+	expect_equal(names(motifRankingForGroup(res.z5)), c("GATA", "GATA", "tin"))
+	expect_equal(names(motifRankingForGroup(res.z5, id=TRUE)), c("gata_like_motif", "gata", "tin_like_motif"))
+	expect_equal(motifRankingForGroup(res.z5, rank=TRUE), c("tin"=3, "GATA"=1, "GATA"=2))
+	expect_equal(motifRankingForGroup(res.z5, order=TRUE, id=TRUE), c("gata_like_motif"=2, "gata"=3, "tin_like_motif"=1))
+	expect_equal(names(motifRankingForGroup(res.z5, unique=TRUE)), c("GATA", "tin"))
+	expect_equal(motifRankingForGroup(res.z5, rank=TRUE, unique=TRUE), c("tin"=2, "GATA"=1))
+	expect_error(motifRankingForGroup(res.z5, order=TRUE, unique=TRUE))
+})

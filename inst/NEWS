@@ -7,7 +7,7 @@ Version 2.0.0:
       that provides a number of convenience methods for common tasks like ranking and
       plotting motifs
     o Functions makeBackground() and getBackgroundFrequencies() can now take BSgenome 
-      objects as input. Thanks to Diego Diaz for suggesting this and providing the code. 
+      objects as input. Thanks to Diego Diez for suggesting this and providing the code. 
     o Another version of motifScores() has been implemented that requires large amounts
       of memory, but is at least 2 times faster than the old motifScores() implementation.
       Use a new option useBigMemoryPWMEnrich() to switch to this implementation.     

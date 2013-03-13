@@ -10,7 +10,9 @@ Version 2.0.0:
       objects as input. Thanks to Diego Diez for suggesting this and providing the code. 
     o Another version of motifScores() has been implemented that requires large amounts
       of memory, but is at least 2 times faster than the old motifScores() implementation.
-      Use a new option useBigMemoryPWMEnrich() to switch to this implementation.     
+      Use a new option useBigMemoryPWMEnrich() to switch to this implementation.   
+    o PFMtoPWM now accepts a new parameter seq.count so that MotifDb motifs that are 
+      expressed as probabilities instead of frequencies can be easily used.  
     
 Version 1.3.0:
 	o Bioconductor 2.11 release version    

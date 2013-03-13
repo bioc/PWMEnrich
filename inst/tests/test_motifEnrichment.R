@@ -173,3 +173,15 @@ test_that("MotifEnrichmentResults methods for z5", {
 	expect_equal(motifRankingForGroup(res.z5, rank=TRUE, unique=TRUE), c("tin"=2, "GATA"=1))
 	expect_error(motifRankingForGroup(res.z5, order=TRUE, unique=TRUE))
 })
+
+### test the new parameter to PWMUnscaled
+gatan = gata/10
+gatan.pwm = PWMUnscaled(gatan, seq.count=10)
+gatan.pwm2 = PFMtoPWM(gatan, seq.count=10)
+test_that("seq.count parameter", {
+	expect_equal(gata.pwm$pfm, gatan.pwm$pfm)
+	expect_equal(gata.pwm$pwm, gatan.pwm$pwm)
+	expect_equal(gata.pwm$pfm, gatan.pwm2$pfm)
+	expect_equal(gata.pwm$pwm, gatan.pwm2$pwm)
+})
+

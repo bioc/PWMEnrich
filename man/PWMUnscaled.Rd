@@ -3,7 +3,7 @@
 \title{Create a PWM from PFM}
 \usage{PWMUnscaled(x, id = "", name = "", type=c("log2probratio", "prob"), prior.params=c(A
     = 0.25, C = 0.25, G = 0.25, T = 0.25), pseudo.count=prior.params,
-    unit.scale=FALSE)
+    unit.scale=FALSE, seq.count)
 }
 \description{The PWM function from Biostrings without unit scaling}
 \details{By default the Biostrings package scales the log-odds score so it is within 0 and 1. In this function
@@ -18,6 +18,8 @@ See ?PWM from Biostrings for more information on input arguments.}
 \item{prior.params}{the pseudocounts for each of the nucleotides}
 \item{pseudo.count}{the pseudo-count values if different from priors}
 \item{unit.scale}{if to unit.scale the pwm (default is no unit scaling)}
+\item{seq.count}{if x is a normalised PFM (i.e. with probabilities instead of sequence counts), then this sequence count
+will be used to convert \code{x} into a count matrix}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
 data(MotifDb.Dmel.PFM)

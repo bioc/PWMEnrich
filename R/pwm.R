@@ -70,6 +70,8 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' @param prior.params the pseudocounts for each of the nucleotides 
 #' @param pseudo.count the pseudo-count values if different from priors
 #' @param unit.scale if to unit.scale the pwm (default is no unit scaling)
+#' @param seq.count if x is a normalised PFM (i.e. with probabilities instead of sequence counts), then this sequence count
+#'                  will be used to convert \code{x} into a count matrix
 #' @return a new PWM object representing the PWM 
 #' @export
 #' @examples
@@ -85,7 +87,12 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' }
 #'
 PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), pseudo.count=prior.params, 
-	unit.scale=FALSE){
+	unit.scale=FALSE, seq.count=NULL){
+	
+	# convert to PFM if needed
+	if(!is.null(seq.count)){
+		x = apply(round(x * seq.count), 1:2, as.integer)
+	}
 	
 	# match input params
     x <- .normargPfm(x)
@@ -197,6 +204,7 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 #' @param motifs a list of motifs represented as matrices of frequencies (PFM)
 #' @param id the set of IDs for the motifs (defaults to names of the 'motifs' list)
 #' @param name the set of names for the motifs (defaults to names of the 'motifs' list)
+#' @param seq.count if frequencies in the motifs are normalized to 1, provides a vector of sequence counts (e.g. for MotifDb motifs)
 #' @param ... other parameters to PWMUnscaled
 #'
 #' @export
@@ -210,7 +218,7 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 #'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
 #'    PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior) # convert with genomic background 
 #' }
-PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), ...){
+PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL, ...){
 	if(!is.list(motifs)){
 		was.list = FALSE
 		motifs = list(motifs)
@@ -228,11 +236,19 @@ PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), ...){
 
 	if(length(name) != length(motifs))
 		stop("The number of names (parameter 'name') need to be the same as number of motifs (parameter 'motifs')")
+		
+	if(!is.null(seq.count) && length(seq.count) != length(motifs)){
+		stop("The 'seq.count' vector needs to be of the same length as the list of motifs (parameters 'motifs')")
+	}
 	
 	# call PWMUnscaled
 	res = list()
 	for(i in 1:length(motifs)){
-		res[[i]] = PWMUnscaled(motifs[[i]], id=id[i], name=name[i], ...)
+		if(is.null(seq.count)){
+			res[[i]] = PWMUnscaled(motifs[[i]], id=id[i], name=name[i], ...)
+		} else {
+			res[[i]] = PWMUnscaled(motifs[[i]], id=id[i], name=name[i], seq.count=seq.count[i], ...)
+		}
 	}
 	
 	names(res) = names(motifs)

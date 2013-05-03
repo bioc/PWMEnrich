@@ -145,7 +145,7 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 	# vector of scores
 	if(bg && "group.bg" %in% names(res)){
 		r = res$group.bg
-		if(res$score == "cutoff")
+		if(res$score == "cutoff" | res$bg == "ms")
 			decreasing = TRUE
 		else
 			decreasing = FALSE
@@ -204,7 +204,7 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 	# vector of scores
 	if(bg && "sequence.bg" %in% names(res)){
 		r = res$sequence.bg[seq.id,]
-		if(res$score == "cutoff")
+		if(res$score == "cutoff" | res$bg == "ms")
 			decreasing = TRUE
 		else
 			decreasing = FALSE

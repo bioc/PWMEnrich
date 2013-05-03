@@ -97,7 +97,7 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 	bg.seq.start = bg.seq.start[1:(length(bg.seq.start)-1)]
 	bg.seq.end = bg.seq.end[2:length(bg.seq.end)]
 	
-	# split into bn.len sequences
+	# split into bg.len sequences
 	bg = DNAStringSet(bg.seq.all, start=bg.seq.start, end=bg.seq.end)
 	
 	if(length(bg)<1000)

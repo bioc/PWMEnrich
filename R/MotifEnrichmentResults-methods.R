@@ -281,7 +281,7 @@ setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"
 #' }
 #' }
 setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResults"), function(obj, seq.id, n, bg=TRUE, id=FALSE, ...){
-	o = motifRankSequence(obj, seq.id, bg, id, order=TRUE)
+	o = motifRankingForSequence(obj, seq.id, bg, id, order=TRUE)
 	
 	plotMultipleMotifs(obj@res$pwms[o[1:n]], names(o)[1:n], ...)
 })

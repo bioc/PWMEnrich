@@ -695,9 +695,9 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' @param verbose if to print verbose output
 #' @param motif.shuffles number of times to shuffle motifs if using "ms" background correction
 #' @param B number of replicates when calculating empirical P-value
-#' @param group.only if to produce statistical only for the group of sequences, not individual sequences. This is useful
-#'                   when one wants to calculate the empirical P-value for the whole group, but not individual sequences
-#'                   (which might take quite a long time). 
+#' @param group.only if to return statistics only for the group of sequences, not individual sequences. In the case of
+#'                   empirical background the P-values for individual sequences are not calculated (thus saving time), for other 
+#'                   backgrounds they are calculated but not returned.  
 #' @return a MotifEnrichmentResults object containing a subset following elements:
 #'         \itemize{
 #'           \item "score" - scoring scheme used

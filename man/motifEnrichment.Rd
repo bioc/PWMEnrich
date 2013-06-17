@@ -96,9 +96,9 @@ Also, this also works only no *individual* sequences, not groups.
 \item{verbose}{if to print verbose output}
 \item{motif.shuffles}{number of times to shuffle motifs if using "ms" background correction}
 \item{B}{number of replicates when calculating empirical P-value}
-\item{group.only}{if to produce statistical only for the group of sequences, not individual sequences. This is useful
-when one wants to calculate the empirical P-value for the whole group, but not individual sequences
-(which might take quite a long time).}
+\item{group.only}{if to return statistics only for the group of sequences, not individual sequences. In the case of
+empirical background the P-values for individual sequences are not calculated (thus saving time), for other 
+backgrounds they are calculated but not returned.}
 }
 \examples{if(require("PWMEnrich.Dmelanogaster.background")){
 ###

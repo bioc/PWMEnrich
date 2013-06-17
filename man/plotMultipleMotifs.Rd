@@ -2,7 +2,7 @@
 \alias{plotMultipleMotifs}
 \title{Plot mulitple motifs in a single plot...}
 \usage{plotMultipleMotifs(pwms, titles=names(pwms), rows=ceiling(sqrt(length(pwms))),
-    cols=ceiling(sqrt(length(pwms))), xmargin.scale=1, ymargin.scale=1,
+    cols=ceiling(sqrt(length(pwms))), xmargin.scale=0.4, ymargin.scale=0.4,
     ...)
 }
 \description{Plot mulitple motifs in a single plot}

@@ -1,5 +1,10 @@
 PWMEnrich package
 
+Version 2.3.1:
+	o Fix a bug with plotTopMotifsSequence() with calling an unknown function 
+	o Implement group.only for all background, not only pval in motifEnrichment()
+	o New default to plotMultipleMotifs() so the margins are better
+
 Version 2.0.0:
     o General cleanup of the code with various small optimisations
     o A FASTA file name is now also taken as input to motifEnrichment()

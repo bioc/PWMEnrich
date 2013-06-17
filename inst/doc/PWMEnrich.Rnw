@@ -144,7 +144,7 @@ The first two motifs comes from FlyFactorSurvey and correspond to a heterodimer 
 \begin{center}
 \setkeys{Gin}{width=16cm, height=7cm}
 <<plots,echo=TRUE,fig=TRUE>>=
-plotTopMotifsGroup(res, 6, rows=2, cols=3, xmargin.scale=0.7)
+plotTopMotifsGroup(res, 6, rows=2, cols=3, xmargin.scale=0.7, ymargin.scale=1)
 @
 
 % ymargin.scale=0.8, xfontsize=11, yfontsize=11, titlefontsize=14)

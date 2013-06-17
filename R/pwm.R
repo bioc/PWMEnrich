@@ -894,6 +894,14 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		stop(paste("Uknown background correction algorithm: '", bg, "', Please select one of: 'none', 'logn', 'z', 'pval', 'ms'", sep=""))
 	}
 	
+	# only store the values for the group, not individual sequences!
+	if(group.only){
+		seq.n = grep("^sequence[.]", names(res))
+		if(length(seq.n)>0){
+			res = res[-seq.n]
+		}
+	}
+	
 	return(new("MotifEnrichmentResults", res=res))
 		
 }

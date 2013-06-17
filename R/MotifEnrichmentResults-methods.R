@@ -22,13 +22,20 @@ setMethod("$", signature=signature(x="MotifEnrichmentResults"), function(x, name
 #' @param object the MotifEnrichmentResults object
 setMethod("show", signature=signature(object="MotifEnrichmentResults"), function(object){
 	res = object@res
+	is.group.only = length(grep("sequence[.]", names(res))) == 0
+	
 	cat("An object of class 'MotifEnrichmentResults':\n")
 	cat("* created with '", res$score, "' scoring function with '", res$bg, "' background correction\n", sep="")
 	cat("* on a set of ", length(res$sequences), " sequence(s) and ", length(res$pwms), " PWMs\n", sep="")
 	cat("Result sets for the group:",paste("$", names(res)[grep("group[.]", names(res))], sep="", collapse=", "), "\n")
-	cat("Result sets for individual sequences:", paste("$", names(res)[grep("sequence[.]", names(res))], sep="", collapse=", "), "\n")
-	cat("Methods to extract data: motifRankingForGroup(), motifRankingForSequence()\n")
-	cat("Methods to plot data: plotTopMotifsGroup(), plotTopMotifsSequence()\n")
+	if(!is.group.only){
+		cat("Result sets for individual sequences:", paste("$", names(res)[grep("sequence[.]", names(res))], sep="", collapse=", "), "\n")
+		cat("Methods to extract data: motifRankingForGroup(), motifRankingForSequence()\n")
+		cat("Methods to plot data: plotTopMotifsGroup(), plotTopMotifsSequence()\n")
+	} else {
+		cat("Methods to extract data: motifRankingForGroup()\n")
+		cat("Methods to plot data: plotTopMotifsGroup()\n")
+	}
 	
 })
 

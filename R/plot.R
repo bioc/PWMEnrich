@@ -46,7 +46,7 @@ setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...)
 #' @param ... other parameters passed to seqLogoGrid()
 #' @export
 plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length(pwms))), 
-	cols=ceiling(sqrt(length(pwms))), xmargin.scale=1, ymargin.scale=1, ...){
+	cols=ceiling(sqrt(length(pwms))), xmargin.scale=0.4, ymargin.scale=0.4, ...){
 	if(!is.list(pwms))
 		pwms = list(pwms)
 		

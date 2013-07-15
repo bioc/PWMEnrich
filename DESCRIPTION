@@ -15,9 +15,9 @@ Description: Asses the enrichment of already known PWMs (from JASPAR
     ranked list of PWMs according to their level of enrichment compared
     to genomic background. Custom sets of PWMs and genomic background
     are also supported.
-Version: 2.3.1
+Version: 2.3.2
 biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software
-Date: 2013-03-08
+Date: 2013-07-15
 Depends: methods, grid, BiocGenerics, Biostrings,
 Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
     PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel

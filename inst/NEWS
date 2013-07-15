@@ -1,5 +1,8 @@
 PWMEnrich package
 
+Version 2.3.2:
+    o Subsetting functions for backgrounds from Diego Diez
+
 Version 2.3.1:
 	o Fix a bug with plotTopMotifsSequence() with calling an unknown function 
 	o Implement group.only for all background, not only pval in motifEnrichment()

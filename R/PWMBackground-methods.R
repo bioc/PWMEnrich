@@ -114,5 +114,85 @@ setMethod("$", signature=signature(x="PWMGEVBackground"), function(x, name){
 	slot(x, name)
 })
 
+#' Get the background for a subset of PWMs
+#'
+#' @aliases [,PWMLognBackground-method
+#' @param x the PWMLognBackground object
+#' @param i the indicies of PWMs
+#' @param j unused
+#' @param ... unused
+#' @param drop unused
+#' @rdname subsetting-PWMLognBackground
+setMethod("[", "PWMLognBackground", 
+function(x, i, j, ..., drop = TRUE){		
+	new("PWMLognBackground",
+		pwms=x@pwms[i],
+		bg.mean=x@bg.mean[i],
+		bg.len=x@bg.len[i],
+		bg.sd=x@bg.sd[i],
+		bg.source=paste(x@bg.source, "--subset")
+	)
+})
+
+#' Get the background for a subset of PWMs
+#'
+#' @aliases [,PWMCutoffBackground-method
+#' @param x the PWMCutoffBackground object
+#' @param i the indicies of PWMs
+#' @param j unused
+#' @param ... unused
+#' @param drop unused
+#' @rdname subsetting-PWMCutoffBackground
+setMethod("[", "PWMCutoffBackground", 
+function(x, i, j, ..., drop = TRUE){		
+	new("PWMCutoffBackground",
+		pwms=x@pwms[i],
+		bg.cutoff=x@bg.cutoff[i],
+		bg.P=x@bg.P[i],
+		bg.source=paste(x@bg.source, "--subset")
+	)
+})
+
+#' Get the background for a subset of PWMs
+#'
+#' @aliases [,PWMEmpiricalBackground-method
+#' @param x the PWMEmpiricalBackground object
+#' @param i the indicies of PWMs
+#' @param j unused
+#' @param ... unused
+#' @param drop unused
+#' @rdname subsetting-PWMEmpiricalBackground
+setMethod("[", "PWMEmpiricalBackground",
+function(x, i, j, ..., drop = TRUE)
+{		
+	new("PWMEmpiricalBackground",
+		pwms=x@pwms[i],
+		bg.fwd=x@bg.fwd[,j,drop=FALSE],
+		bg.rev=x@bg.rev[,j,drop=FALSE],
+		bg.source=paste(x@bg.source, "--subset")
+	)
+})
+
+#' Get the background for a subset of PWMs
+#'
+#' @aliases [,PWMGEVBackground-method
+#' @param x the PWMGEVBackground object
+#' @param i the indicies of PWMs
+#' @param j unused
+#' @param ... unused
+#' @param drop unused
+#' @rdname subsetting-PWMGEVBackground
+setMethod("[", "PWMGEVBackground",
+function(x, i, j, ..., drop = TRUE)
+{		
+	new("PWMGEVBackground",
+		pwms=x@pwms[i],
+		bg.loc=x@bg.loc[i],
+		bg.scale=x@bg.scale[i],
+		bg.shape=x@bg.shape[i],
+		bg.source=paste(x@bg.source, "--subset")
+	)
+})
+
 
 

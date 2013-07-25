@@ -167,8 +167,8 @@ function(x, i, j, ..., drop = TRUE)
 {		
 	new("PWMEmpiricalBackground",
 		pwms=x@pwms[i],
-		bg.fwd=x@bg.fwd[,j,drop=FALSE],
-		bg.rev=x@bg.rev[,j,drop=FALSE],
+		bg.fwd=x@bg.fwd[,i,drop=FALSE],
+		bg.rev=x@bg.rev[,i,drop=FALSE],
 		bg.source=paste(x@bg.source, "--subset")
 	)
 })

@@ -291,6 +291,15 @@ PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL
 	# make sure sequences are in the right formar
 	if(!is.list(sequences) & class(sequences) != "DNAStringSet")
 		sequences = list(sequences)
+	
+	if(is.list(sequences) & length(sequences)>0){
+		sequences = lapply(sequences, function(s){
+			if(is.character(s))
+				DNAString(s)
+			else
+				s
+		})
+	}
 		
 	#if(class(sequences) == "DNAStringSet")
 	#	sequences = DNAStringSetToList(sequences)

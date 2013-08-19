@@ -1,4 +1,4 @@
-\name{subsetting-PWMCutoffBackground}
+\name{[,PWMCutoffBackground-method}
 \alias{[,PWMCutoffBackground-method}
 \title{Get the background for a subset of PWMs}
 \arguments{

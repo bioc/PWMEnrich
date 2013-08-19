@@ -412,6 +412,7 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 	
 	## return either raw scores, or counts or means
 	if(raw.scores){
+		names(res) = names(sequences)
 		return(res)
 	} else {
 		if(length(pwms) == 1){
@@ -425,7 +426,7 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 	}
 }
 
-#' This is a memory intensive version of motifScore() which is abount 2 times faster
+#' This is a memory intensive version of motifScore() which is about 2 times faster
 #'
 #' The parameters and functionality are the same as \code{\link{motifScores}}. Please refer to documentation of this function
 #' for detailed explanation of functionality. 
@@ -437,9 +438,10 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 #' @param raw.scores if to return scores for each base-pair
 #' @param verbose if to produce verbose output
 #' @param cutoff the cutoff for calling binding sites (in base 2 log). 
+#' @param seq.all already concatenated sequences if already available (used to internally speed up things)
 #'
 #' @seealso \code{\link{motifScores}}
-motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff=NULL){	
+motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff=NULL, seq.all=NULL){	
 	# check motifs format and convert to PWM
 	pwms = .inputParamMotifs(motifs)
 	sequences = .inputParamSequences(sequences)
@@ -461,7 +463,8 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 	}
 	
 	# work on a single sequence that is all concatenated together because it's faster
-	seq.all = DNAString(concatenateSequences(sequences))
+	if(is.null(seq.all))
+		seq.all = DNAString(concatenateSequences(sequences))
 	seq.len = sapply(sequences, length)
 	
 	# a common error with shorter sequences
@@ -556,7 +559,7 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 	######################################## END OF INNER LOOP ######################################
 
 	# either do it parallel or serial
-	if(!is.null(.PWMEnrich.Options[["numCores"]])){
+	if(!is.null(.PWMEnrich.Options[["numCores"]]) && length(pwms) >= .PWMEnrich.Options[["numCores"]]){
 		cores = .PWMEnrich.Options[["numCores"]]
 		sel = round(seq(0, length(pwms), length.out=cores+1))
 		start = sel[1:cores]+1
@@ -585,6 +588,7 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 	
 	## return either raw scores, or counts or means
 	if(raw.scores){
+		names(res) = names(sequences)
 		return(res)
 	} else {
 		if(length(pwms) == 1){
@@ -672,11 +676,10 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #'        \itemize{
 #'           \item "autodetect" - default value. Scoring method is determined based
 #'                 on the type of \code{pwms} parameter. 
-#'           \item "affinity" - use threshold-free affinity scores without a background. The \code{pwms}
+#'           \item "affinity" - use threshold-free affinity score. The \code{pwms}
 #'                 parameter can either be a list of frequency matrices, \code{PWM} objects, or a 
 #'                 \code{PWMLognBackground} object. 
-#'           \item "cutoff" - use number of motif hits above a score cutoff as a measure of enrichment. 
-#'                 No background correction is performed. The \code{pwms}
+#'           \item "cutoff" - use number of motif hits above a score cutoff. The \code{pwms}
 #'                 parameter can either be a list of frequency matrices, \code{PWM} objects, or a 
 #'                 \code{PWMCutoffBackground} object.
 #'           \item "clover" - use the Clover algorithm (Frith et al, 2004). The Clover score of a single 
@@ -684,7 +687,7 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #'                 average of products of affinities over all sequence subsets. 
 #'         }
 #'            
-#' @param bg this parameter determines which background correction to use, if any. 
+#' @param bg this parameter determines how the raw score is compared to the background distribution. 
 #'        \itemize{
 #'           \item "autodetect" - default value. Background correction is determined based on the type
 #'                  of the \code{pwms} parameter. 
@@ -909,6 +912,14 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		if(length(seq.n)>0){
 			res = res[-seq.n]
 		}
+	}
+	
+	# restore the sequence names
+	if("sequence.nobg" %in% names(res)){
+		rownames(res$sequence.nobg) = names(sequences)
+	}
+	if("sequence.bg" %in% names(res)){
+		rownames(res$sequence.bg) = names(sequences)
 	}
 	
 	return(new("MotifEnrichmentResults", res=res))
@@ -1327,8 +1338,6 @@ motifPrAUC = function(seq.res){
 	
 	list("prec"=prec, "recall"=recall)
 }
-
-
 
 
 

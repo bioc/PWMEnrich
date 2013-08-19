@@ -2,6 +2,8 @@
 #' Name of different pieces of information associated with MotifEnrichmentResults
 #'
 #' @title Names of variables
+#' @name names,MotifEnrichmentResults
+#' @aliases names,MotifEnrichmentResults-method
 #' @param x the MotifEnrichmentResults object
 #' @return the names of the variables
 #' @rdname operators-MotifEnrichmentResults
@@ -30,11 +32,13 @@ setMethod("show", signature=signature(object="MotifEnrichmentResults"), function
 	cat("Result sets for the group:",paste("$", names(res)[grep("group[.]", names(res))], sep="", collapse=", "), "\n")
 	if(!is.group.only){
 		cat("Result sets for individual sequences:", paste("$", names(res)[grep("sequence[.]", names(res))], sep="", collapse=", "), "\n")
-		cat("Methods to extract data: motifRankingForGroup(), motifRankingForSequence()\n")
-		cat("Methods to plot data: plotTopMotifsGroup(), plotTopMotifsSequence()\n")
+		cat("Report methods: groupReport(), sequenceReport()\n")
+		#cat("Methods to extract data: motifRankingForGroup(), motifRankingForSequence()\n")
+		#cat("Methods to plot data: plotTopMotifsGroup(), plotTopMotifsSequence()\n")
 	} else {
-		cat("Methods to extract data: motifRankingForGroup()\n")
-		cat("Methods to plot data: plotTopMotifsGroup()\n")
+		cat("Report method: sequenceReport()\n")
+		#cat("Methods to extract data: motifRankingForGroup()\n")
+		#cat("Methods to plot data: plotTopMotifsGroup()\n")
 	}
 	
 })
@@ -55,8 +59,8 @@ rankingProcessAndReturn = function(res, r, id, order, rank, unique, decreasing){
 
 
 	# set either the names or IDs
-	all.ids = sapply(res$pwms, function(x) x$id)
-	all.names = sapply(res$pwms, function(x) x$name)
+	all.ids = sapply(res$pwms, function(x) x@id)
+	all.names = sapply(res$pwms, function(x) x@name)
 	
 	if(id){
 		names(r) = all.ids
@@ -111,8 +115,10 @@ rankingProcessAndReturn = function(res, r, id, order, rank, unique, decreasing){
 
 #' Get a ranking of motifs by their enrichment in the whole set of sequences
 #'
+#' @name motifRankingForGroup,MotifEnrichmentResults-method
+#' @aliases motifRankingForGroup
 #' @param obj a MotifEnrichmentResults object
-#' @param bg if to use background P-values to do the ranking (if available)
+#' @param bg if to use background corrected P-values to do the ranking (if available)
 #' @param id if to show PWM IDs instead of target TF names
 #' @param order if to output the ordering of PWMs instead of actual P-values or raw values
 #' @param rank if the output should be rank of a PWM instead of actual P-values or raw values
@@ -157,8 +163,8 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 		else
 			decreasing = FALSE
 	} else {
-		if(bg) 
-			warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
+		#if(bg) 
+		#	warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
 		r = res$group.nobg
 		decreasing = TRUE
 	}
@@ -168,9 +174,11 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 
 #' Get a ranking of motifs by their enrichment in one specific sequence
 #'
+#' @name motifRankingForSequence,MotifEnrichmentResults-method
+#' @aliases motifRankingForSequence
 #' @param obj a MotifEnrichmentResults object
 #' @param seq.id either the sequence number or sequence name 
-#' @param bg if to use background P-values to do the ranking (if available)
+#' @param bg if to use background corrected P-values to do the ranking (if available)
 #' @param id if to show PWM IDs instead of target TF names
 #' @param order if to output the ordering of PWMs instead of actual P-values or raw values
 #' @param rank if the output should be rank of a PWM instead of actual P-values or raw values
@@ -208,6 +216,10 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentResults"), function(obj, seq.id, bg=TRUE, id=FALSE, order=FALSE, rank=FALSE, unique=FALSE, ...){
 	res = obj@res
 	
+	if(missing(seq.id)){
+		stop("Please specify the sequence number with 'seq.id'")
+	}
+	
 	# vector of scores
 	if(bg && "sequence.bg" %in% names(res)){
 		r = res$sequence.bg[seq.id,]
@@ -216,8 +228,8 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 		else
 			decreasing = FALSE
 	} else {
-		if(bg) 
-			warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
+		#if(bg) 
+		#	warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
 		r = res$sequence.nobg[seq.id,]
 		decreasing = TRUE
 	}
@@ -228,14 +240,15 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 
 #' Plot the top N enrichment motifs in a group of sequences
 #'
+#' @name plotTopMotifsGroup,MotifEnrichmentResults-method
+#' @aliases plotTopMotifsGroup
 #' @param obj a MotifEnrichmentResults object
 #' @param n the number of top ranked motifs to plot
-#' @param bg if to use background P-values to do the ranking (if available)
+#' @param bg if to use background corrected P-values to do the ranking (if available)
 #' @param id if to show PWM IDs instead of target TF names
 #' @param ... other parameters passed to \code{plotMultipleMotifs()}
 #' @export
 #' @examples
-#' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
@@ -252,7 +265,6 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 #'    # plot top 3 motifs in a single row
 #'    plotTopMotifsGroup(res, 3, row=1, cols=3)
 #' }
-#' }
 setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"), function(obj, n, bg=TRUE, id=FALSE, ...){
 	o = motifRankingForGroup(obj, bg, id, order=TRUE)
 	
@@ -261,15 +273,16 @@ setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"
 
 #' Plot the top N enrichment motifs in a single sequence
 #'
+#' @name plotTopMotifsSequence,MotifEnrichmentResults-method
+#' @aliases plotTopMotifsSequence
 #' @param obj a MotifEnrichmentResults object
 #' @param seq.id either the sequence number or sequence name 
 #' @param n the number of top ranked motifs to plot
-#' @param bg if to use background P-values to do the ranking (if available)
+#' @param bg if to use background corrected P-values to do the ranking (if available)
 #' @param id if to show PWM IDs instead of target TF names
 #' @param ... other parameters passed to \code{plotMultipleMotifs()}
 #' @export
 #' @examples
-#' \dontrun{
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
@@ -286,11 +299,177 @@ setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"
 #'    # plot top 3 motifs in a single row
 #'    plotTopMotifsSequence(res, 1, 3, row=1, cols=3)
 #' }
-#' }
 setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResults"), function(obj, seq.id, n, bg=TRUE, id=FALSE, ...){
 	o = motifRankingForSequence(obj, seq.id, bg, id, order=TRUE)
 	
 	plotMultipleMotifs(obj@res$pwms[o[1:n]], names(o)[1:n], ...)
+})
+
+#' Generate a motif enrichment report for the whole group of sequences together
+#'
+#' @name groupReport,MotifEnrichmentResults-method
+#' @aliases groupReport
+#' @param obj a MotifEnrichmentResults object
+#' @param top what proportion of top motifs should be examined in each individual sequence (by default 5%)
+#' @param bg if to use background corrected P-values to do the ranking (if available)
+#' @param ... unused
+#' @return a MotifEnrichmentReport object containing a table with the following columns: 
+#' \itemize{
+#'    \item 'rank' - The rank of the PWM's enrichment in the whole group of sequences together
+#'    \item 'target' - The name of the PWM's target gene, transcript or protein complex. 
+#'    \item 'id' - The unique identifier of the PWM (if set during PWM creation).
+#'    \item 'raw.score' - The raw score before P-value calculation
+#'    \item 'p.value' - The P-value of motif enrichment (if available)
+#'    \item 'top.motif.prop' - The proportion (between 0 and 1) of sequences where the motif is within \code{top} proportion of enrichment motifs. 
+#' } 
+#' @export
+#' @examples
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    ###
+#'    # load the pre-compiled lognormal background
+#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # scan two sequences for motif enrichment
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'
+#'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # produce a report for all sequences taken together
+#'    r.default = groupReport(res)
+#'
+#'    # produce a report where the last column takes top 1% motifs
+#'    r = groupReport(res, top=0.01)
+#'
+#'    # view the results
+#'    r
+#'
+#'    # plot the top 10 most enriched motifs
+#'    plot(r[1:10])
+#' 
+#' }
+setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), function(obj, top=0.05, bg=TRUE, ...){
+	pwms = obj$pwms	
+		
+	# correct ordering of motifs
+	o = motifRankingForGroup(obj, rank=TRUE, bg=bg)
+	
+	targets = sapply(obj$pwms, function(x) x@name)
+	ids = sapply(obj$pwms, function(x) x@id)
+	
+	# construct the initial data frame object
+	df = data.frame(rank=o, target=targets, id=ids, raw.score=obj$group.nobg, stringsAsFactors=FALSE)
+	
+	if(bg && "group.bg" %in% names(obj)){
+		p.value = obj$group.bg
+	} else {
+		p.value = as.numeric(NA)
+	}
+
+	df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+	
+	# calculate in how many top sequences is the motif present
+	if("sequence.nobg" %in% names(obj)){
+		pct.top = rep(0, nrow(df))
+		pct.cutoff = nrow(df) * top
+		num.seq = nrow(obj$sequence.nobg)
+		for(i in 1:num.seq){
+			os = motifRankingForSequence(obj, i, rank=TRUE, bg=bg)
+			pct.top = pct.top + (os <= pct.cutoff)
+		}
+		pct.top = pct.top / num.seq
+		
+		top.motif = pct.top
+	} else {
+		top.motif = as.numeric(NA)
+	}
+	
+	df = data.frame(df, "top.motif.prop"=top.motif, stringsAsFactors=FALSE)
+	
+	# sort and return
+	correct.order = order(df$rank)
+	
+	df = df[correct.order,]
+	rownames(df) = NULL
+	pwms = pwms[correct.order]
+	
+	# return a MotifEnrichmentReport object
+	new("MotifEnrichmentReport", d=df, pwms=pwms)
+})
+
+#' Generate a motif enrichment report for a single sequence
+#'
+#' @name sequenceReport,MotifEnrichmentResults-method
+#' @aliases sequenceReport
+#' @param obj a MotifEnrichmentResults object
+#' @param seq.id the sequence index or name
+#' @param bg if to use background corrected P-values to do the ranking (if available)
+#' @param ... unused
+#' @return a MotifEnrichmentReport object containing a table with the following columns: 
+#' \itemize{
+#'    \item 'rank' - The rank of the PWM's enrichment in the sequence
+#'    \item 'target' - The name of the PWM's target gene, transcript or protein complex. 
+#'    \item 'id' - The unique identifier of the PWM (if set during PWM creation).
+#'    \item 'raw.score' - The raw score before P-value calculation
+#'    \item 'p.value' - The P-value of motif enrichment (if available)
+#' } 
+#' @export
+#' @examples
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    ###
+#'    # load the pre-compiled lognormal background
+#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # scan two sequences for motif enrichment
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'
+#'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # reports for the two sequences
+#'    r1 = sequenceReport(res, 1)
+#'    r2 = sequenceReport(res, 2)
+#'
+#'    # view the results
+#'    r1
+#'    r2
+#'
+#'    # plot the top 10 most enriched motifs in the first, and then second sequence
+#'    plot(r1[1:10])
+#'    plot(r2[1:10])
+#' 
+#' }
+setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), function(obj, seq.id, bg=TRUE, ...){
+	if(missing(seq.id)){
+		stop("Please specify the sequence number with 'seq.id'")
+	}
+
+	pwms = obj$pwms	
+		
+	# correct ordering of motifs
+	o = motifRankingForSequence(obj, seq.id, rank=TRUE, bg=bg)
+	
+	targets = sapply(obj$pwms, function(x) x@name)
+	ids = sapply(obj$pwms, function(x) x@id)
+	
+	# construct the initial data frame object
+	df = data.frame(rank=o, target=targets, id=ids, raw.score=obj$sequence.nobg[seq.id,], stringsAsFactors=FALSE)
+	
+	if(bg && "sequence.bg" %in% names(obj)){
+		p.value = obj$sequence.bg[seq.id,]
+	} else {
+		p.value = as.numeric(NA)
+	}
+
+	df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+		
+	# sort and return
+	correct.order = order(df$rank)
+	
+	df = df[correct.order,]
+	rownames(df) = NULL
+	pwms = pwms[correct.order]
+	
+	# return a MotifEnrichmentReport object
+	new("MotifEnrichmentReport", d=df, pwms=pwms)
 })
 
 

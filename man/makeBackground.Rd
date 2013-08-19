@@ -1,46 +1,71 @@
 \name{makeBackground}
 \alias{makeBackground}
-\title{Make a background for a set of position frequency matrices...}
-\usage{makeBackground(motifs, organism="dm3", type="logn", quick=FALSE, ...)
+\title{Make a background for a set of position frequency matrices}
+\usage{
+  makeBackground(motifs, organism = "dm3", type = "logn",
+    quick = FALSE, ...)
 }
-\description{Make a background for a set of position frequency matrices}
-\details{This is a convenience front-end function to compile new backgrounds for a set of PFMs. 
-Currently only supports D. melanogaster, but in the future should support other common organisms as well.}
-\author{Robert Stojnic, Diego Diez}
-\arguments{\item{motifs}{a list of position frequency matrices (4xL matrices)}
-\item{organism}{either a name of the organisms for which the background should be compiled 
-(currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).}
-\item{type}{the type of background to be compiled. Possible types are: 
-\itemize{
-\item "logn" - estimate a lognormal background
-\item "cutoff" - estimate a Z-score background with fixed log-odds cutoff (in log2)
-\item "pval" - estimate a Z-score background with a fixed P-value cutoff. Note that this may require a lot of memory
-since the P-value of motif hits is first estimated from the empirical distribution. 
-\item "empirical" - create an empirical P-value background. Note that this may require a lot of memory (up to 10GB in
-default "slow" mode (quick=FALSE) for 126 JASPAR motifs and 1000 D. melanogaster promoters).
-\item "GEV" - estimate a generalized extreme value (GEV) distribution background by fitting linear regression to distribution 
-parameters in log space
-}}
-\item{quick}{if to preform fitting on a reduced set of 100 promoters. This will not give as good results but is much quicker than fitting to all the promoters (~10k). 
-Usage of this parameter is recommended only for testing and rough estimates.}
-\item{...}{other named parameters that backend function makePWM***Background functions take.}
+\arguments{
+  \item{motifs}{a list of position frequency matrices (4xL
+  matrices)}
+
+  \item{organism}{either a name of the organisms for which
+  the background should be compiled (currently only
+  supported name is "dm3" for Drosophila Melanogaster), or
+  a \code{BSgenome} object (see \code{BSgenome} package).}
+
+  \item{type}{the type of background to be compiled.
+  Possible types are: \itemize{ \item "logn" - estimate a
+  lognormal background \item "cutoff" - estimate a Z-score
+  background with fixed log-odds cutoff (in log2) \item
+  "pval" - estimate a Z-score background with a fixed
+  P-value cutoff. Note that this may require a lot of
+  memory since the P-value of motif hits is first estimated
+  from the empirical distribution.  \item "empirical" -
+  create an empirical P-value background. Note that this
+  may require a lot of memory (up to 10GB in default "slow"
+  mode (quick=FALSE) for 126 JASPAR motifs and 1000 D.
+  melanogaster promoters).  \item "GEV" - estimate a
+  generalized extreme value (GEV) distribution background
+  by fitting linear regression to distribution parameters
+  in log space }}
+
+  \item{quick}{if to preform fitting on a reduced set of
+  100 promoters. This will not give as good results but is
+  much quicker than fitting to all the promoters (~10k).
+  Usage of this parameter is recommended only for testing
+  and rough estimates.}
+
+  \item{...}{other named parameters that backend function
+  makePWM***Background functions take.}
 }
-\examples{# load in the two example de-novo motifs
+\description{
+  This is a convenience front-end function to compile new
+  backgrounds for a set of PFMs. Currently only supports D.
+  melanogaster, but in the future should support other
+  common organisms as well.
+}
+\examples{
+# load in the two example de-novo motifs
 motifs = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="example.transfac"), remove.acc=TRUE)
 
 \dontrun{
-# construct lognormal background
-bg.logn = makeBackground(motifs, organism="dm3", type="logn")
+  # construct lognormal background
+  bg.logn = makeBackground(motifs, organism="dm3", type="logn")
 
-# alternatively, any BSgenome object can also be used
-if(require("BSgenome.Dmelanogaster.UCSC.dm3"))
-bg.logn = makeBackground(motifs, organism=Dmelanogaster, type="logn")
+  # alternatively, any BSgenome object can also be used
+  if(require("BSgenome.Dmelanogaster.UCSC.dm3"))
+    bg.logn = makeBackground(motifs, organism=Dmelanogaster, type="logn")
 
-# construct a Z-score of hits with P-value background
-bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)
+  # construct a Z-score of hits with P-value background
+  bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)
 
-# now we can use them to scan for enrichment in sequences (in this case there is a consensus Tin binding site)
-motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.logn)
-motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.pval)
-}}
+  # now we can use them to scan for enrichment in sequences (in this case there is a consensus Tin binding site)
+  motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.logn)
+  motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.pval)
+}
+}
+\author{
+  Robert Stojnic, Diego Diez
+}
 

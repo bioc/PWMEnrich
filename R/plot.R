@@ -11,6 +11,7 @@ plotPFM = function(pfm, ...){
 #'
 #' This function produces a sequence logo (via package seqLogo). 
 #'
+#' @aliases plot,PWM,missing-method
 #' @param x the PWM object
 #' @param y unused
 #' @param ... other parameters to pass to seqLogo's \code{plot} function
@@ -51,7 +52,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 		pwms = list(pwms)
 		
 	if(length(pwms) != length(titles))
-		stop("Provide titles for each of the input motifs")
+		stop("Number of titles in the 'titles' parameter does not match the number of input motifs")
 
 	# start a new viewport page
 	grid.newpage()
@@ -78,6 +79,100 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 	}
 	popViewport()
 }
+
+#' Plot the motif enrichment report
+#'
+#' Plots a graphical version of the motif enrichment report. Note that all values are plotted, if you want to plot only a subset of
+#' a report, first select this subset (see examples). 
+#'
+#' @aliases plot,MotifEnrichmentReport,missing-method
+#' @param x a MotifEnrichmentReport object
+#' @param y unused
+#' @param fontsize font size to use in the plot
+#' @param header.fontsize font size of the header
+#' @param widths the relative widths of columns
+#' @param ... unused
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    ###
+#'    # load the pre-compiled lognormal background
+#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # scan two sequences for motif enrichment
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'
+#'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
+#'
+#'    # produce a report for all sequences taken together
+#'    r = groupReport(res)
+#'
+#'    # plot the top 10 most enriched motifs
+#'    plot(r[1:10])
+#' 
+#' }
+setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), function(x, y, fontsize=14, header.fontsize=fontsize, widths=NULL, ...){
+	d = x@d
+	pwms = x@pwms
+	
+	rows = nrow(d)+1
+	cols = ncol(d)+1 
+	
+	# some default widths
+	if(is.null(widths))
+		widths = c(0.05, 0.1, 0.2, 0.3, 0.1, 0.1, 0.1)[1:(ncol(d)+1)]
+		
+	widths = widths / sum(widths)
+
+	names(d) = c("Rank", "Target", "Motif ID", "Raw score", "P-value", "In top\nmotifs")[1:ncol(d)]
+	
+	# start a new viewport page
+	grid.newpage()
+	pushViewport(viewport(layout = grid.layout(rows, cols, widths=widths)))
+	
+	# use the grid layout
+	for(ii in 1:rows){
+		for(j in 1:cols){
+			pushViewport(viewport(layout.pos.row = ii, layout.pos.col = j))
+						
+			# figure out which column to plot
+			if(j <= 2){ 
+				inx = j
+			} else {
+				inx = j - 1
+			}
+			
+			if(ii == 1){
+				# header
+				if(j == 3)
+					grid.text("PWM", gp=gpar(fontsize=header.fontsize, fontface="bold"))
+				else
+					grid.text(names(d)[inx], gp=gpar(fontsize=header.fontsize, fontface="bold"))
+				
+			} else {
+				# rest of the table
+				i = ii - 1
+
+				# 3rd column is PWM			
+				if(j == 3){			
+					pwm = pwms[[i]]$pfm
+					# use the backend functions to plot
+					seqLogoGrid(divideRows(pwm,colSums(pwm)), 
+						xmargin.scale=0.01, ymargin.scale=0.01, xaxis=FALSE, yaxis=FALSE, ...)
+				} else {
+					if(inx == 6){
+						grid.text(paste(round(d[i,inx]*100), "%"), gp=gpar(fontsize=fontsize))
+					} else if(inx > 3){
+						grid.text(signif(d[i,inx],3), gp=gpar(fontsize=fontsize))
+					} else {
+						grid.text(d[i,inx], gp=gpar(fontsize=fontsize))
+					}
+				}
+			}
+				
+			popViewport()
+		}
+	}
+	popViewport()
+})
 
 #' Draw a motif logo on an existing viewport
 #'
@@ -170,5 +265,202 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
   }
   popViewport()
   popViewport()
+}
+
+#' Plot the raw motifs scores as returned by motifScores()
+#' 
+#' This function visualises the motif scores for one or more sequences. Sequences are drawn as lines, and scores are plotted
+#' as triangles at both sides of the line (corresponding to the two strands). The width of the base of the triangle corresponds to motif width and 
+#' the height to the motif \code{log(score)} that is positive and greater than the \code{cutoff} parameter (if specified). All scores
+#' have the same y-axis, so the heights of bars are comparable between sequences and motifs.
+#' 
+#' @param scores the list of motifs scores. Each element of the list is a matrix of scores for one sequences. The columns in the matrix
+#'               correspond to different motifs. Each column contains the odds (not log-odds!) scores over both strands. For example, 
+#'               for a sequence of length 5, scores for a 3 bp motifs could be: \code{c(0.1, 1, 4, NA, NA, 1, 0.3, 2, NA, NA)}. The first
+#'               3 numbers are odds scores starting at first three bases, and the second lot of 3 numbers is the scores starting at the
+#'               same positions but with the reverse complement of the motif. The last two values are NA on both strands because we do not
+#'               support partial motif hits.
+#' @param sel.motifs a vector of motif names. Use this parameter to show the motif hits to only a subset of motifs for which the scores are available.
+#' @param seq.names a vector of sequence names to show in the graph. If none specified, the sequences will be named Sequence 1, Sequence 2, ...
+#' @param cols a vector of colours to use to colour code motif hits. If none are specified, the current palette will be used. 
+#' @param cutoff either a single value, or a vector of values. The values are PWM cutoffs after \code{log.fun} (see below). Only motif scores above these cutoffs will be shown. 
+#'               If a single values is specified, it will be used for all PWMs, otherwise the vector needs to specify one cutoff per PWM. 
+#' @param log.fun the logarithm function to use to calculate log-odds. By default log2 is used for consistency with Biostrings.               
+#' @param main the main title
+#' @param legend.space the proportion of horizontal space to reserve for the legend. The default is 30%.
+#' @param max.score the maximal log-odds score used to scale all other scores. By default this values is automatically determined, but it can
+#'                  also be set manually to make multiple plots comparable. 
+#' @param trans the level of transparency. By default 50% transparency to be able to see overlapping binding sites
+#' @param text.cex the scaling factor for sequence names
+#' @param legend.cex the scaling factor for the legend
+#' @param motif.names optional vector of motif names to show instead of those present as column names in \code{scores}
+#' @param seq.len.spacing the spacing (in bp units) between the end of the sequence line and the text showing the length in bp
+#' @export
+#' @examples
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    ###
+#'    # Load Drosophila PWMs
+#'    data(MotifDb.Dmel)
+#'
+#'    # two sequences of interest
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'
+#'    # select the tinman and snail motifs
+#'    pwms = MotifDb.Dmel[c("tin", "sna")]
+#'
+#'    # get the raw score that will be plotted
+#'    scores = motifScores(sequences, pwms, raw.scores=TRUE)
+#'
+#'    # plot the scores in both sequences, green for tin and blue for sna
+#'    plotMotifScores(scores, cols=c("green", "blue"))
+#'     
+#' }
+plotMotifScores = function(scores, sel.motifs=NULL, seq.names=NULL, cols=NULL, cutoff=NULL, log.fun=log2, main="", legend.space=0.30, max.score=NULL,
+	trans=0.5, text.cex=0.9, legend.cex=0.9, motif.names=NULL, seq.len.spacing=8){
+	# subset motifs
+	if(!is.null(sel.motifs)){
+		scores = lapply(scores, function(x) x[, sel.motifs, drop=FALSE])
+	}	
+	
+	if(length(unique(sapply(scores, ncol)))!=1){
+		stop("All elements of the 'scores' list need to have matrices with the same number of columns.")
+	}
+	
+	# reverse the scores for plotting order!
+	scores = rev(scores)
+
+	# number of sequences
+	num.seq = length(scores)
+	# maximal sequence length
+	seq.len = sapply(scores, nrow)/2
+	max.seq.len = max(seq.len)
+	
+	# find out the length of each motif by the number of NAs
+	motif.len = apply(scores[[1]], 2, function(x) sum(is.na(x))/2 + 1)
+	num.motifs = length(motif.len)
+	
+	# threshold the signal
+	if(is.null(cutoff)){
+		cutoff = rep(0, num.motifs)
+	} else if(length(cutoff) == 1) {
+		cutoff = rep(cutoff, num.motifs)
+	} else if(length(cutoff) != num.motifs){
+		stop("The length of 'cutoff' does not match the number of shown motifs")
+	}
+	
+	# do the log of scores
+	scores = lapply(scores, log.fun)
+	
+	# apply the cutoff to the scores
+	scores = lapply(scores, function(s){
+		for(i in 1:ncol(s)){
+			sel = which(s[,i] <= cutoff[i])
+			if(length(sel) > 0)
+				s[sel,i] = 0
+		} 
+		s
+	})
+	
+	# the largest score to use to scale all scores
+	if(is.null(max.score))
+		max.score = max(sapply(scores, function(s) max(s, na.rm=TRUE)))
+	
+	############# PLOTING #############
+	
+	if(is.null(cols)){
+		pal = palette()
+		cols = pal[ (1:num.motifs) %% length(pal) ]
+	}
+		
+	# add transparency
+	cols.rgb = col2rgb(cols)
+	cols.rgb = rbind(cols.rgb, "alpha"=(1-trans)*255) / 255
+	
+	for(i in 1:length(cols)){
+		cols[i] = rgb(cols.rgb[1, i], cols.rgb[2, i], cols.rgb[3, i], cols.rgb[4, i])
+	}
+	
+	
+	# set up the empty plotting area
+	ylim = c(0, 2*num.seq)
+	xlim = c(0, max.seq.len/(1-legend.space)) # allow for extra space for the legend
+	
+	par(mar=c(0,0,2,1))
+	plot(NULL, xlim=xlim, ylim=ylim, xaxt="n", yaxt="n", ylab="", xlab="", bty="n", main=main)
+	
+	# plot the lines corresponding to the sequences
+	for(i in 1:num.seq){
+		y = 1+(i-1)*2
+		lines(c(1, seq.len[i]+1), c(y, y))
+		# ticks at the dn
+		lines(c(1,1), c(y-0.03, y+0.03))
+		lines(c(seq.len[i]+1, seq.len[i]+1), c(y-0.03, y+0.03))
+	}
+	
+	
+	# now plot the signal
+	for(i in 1:num.seq){
+		s = scores[[i]]
+		
+		# the basic y axis
+		y = 1+(i-1)*2
+		
+		# iterate over motifs
+		for(j in 1:ncol(s)){
+			by.strand = matrix(s[,j], ncol=2)
+			for(k in 1:2){
+				x.start = which(by.strand[,k] > 0)
+				x.end = x.start + motif.len[j]
+				
+				y.start = rep(y, length(x.start))
+				if(k == 1){
+					# multiply by 0.8 to leave some space between sequences!
+					y.end = y.start + by.strand[x.start,k] / max.score * 0.8
+				} else {
+					y.end = y.start - by.strand[x.start,k] / max.score * 0.8
+				}
+				
+				for(kk in 1:length(x.start)){
+					polygon(c(x.start[kk], x.end[kk], (x.start[kk]+x.end[kk])/2), c(y.start[kk], y.start[kk], y.end[kk]), col=cols[j], border=cols[j])
+					#rect(x.start[kk], y.start[kk], x.end[kk], y.end[kk], col=cols[j], border=cols[j])
+				}
+			}
+		}
+	}
+	
+	# find out max scores for each motif separately
+	max.score.motif = sapply(1:num.motifs, function(i){
+		max(sapply(scores, function(s) max(s[,i], na.rm=TRUE)))
+	})
+	
+	# set up the legend
+	if(is.null(motif.names))
+		motif.names = colnames(scores[[1]])
+		
+	legend = paste(motif.names, " (", round(max.score.motif, 2), " max)", sep="")
+	legend("topright", pch=rep(15, num.motifs), col=cols, legend=legend, cex=legend.cex)
+	
+	# plot sequence names
+	if(is.null(seq.names)){
+		if(is.null(names(scores)))
+			seq.names = paste("Sequence", 1:length(scores))
+		else
+			seq.names = names(scores)
+	}
+	
+	seq.names = rev(seq.names)
+		
+	for(i in 1:length(seq.names)){
+		y = 1+(i-1)*2 + 1
+		text(1, y, seq.names[i], adj=0, cex=text.cex)
+	}
+	
+	# plot the lengths of sequences
+	for(i in 1:length(seq.len)){
+		y = 1+(i-1)*2
+		x = seq.len[i] + seq.len.spacing
+		
+		text(x, y, paste(seq.len[i], "bp"), adj=0, cex=text.cex*0.8)
+	}
 }
 

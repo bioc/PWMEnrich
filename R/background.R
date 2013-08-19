@@ -64,8 +64,7 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #'
 #' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
-#'               frequency matrices are given, the background distribution fitted from bg.seq. 
-#'               Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 nucleotides. 
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
 #' @param bg.len the length of background chunks
 #' @param bg.source a free-form textual description of how the background was generated
@@ -129,8 +128,7 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 #'
 #' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
-#'               frequency matrices are given, the background distribution fitted from bg.seq. 
-#'               Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 nucleotides. 
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param cutoff the cutoff at which the background should be made, i.e. at which a motif hit is called significant
 #' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
 #' @param bg.source a free-form textual description of how the background was generated
@@ -194,8 +192,7 @@ makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseud
 #'
 #' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
-#'               frequency matrices are given, the background distribution fitted from bg.seq. 
-#'               Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 nucleotides. 
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
 #' @param bg.source a free-form textual description of how the background was generated
 #' @param verbose if to produce verbose output
@@ -300,6 +297,70 @@ makePWMPvalCutoffBackground = function(bg.p, p.value=1e-3, bg.source=""){
 	new("PWMCutoffBackground", bg.source=bg.source, bg.cutoff=cutoff, bg.P=P, pwms=pwms)
 }
 
+#' Construct a P-value cutoff background from a set of sequences
+#'
+#' This function creates a P-value cutoff background for motif enrichment. 
+#'
+#' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
+#' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
+#' @param p.value the P-value used to find cuttoffs for each of the motifs
+#' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
+#' @param bg.source textual description of background source
+#' @param verbose if to print verbose output
+#' @return an object of type PWMCutoffBackground
+#' @export
+#' @examples
+#' \dontrun{
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    data(MotifDb.Dmel.PFM)
+#'
+#'    # use the empirical background to pick a threshold and make cutoff background
+#'    makePWMPvalCutoffBackground(Dmelanogaster$upstream2000, 0.001)
+#' }
+#' }
+makePWMPvalCutoffBackgroundFromSeq = function(bg.seq, motifs, p.value=1e-3, bg.pseudo.count=1, bg.source="", verbose=TRUE){
+	# check if the sequences are in the right format
+	bg.seq = .normalize.bg.seq(bg.seq)
+	
+	# convert to list if a single motif is given
+	if(!is.list(motifs))
+		motifs = list(motifs)
+	
+	# make priors and PWMs
+	if(class(motifs[[1]]) != "PWM"){
+		prior = makePriors(bg.seq, bg.pseudo.count)
+		pwms = PFMtoPWM(motifs, prior.params = prior)
+	} else {
+		pwms = motifs
+	}
+	
+	# pre-calculate the big sequence motifScoresBigMemory() is faster
+	seq.input = .inputParamSequences(bg.seq)
+	seq.all = DNAString(concatenateSequences(seq.input))
+	
+	# get cutoffs
+	cutoff = structure(rep(0, length(pwms)), names=names(pwms))
+	P = structure(rep(0, length(pwms)), names=names(pwms))
+	for(i in 1:length(pwms)){	
+		# get the raw values for this motif only!
+		bg.res = motifScoresBigMemory(bg.seq, pwms[i], verbose=verbose, raw.scores=TRUE, seq.all=seq.all)
+		bg.res = na.omit(unlist(bg.res))
+		
+		# transform to log2 to get the final data
+		all.data = log2(bg.res)
+		
+		# find out the cutoff for 1-p.value
+		cutoff[i] = quantile(ecdf(all.data), 1 - p.value)
+		# work out the actual P value
+		# NOTE: since the distribution is decrete, this won't be exactly the same as 2*P.value but will be quite close
+		P[i] = 2 * (sum(all.data >= cutoff[i]) / length(all.data))
+	}
+
+	# final object
+	new("PWMCutoffBackground", bg.source=bg.source, bg.cutoff=cutoff, bg.P=P, pwms=pwms)
+}
+
 #' Divide total.len into fragments of length len by providing start,end positions
 #'
 #' @param total.len total available length to be subdivided
@@ -325,8 +386,7 @@ makeStartEndPos = function(total.len, len){
 #'
 #' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
-#'               frequency matrices are given, the background distribution fitted from bg.seq. 
-#'               Same ratios are used for pseudo counts that sum up to bg.pseudo.count for the 4 nucleotides. 
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
 #' @param bg.len the length range of background chunks
 #' @param bg.source a free-form textual description of how the background was generated
@@ -437,6 +497,22 @@ pickGenome = function(organism){
 	genome
 }
 
+#' A helper function to select a set of non-redundant promoters from a genome object
+#'
+#' @param genome a BSgenome object
+#' @return a vector of inidicies of non-redundant promoters
+selectPromoters = function(genome){
+	promoters = genome$upstream2000
+	if(organism(genome) == "Drosophila melanogaster"){
+		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
+		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
+	} else{
+		select.one = 1:length(promoters)
+	}
+	
+	select.one
+}
+
 #' Make a background for a set of position frequency matrices
 #'
 #' This is a convenience front-end function to compile new backgrounds for a set of PFMs. 
@@ -495,27 +571,21 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 	genome = pickGenome(organism)
 	
 	# take only a single promoter from each of the genes (this works only for Drosophila)
-	promoters = genome$upstream2000
-	if(organism(genome) == "Drosophila melanogaster"){
-		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
-		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-	} else{
-		select.one = 1:length(promoters)
-	}
+	select.one = selectPromoters(genome)
 	
 	if(quick){
 		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
 		if(is.null(bg.source))
-			bg.source = "D.melanogaster (dm3) 100 unique 2kb promoters"
+			bg.source = paste(organism(genome), " (", providerVersion(genome), ") 100 unique 2kb promoters", sep="")
 	} else {
-		if(type %in% c("empirical", "pval")){
+		if(type %in% c("pval")){
 			bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=500)]]
 			if(is.null(bg.source))
-				bg.source = "D.melanogaster (dm3) 500 unique 2kb promoters"
+				bg.source = paste(organism(genome), " (", providerVersion(genome), ") 500 unique 2kb promoters", sep="")
 		} else {
 			bg.seq = genome$upstream2000[select.one]
 			if(is.null(bg.source))
-				bg.source = paste("D.melanogaster (dm3)", length(select.one), "unique 2kb promoters")
+				bg.source = paste(organism(genome), " (", providerVersion(genome), ") ", length(select.one), " unique 2kb promoters", sep="")
 		}
 	}
 	
@@ -527,8 +597,7 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 	} else if(type == "cutoff"){
 		bg = makePWMCutoffBackground(bg.seq, motifs, bg.source=bg.source, ...)
 	} else if(type == "pval"){
-		bg.p = makePWMEmpiricalBackground(bg.seq, motifs, bg.source=bg.source, ...)
-		bg = makePWMPvalCutoffBackground(bg.p, bg.source=bg.source, ...)
+		bg = makePWMPvalCutoffBackgroundFromSeq(bg.seq, motifs, bg.source=bg.source, ...)
 	} else if(type == "empirical"){
 		bg = makePWMEmpiricalBackground(bg.seq, motifs, bg.source=bg.source, ...)
 	} else if(type == "GEV"){
@@ -558,10 +627,8 @@ getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE)
 	genome = pickGenome(organism)
 
 	# take only a single promoter from each of the genes
-	promoters = genome$upstream2000
-	promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
-	select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-	
+	select.one = selectPromoters(genome)
+		
 	if(quick){
 		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
 	} else {
@@ -573,3 +640,59 @@ getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE)
 	makePriors(bg.seq, pseudo.count)
 }
 
+#' Calculate the empirical distribution score distribution for a set of motifs
+#'
+#' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
+#'               frequency matrices are given, the background distribution is fitted from bg.seq. 
+#' @param organism either a name of the organisms for which the background should be compiled 
+#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).
+#' @param bg.seq a set of background sequence (either this or organism needs to be specified!). Can be a DNAString or DNAStringSet object.
+#' @param quick if to do the fitting only on a small subset of the data (only in combination with \code{organism}). Useful only for code testing!
+#' @param pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
+#' @return a list of \code{ecdf} objects (see help page for \code{ecdf} for usage). 
+#' @export
+motifEcdf = function(motifs, organism=NULL, bg.seq=NULL, quick=FALSE, pseudo.count=1){
+	if(is.null(organism) && is.null(bg.seq)){
+		stop("Either the 'organism' or 'bg.seq' parameter need to be specified!")
+	}
+	
+	if(!is.list(motifs))
+		motifs = list(motifs)
+	
+	if(!is.null(bg.seq)){
+		# check if the sequences are in the right format
+		bg.seq = .normalize.bg.seq(bg.seq)
+	} else {
+		# pick the set of background sequences
+		genome = pickGenome(organism)
+
+		# take only a single promoter from each of the genes
+		select.one = selectPromoters(genome)
+	
+		if(quick){
+			bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
+		} else {
+			bg.seq = genome$upstream2000[select.one]
+		}
+	}
+	
+	# make priors and PWMs
+	if(class(motifs[[1]]) != "PWM"){
+		prior = makePriors(bg.seq, pseudo.count)
+		pwms = PFMtoPWM(motifs, prior.params = prior)
+	} else {
+		pwms = motifs
+	}	
+	
+	# always use the big memory implementation as it is much faster in typical usage!
+	s = motifScoresBigMemory(bg.seq, pwms, raw.scores=TRUE)
+	
+	# group together distributions for motifs
+	s = lapply(1:length(pwms), function(i) na.omit(unlist(lapply(s, function(x) x[,i]))))
+	
+	# create empirical CDFs and return
+	e = lapply(s, ecdf)
+	names(e) = names(pwms)
+	
+	e
+}

@@ -1,11 +1,19 @@
 \name{makeStartEndPos}
 \alias{makeStartEndPos}
-\title{Divide total...}
-\usage{makeStartEndPos(total.len, len)
+\title{Divide total.len into fragments of length len by providing start,end positions}
+\usage{
+  makeStartEndPos(total.len, len)
 }
-\description{Divide total.len into fragments of length len by providing start,end positions}
-\value{a data.frame containing paired up start,end positions}
-\arguments{\item{total.len}{total available length to be subdivided}
-\item{len}{size of the individual chunk}
+\arguments{
+  \item{total.len}{total available length to be subdivided}
+
+  \item{len}{size of the individual chunk}
+}
+\value{
+  a data.frame containing paired up start,end positions
+}
+\description{
+  Divide total.len into fragments of length len by
+  providing start,end positions
 }
 

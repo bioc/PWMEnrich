@@ -1,16 +1,23 @@
 \name{makePriors}
 \alias{makePriors}
-\title{Make priors from background sequences...}
-\usage{makePriors(bg.seq, bg.pseudo.count)
+\title{Make priors from background sequences}
+\usage{
+  makePriors(bg.seq, bg.pseudo.count)
 }
-\description{Make priors from background sequences}
-\details{These priors serve both as background nucleotide frequencies and pseudo-counts
-for PWMs.}
-\arguments{\item{bg.seq}{a set of background sequences}
-\item{bg.pseudo.count}{the total pseudocount shared between nucleotides}
+\arguments{
+  \item{bg.seq}{a set of background sequences}
+
+  \item{bg.pseudo.count}{the total pseudocount shared
+  between nucleotides}
 }
-\examples{# some example sequences
+\description{
+  These priors serve both as background nucleotide
+  frequencies and pseudo-counts for PWMs.
+}
+\examples{
+# some example sequences
 sequences = list(DNAString("AAAGAGAGTGACCGATGAC"), DNAString("ACGATGAGGATGAC"))
 # make priors with pseudo-count of 1 shared between them
-makePriors(sequences, 1)}
+makePriors(sequences, 1)
+}
 

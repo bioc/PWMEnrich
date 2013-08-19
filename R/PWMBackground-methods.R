@@ -45,6 +45,8 @@ setMethod("show", signature=signature(object="PWMGEVBackground"), function(objec
 #' Name of different pieces of information associated with PWMLognBackground
 #'
 #' @title Names of variables
+#' @name names,PWMLognBackground
+#' @aliases names,PWMLognBackground-method
 #' @param x the PWMLognBackground object
 #' @return the names of the variables
 #' @rdname operators-PWMLognBackground
@@ -63,6 +65,8 @@ setMethod("$", signature=signature(x="PWMLognBackground"), function(x, name){
 #' Name of different pieces of information associated with PWMCutoffBackground
 #'
 #' @title Names of variables
+#' @name names,PWMCutoffBackground
+#' @aliases names,PWMCutoffBackground-method
 #' @param x the PWMCutoffBackground object
 #' @return the names of the variables
 #' @rdname operators-PWMCutoffBackground
@@ -81,6 +85,8 @@ setMethod("$", signature=signature(x="PWMCutoffBackground"), function(x, name){
 #' Name of different pieces of information associated with PWMEmpiricalBackground
 #'
 #' @title Names of variables
+#' @name names,PWMEmpiricalBackground
+#' @aliases names,PWMEmpiricalBackground-method
 #' @param x the PWMEmpiricalBackground object
 #' @return the names of the variables
 #' @rdname operators-PWMEmpiricalBackground
@@ -99,6 +105,8 @@ setMethod("$", signature=signature(x="PWMEmpiricalBackground"), function(x, name
 #' Name of different pieces of information associated with PWMGEVBackground
 #'
 #' @title Names of variables
+#' @name names,PWMGEVBackground
+#' @aliases names,PWMGEVBackground-method
 #' @param x the PWMGEVBackground object
 #' @return the names of the variables
 #' @rdname operators-PWMGEVBackground
@@ -117,6 +125,7 @@ setMethod("$", signature=signature(x="PWMGEVBackground"), function(x, name){
 #' Get the background for a subset of PWMs
 #'
 #' @aliases [,PWMLognBackground-method
+#' @name [,PWMLognBackground-method
 #' @param x the PWMLognBackground object
 #' @param i the indicies of PWMs
 #' @param j unused
@@ -137,6 +146,7 @@ function(x, i, j, ..., drop = TRUE){
 #' Get the background for a subset of PWMs
 #'
 #' @aliases [,PWMCutoffBackground-method
+#' @name [,PWMCutoffBackground-method
 #' @param x the PWMCutoffBackground object
 #' @param i the indicies of PWMs
 #' @param j unused
@@ -156,6 +166,7 @@ function(x, i, j, ..., drop = TRUE){
 #' Get the background for a subset of PWMs
 #'
 #' @aliases [,PWMEmpiricalBackground-method
+#' @name [,PWMEmpiricalBackground-method
 #' @param x the PWMEmpiricalBackground object
 #' @param i the indicies of PWMs
 #' @param j unused
@@ -176,6 +187,7 @@ function(x, i, j, ..., drop = TRUE)
 #' Get the background for a subset of PWMs
 #'
 #' @aliases [,PWMGEVBackground-method
+#' @name [,PWMGEVBackground-method
 #' @param x the PWMGEVBackground object
 #' @param i the indicies of PWMs
 #' @param j unused

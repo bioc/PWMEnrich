@@ -1,6 +1,8 @@
 #' Name of different pieces of information associated with PWM
 #'
 #' @title Names of variables
+#' @name names,PWM
+#' @aliases names,PWM-method
 #' @param x the PWM object
 #' @return the names of the variables
 #' @rdname operators-PWM
@@ -21,6 +23,7 @@ setMethod("$", signature=signature(x="PWM"), function(x, name){
 #' Returns the motif length, i.e. the number of columns in the PWM.
 #'
 #' @param x the PWM object
+#' @aliases length,PWM-method
 #' @rdname operators-PWM
 setMethod("length", signature=signature(x="PWM"), function(x){
 	ncol(x@pwm)
@@ -30,6 +33,7 @@ setMethod("length", signature=signature(x="PWM"), function(x){
 #'
 #' Finds the reverse complement of the PWM
 #'
+#' @aliases reverseComplement,PWM-method
 #' @param x an object of type PWM
 #' @param ... unused
 #' @return an object of type PWM that is reverse complement of x

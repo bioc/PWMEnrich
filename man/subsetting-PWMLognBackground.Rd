@@ -1,4 +1,4 @@
-\name{subsetting-PWMLognBackground}
+\name{[,PWMLognBackground-method}
 \alias{[,PWMLognBackground-method}
 \title{Get the background for a subset of PWMs}
 \arguments{

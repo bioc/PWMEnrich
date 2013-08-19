@@ -1,4 +1,4 @@
-\name{subsetting-PWMGEVBackground}
+\name{[,PWMGEVBackground-method}
 \alias{[,PWMGEVBackground-method}
 \title{Get the background for a subset of PWMs}
 \arguments{

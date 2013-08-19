@@ -5,3 +5,6 @@ setGeneric("motifRankingForSequence", function(obj, ...) standardGeneric("motifR
 
 setGeneric("plotTopMotifsGroup", function(obj, ...) standardGeneric("plotTopMotifsGroup"))
 setGeneric("plotTopMotifsSequence", function(obj, ...) standardGeneric("plotTopMotifsSequence"))
+
+setGeneric("groupReport", function(obj, ...) standardGeneric("groupReport"))
+setGeneric("sequenceReport", function(obj, ...) standardGeneric("sequenceReport"))

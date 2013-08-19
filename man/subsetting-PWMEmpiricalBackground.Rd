@@ -1,4 +1,4 @@
-\name{subsetting-PWMEmpiricalBackground}
+\name{[,PWMEmpiricalBackground-method}
 \alias{[,PWMEmpiricalBackground-method}
 \title{Get the background for a subset of PWMs}
 \arguments{

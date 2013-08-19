@@ -1,27 +1,50 @@
 Package: PWMEnrich
-Imports: seqLogo, gdata, evd
+Imports:
+    seqLogo,
+    gdata,
+    evd
 Maintainer: Robert Stojnic <robert.stojnic@gmail.com>
 License: GPL-3
 Title: PWM enrichment analysis
 Type: Package
 LazyLoad: yes
-Author: Robert Stojnic, with contributions from Diego Diez
-Description: Asses the enrichment of already known PWMs (from JASPAR
-    and MotifDb) in DNA sequences. The package implements multiple
-    algorithms, including fixed-threshold (Z-score) and threshold-free
-    (Lognormal normalization and Clover) methods. These can be applied
-    to a single sequence (e.g. enhancer of interest) or a group of
-    sequences (e.g. a set of ChIP-chip/seq peaks). The output is a
-    ranked list of PWMs according to their level of enrichment compared
-    to genomic background. Custom sets of PWMs and genomic background
-    are also supported.
-Version: 2.3.4
+Author: Robert Stojnic, Diego Diez
+Description: A toolkit of high-level functions for DNA motif scanning and
+    enrichment analysis built upon Biostrings. The main functionality is PWM
+    enrichment analysis of already known PWMs (e.g. from databases such as
+    JASPAR), but the package also implements high-level functions for PWM
+    scanning and visualisation. The package does not perform "de novo" motif
+    discovery, but is instead focusing on using motifs that are either
+    experimentally derived or computationally constructed by other tools.
+Version: 2.4.0
 biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software
-Date: 2013-08-08
-Depends: methods, grid, BiocGenerics, Biostrings,
-Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
-    PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel
-Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
-    'diff.R' 'misc.R' 'MotifEnrichmentResults-methods.R' 'options.R'
-    'plot.R' 'PWMBackground-methods.R' 'PWM-methods.R' 'pwm.R'
-    'readData.R' 'seqLogoSupp.R' 'similarity.R'
+Date: 2013-08-14
+Depends:
+    methods,
+    grid,
+    BiocGenerics,
+    Biostrings,
+Suggests:
+    MotifDb,
+    BSgenome.Dmelanogaster.UCSC.dm3,
+    PWMEnrich.Dmelanogaster.background,
+    testthat,
+    gtools,
+    parallel
+Collate:
+    'AllDataClasses.R'
+    'AllGenerics.R'
+    'background.R'
+    'clover.R'
+    'diff.R'
+    'misc.R'
+    'MotifEnrichmentResults-methods.R'
+    'MotifEnrichmentReport-methods.R'
+    'options.R'
+    'plot.R'
+    'PWMBackground-methods.R'
+    'PWM-methods.R'
+    'pwm.R'
+    'readData.R'
+    'seqLogoSupp.R'
+    'similarity.R'

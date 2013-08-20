@@ -1,0 +1,46 @@
+\name{makePWMPvalCutoffBackgroundFromSeq}
+\alias{makePWMPvalCutoffBackgroundFromSeq}
+\title{Construct a P-value cutoff background from a set of sequences}
+\usage{
+  makePWMPvalCutoffBackgroundFromSeq(bg.seq, motifs,
+    p.value = 0.001, bg.pseudo.count = 1, bg.source = "",
+    verbose = TRUE)
+}
+\arguments{
+  \item{bg.seq}{a set of background sequences, either a
+  list of DNAString object or DNAStringSet object}
+
+  \item{motifs}{a set of motifs, either a list of frequency
+  matrices, or a list of PWM objects. If frequency matrices
+  are given, the background distribution is fitted from
+  bg.seq.}
+
+  \item{p.value}{the P-value used to find cuttoffs for each
+  of the motifs}
+
+  \item{bg.pseudo.count}{the pseudo count which is shared
+  between nucleotides when frequency matrices are given}
+
+  \item{bg.source}{textual description of background
+  source}
+
+  \item{verbose}{if to print verbose output}
+}
+\value{
+  an object of type PWMCutoffBackground
+}
+\description{
+  This function creates a P-value cutoff background for
+  motif enrichment.
+}
+\examples{
+\dontrun{
+if(require("PWMEnrich.Dmelanogaster.background")){
+   data(MotifDb.Dmel.PFM)
+
+   # use the empirical background to pick a threshold and make cutoff background
+   makePWMPvalCutoffBackground(Dmelanogaster$upstream2000, 0.001)
+}
+}
+}
+

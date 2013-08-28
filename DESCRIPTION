@@ -12,9 +12,9 @@ Author: Robert Stojnic, Diego Diez
 Description: A toolkit of high-level functions for DNA motif scanning and
     enrichment analysis built upon Biostrings. The main functionality is PWM
     enrichment analysis of already known PWMs (e.g. from databases such as
-    JASPAR), but the package also implements high-level functions for PWM
+    MotifDb), but the package also implements high-level functions for PWM
     scanning and visualisation. The package does not perform "de novo" motif
-    discovery, but is instead focusing on using motifs that are either
+    discovery, but is instead focused on using motifs that are either
     experimentally derived or computationally constructed by other tools.
 Version: 2.4.0
 biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software

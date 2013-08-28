@@ -22,6 +22,8 @@
 \definecolor{Red}{rgb}{0.7,0,0}
 \definecolor{Blue}{rgb}{0,0,0.8}
 
+\SweaveOpts{keep.source=TRUE,eps=FALSE,pdf=FALSE,png=TRUE,resolution=180}
+
 \hypersetup{%
   hyperindex = {true},
   colorlinks = {true},

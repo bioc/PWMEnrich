@@ -504,9 +504,15 @@ pickGenome = function(organism){
 selectPromoters = function(genome){
 	promoters = genome$upstream2000
 	if(organism(genome) == "Drosophila melanogaster"){
+		# select one promoter per gene
 		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
 		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-	} else{
+	} else if(organism(genome) == "Homo sapiens" || organism(genome) == "Mus musculus"){
+		# only select non-duplicate promoters, assumes that the name is formatted like "NM_032291_up_2000_chr1_66997825_f chr1:66997825-66999824"
+		pnames = names(promoters)
+		pcoord = sapply(strsplit(pnames, " "), function(x) x[2])
+		select.one = match(unique(pcoord), pcoord)
+	} else {
 		select.one = 1:length(promoters)
 	}
 	

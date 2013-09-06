@@ -295,6 +295,7 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #' @param legend.cex the scaling factor for the legend
 #' @param motif.names optional vector of motif names to show instead of those present as column names in \code{scores}
 #' @param seq.len.spacing the spacing (in bp units) between the end of the sequence line and the text showing the length in bp
+#' @param shape the shape to use to draw motif occurances, valid values are "rectangle" (default), "line" and "triangle"
 #' @export
 #' @examples
 #' if(require("PWMEnrich.Dmelanogaster.background")){
@@ -316,7 +317,7 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #'     
 #' }
 plotMotifScores = function(scores, sel.motifs=NULL, seq.names=NULL, cols=NULL, cutoff=NULL, log.fun=log2, main="", legend.space=0.30, max.score=NULL,
-	trans=0.5, text.cex=0.9, legend.cex=0.9, motif.names=NULL, seq.len.spacing=8){
+	trans=0.5, text.cex=0.9, legend.cex=0.9, motif.names=NULL, seq.len.spacing=8, shape="rectangle"){
 	# subset motifs
 	if(!is.null(sel.motifs)){
 		scores = lapply(scores, function(x) x[, sel.motifs, drop=FALSE])
@@ -324,6 +325,10 @@ plotMotifScores = function(scores, sel.motifs=NULL, seq.names=NULL, cols=NULL, c
 	
 	if(length(unique(sapply(scores, ncol)))!=1){
 		stop("All elements of the 'scores' list need to have matrices with the same number of columns.")
+	}
+	
+	if(!(shape %in% c("line", "triangle", "rectangle"))){
+		stop("'shape' parameter needs to be 'rectangle', 'line' or 'triangle'")
 	}
 	
 	# reverse the scores for plotting order!
@@ -421,8 +426,14 @@ plotMotifScores = function(scores, sel.motifs=NULL, seq.names=NULL, cols=NULL, c
 				}
 				
 				for(kk in 1:length(x.start)){
-					polygon(c(x.start[kk], x.end[kk], (x.start[kk]+x.end[kk])/2), c(y.start[kk], y.start[kk], y.end[kk]), col=cols[j], border=cols[j])
-					#rect(x.start[kk], y.start[kk], x.end[kk], y.end[kk], col=cols[j], border=cols[j])
+					if(shape == "triangle"){
+						polygon(c(x.start[kk], x.end[kk], (x.start[kk]+x.end[kk])/2), c(y.start[kk], y.start[kk], y.end[kk]), col=cols[j], border=cols[j])
+					} else if(shape == "rectangle"){
+						rect(x.start[kk], y.start[kk], x.end[kk], y.end[kk], col=cols[j], border=cols[j])
+					} else {
+						xmid = (x.start[kk]+x.end[kk])/2
+						rect(xmid-0.5, y.start[kk], xmid+0.5, y.end[kk], col=cols[j], border=cols[j])
+					}
 				}
 			}
 		}

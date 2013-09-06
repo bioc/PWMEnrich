@@ -7,7 +7,7 @@
     log.fun = log2, main = "", legend.space = 0.3,
     max.score = NULL, trans = 0.5, text.cex = 0.9,
     legend.cex = 0.9, motif.names = NULL,
-    seq.len.spacing = 8)
+    seq.len.spacing = 8, shape="rectangle")
 }
 \arguments{
   \item{scores}{the list of motifs scores. Each element of
@@ -70,6 +70,9 @@
   \item{seq.len.spacing}{the spacing (in bp units) between
   the end of the sequence line and the text showing the
   length in bp}
+  
+  \item{shape}{the shape to use to draw motif occurances, 
+  valid values are "rectangle" (default), "line" and "triangle"}
 }
 \description{
   This function visualises the motif scores for one or more

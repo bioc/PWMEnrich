@@ -364,8 +364,12 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 	} else {
 		p.value = as.numeric(NA)
 	}
-
-	df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+	
+	if(res$score == "cutoff" | res$bg == "ms"){
+		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
+	} else {
+		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+	}
 	
 	# calculate in how many top sequences is the motif present
 	if("sequence.nobg" %in% names(obj)){
@@ -459,7 +463,11 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 		p.value = as.numeric(NA)
 	}
 
-	df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+	if(res$score == "cutoff" | res$bg == "ms"){
+		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
+	} else {
+		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
+	}
 		
 	# sort and return
 	correct.order = order(df$rank)

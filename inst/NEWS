@@ -1,5 +1,8 @@
 PWMEnrich package
 
+Version 2.4.4:
+	o Vignette update and fix naming of columns in the motif enrichment report
+
 Version 2.4.2:
     o Improve promoter selection for human and mouse genomes (duplicates are now disregarded)    
 

@@ -121,8 +121,12 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 		widths = c(0.05, 0.1, 0.2, 0.3, 0.1, 0.1, 0.1)[1:(ncol(d)+1)]
 		
 	widths = widths / sum(widths)
-
-	names(d) = c("Rank", "Target", "Motif ID", "Raw score", "P-value", "In top\nmotifs")[1:ncol(d)]
+	
+	if("z.score" %in% colnames(d)){
+		names(d) = c("Rank", "Target", "Motif ID", "Raw score", "Z score", "In top\nmotifs")[1:ncol(d)]
+	} else {
+		names(d) = c("Rank", "Target", "Motif ID", "Raw score", "P-value", "In top\nmotifs")[1:ncol(d)]
+	}
 	
 	# start a new viewport page
 	grid.newpage()

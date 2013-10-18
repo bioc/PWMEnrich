@@ -859,8 +859,13 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		
 		if(score == "affinity"){
 			# and for the group
-			res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
-			res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
+			#### these two lines are the old implementation!!!
+			# res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
+			# res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
+			#####
+			res$group.bg = colMeans(res$sequence.norm)
+			res$group.norm = res$group.bg
+			
 		} else if(score == "clover"){
 			# now run Clover on normalized scores
 			res$group.bg = cloverScore(res$sequence.norm, verbose=verbose)

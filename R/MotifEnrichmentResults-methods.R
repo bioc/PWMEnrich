@@ -158,7 +158,7 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 	# vector of scores
 	if(bg && "group.bg" %in% names(res)){
 		r = res$group.bg
-		if(res$score == "cutoff" | res$bg == "ms")
+		if(res$score == "cutoff" | res$bg == "ms" | res$score == "affinity")
 			decreasing = TRUE
 		else
 			decreasing = FALSE
@@ -367,6 +367,8 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 	
 	if(res$score == "cutoff" | res$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
+	} else if(res$score == "affinity"){
+		df = data.frame(df, logn.score=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
 	}

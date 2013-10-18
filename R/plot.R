@@ -124,6 +124,8 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 	
 	if("z.score" %in% colnames(d)){
 		names(d) = c("Rank", "Target", "Motif ID", "Raw score", "Z score", "In top\nmotifs")[1:ncol(d)]
+	} else if("logn.score" %in% colnames(d)){
+		names(d) = c("Rank", "Target", "Motif ID", "Raw score", "Logn score", "In top\nmotifs")[1:ncol(d)]
 	} else {
 		names(d) = c("Rank", "Target", "Motif ID", "Raw score", "P-value", "In top\nmotifs")[1:ncol(d)]
 	}

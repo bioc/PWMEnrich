@@ -18,7 +18,7 @@ Description: A toolkit of high-level functions for DNA motif scanning and
     experimentally derived or computationally constructed by other tools.
 Version: 3.1.1
 biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software
-Date: 2013-18-10
+Date: 2013-11-19
 Depends:
     methods,
     grid,

@@ -365,9 +365,9 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 		p.value = as.numeric(NA)
 	}
 	
-	if(res$score == "cutoff" | res$bg == "ms"){
+	if(obj$score == "cutoff" | obj$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
-	} else if(res$score == "affinity"){
+	} else if(obj$score == "affinity"){
 		df = data.frame(df, logn.score=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
@@ -465,7 +465,7 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 		p.value = as.numeric(NA)
 	}
 
-	if(res$score == "cutoff" | res$bg == "ms"){
+	if(obj$score == "cutoff" | obj$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)

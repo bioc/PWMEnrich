@@ -349,6 +349,7 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #' }
 setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), function(obj, top=0.05, bg=TRUE, ...){
 	pwms = obj$pwms	
+	res = obj@res
 		
 	# correct ordering of motifs
 	o = motifRankingForGroup(obj, rank=TRUE, bg=bg)
@@ -447,6 +448,7 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 	}
 
 	pwms = obj$pwms	
+	res = obj@res
 		
 	# correct ordering of motifs
 	o = motifRankingForSequence(obj, seq.id, rank=TRUE, bg=bg)

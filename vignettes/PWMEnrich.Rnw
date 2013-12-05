@@ -187,11 +187,11 @@ report
 plot(report[1:10], fontsize=8)
 @
 
-As in Use case 1, the main function is \Robj{motifEnrichment} which took our sequences and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). We then applied the \Robj{groupReport} function to calculate the enrichment over the whole group of sequences. This produced a ranked list of motifs according to their P-value. When then used \Robj{plot} to plot the top 10 motifs. 
+As in Use case 1, the main function is \Robj{motifEnrichment} which took our sequences and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). We then applied the \Robj{groupReport} function to calculate the enrichment over the whole group of sequences. This produced a ranked list of motifs according to average lognormal score. When then used \Robj{plot} to plot the top 10 motifs. 
 
-The two most enriched motifs are almost identical, and one of them (tinman) is the transcription factor for which the ChIP-chip experiment was performed. The first six columns are the same as before (see Use case 1). The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. Because the P-value does not distinguish between the cases when all the motif hits are in one sequences, versus being spread out in many sequences this column provides this additional information. We can see that the largest percentages are for the tin/vnd motif indicating it is also the most commonly enriched motifs in single ChIP peaks. 
+The most enriched motif is tin (tinman), which is the transcription factor for which the ChIP-chip experiment was performed. The first five columns are the same as before (see Use case 1). The sixth column gives the average lognormal score. The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. This column helps to differentiate cases where the motif enrichment is strongly focused to a small subset of sequences, versus being more widespread but weaker. 
 
-The object returned by \ref{motifEnrichment} has more information in it, as can be seen below:
+The object returned by \Robj{motifEnrichment} has more information in it, as can be seen below:
 
 <<tinman2,echo=TRUE>>=
 res
@@ -205,7 +205,7 @@ res$sequence.bg[1:5, 1:2]
 
 In these two matrices the rows correspond to the different input sequences and the columns correspond to motifs. The first matrix (sequence.nobg) contains the raw affinity scores, while the second (sequence.bg) contains the corresponding P-values. If you are using a fixed threshold background (e.g. scanning with \Robj{PWMPvalueCutoff1e3.dm3.MotifDb.Dmel}) the first matrix will contain the number of motif hits, and the second the corresponding Z-scores. 
 
-\section{Improving performance}
+\section{Improving speed}
 
 \subsection{Parallel execution}
 

@@ -16,9 +16,9 @@ Description: A toolkit of high-level functions for DNA motif scanning and
     scanning and visualisation. The package does not perform "de novo" motif
     discovery, but is instead focused on using motifs that are either
     experimentally derived or computationally constructed by other tools.
-Version: 2.6.1
+Version: 2.6.2
 biocViews: Bioinformatics, SequenceMatching, GenomicSequence, Software
-Date: 2013-11-22
+Date: 2013-12-05
 Depends:
     methods,
     grid,

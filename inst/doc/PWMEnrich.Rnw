@@ -191,7 +191,7 @@ As in Use case 1, the main function is \Robj{motifEnrichment} which took our seq
 
 The two most enriched motifs are almost identical, and one of them (tinman) is the transcription factor for which the ChIP-chip experiment was performed. The first six columns are the same as before (see Use case 1). The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. Because the P-value does not distinguish between the cases when all the motif hits are in one sequences, versus being spread out in many sequences this column provides this additional information. We can see that the largest percentages are for the tin/vnd motif indicating it is also the most commonly enriched motifs in single ChIP peaks. 
 
-The object returned by \ref{motifEnrichment} has more information in it, as can be seen below:
+The object returned by \Robj{motifEnrichment} has more information in it, as can be seen below:
 
 <<tinman2,echo=TRUE>>=
 res

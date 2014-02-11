@@ -158,16 +158,20 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 	# vector of scores
 	if(bg && "group.bg" %in% names(res)){
 		r = res$group.bg
-		if(res$score == "cutoff" | res$bg == "ms" | res$score == "affinity")
+		if(res$score == "cutoff" | res$bg == "ms")
 			decreasing = TRUE
 		else
 			decreasing = FALSE
+			
+		if(res$score == "affinity")
+			warning("New in PWMEnrich 3.x: Please note that the P-value calculation algorithm for groups of sequences has changed since PWMEnrich 2.x/1.x. The P-values should be more accurate and give very similar motif ranking as before.")
 	} else {
 		#if(bg) 
 		#	warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
 		r = res$group.nobg
 		decreasing = TRUE
 	}
+	
 	
 	rankingProcessAndReturn(res, r, id, order, rank, unique, decreasing)
 })
@@ -368,7 +372,7 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 	if(obj$score == "cutoff" | obj$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
 	} else if(obj$score == "affinity"){
-		df = data.frame(df, logn.score=p.value, stringsAsFactors=FALSE)
+		df = data.frame(df, p.value=exp(p.value), log.p.value=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
 	}

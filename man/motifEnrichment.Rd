@@ -4,7 +4,8 @@
 \usage{
   motifEnrichment(sequences, pwms, score = "autodetect",
     bg = "autodetect", cutoff = NULL, verbose = TRUE,
-    motif.shuffles = 30, B = 1000, group.only = FALSE)
+    motif.shuffles = 30, B = 1000, group.only = FALSE,
+    PWMEnrich2.pvalue = FALSE)
 }
 \arguments{
   \item{sequences}{the sequences to be scanned for
@@ -84,6 +85,10 @@
   of empirical background the P-values for individual
   sequences are not calculated (thus saving time), for
   other backgrounds they are calculated but not returned.}
+  
+  \item{PWMEnrich2.pvalue}{use the PWMEnrich 2.x algorithm of 
+  estimating P-values for groups of sequences (which is now 
+  obsolete!).}
 }
 \value{
   a MotifEnrichmentResults object containing a subset

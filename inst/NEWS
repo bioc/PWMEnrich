@@ -1,5 +1,8 @@
 PWMEnrich package
 
+Version 3.1.4:
+    o New way of estimating P-value for groups of sequences. Note this will produce different P-values for groups of sequences than PWMEnrich 2.x !
+
 Version 3.1.0:
     o Change how aggregate score is calculated for the group using lognormal background. Now it is the average of normalised lognomal scores
 

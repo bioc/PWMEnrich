@@ -710,6 +710,7 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' @param group.only if to return statistics only for the group of sequences, not individual sequences. In the case of
 #'                   empirical background the P-values for individual sequences are not calculated (thus saving time), for other 
 #'                   backgrounds they are calculated but not returned.  
+#' @param PWMEnrich2.pvalue use the PWMEnrich 2.x algorithm of estimating P-values for groups of sequences (which is now obsolete!). 
 #' @return a MotifEnrichmentResults object containing a subset following elements:
 #'         \itemize{
 #'           \item "score" - scoring scheme used
@@ -773,7 +774,7 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #'    
 #' }
 motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect", cutoff=NULL, verbose=TRUE, motif.shuffles=30, B=1000,
-	group.only=FALSE){
+	group.only=FALSE, PWMEnrich2.pvalue=FALSE){
 	
 	# detect scoring method
 	if(score == "autodetect"){
@@ -859,13 +860,28 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		
 		if(score == "affinity"){
 			# and for the group
+			if(PWMEnrich2.pvalue){
 			#### these two lines are the old implementation!!!
-			# res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
-			# res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
+				res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
+				res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
 			#####
-			res$group.bg = colMeans(res$sequence.norm)
-			res$group.norm = res$group.bg
-			
+			} else {
+				res$group.norm = colMeans(res$sequence.norm)
+				
+				# mean and SD of a 0,1 lognormal distribution
+				lnorm.mean = exp(0+1/2)
+				lnorm.sd = sqrt( (exp(1)-1) * exp(2*0+1))
+				
+				# distribution for P-values
+				mx = lnorm.mean
+				sx = lnorm.sd / sqrt(nrow(res$sequence.norm))
+				
+				ml = 2*log(mx) - 0.5*log(mx^2+sx^2)
+				sl = sqrt(-2*log(mx) + log(mx^2+sx^2))
+				
+				# convert to log(P-values)
+				res$group.bg = plnorm(res$group.norm, meanlog=ml, sdlog=sl, lower.tail=FALSE, log.p=TRUE)				
+			}
 		} else if(score == "clover"){
 			# now run Clover on normalized scores
 			res$group.bg = cloverScore(res$sequence.norm, verbose=verbose)

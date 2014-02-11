@@ -113,6 +113,11 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 	d = x@d
 	pwms = x@pwms
 	
+	# remove this before plotting, this is just for book-keeping
+	if("log.p.value" %in% names(d)){
+		d = d[,-which(names(d) == "log.p.value")]
+	}
+	
 	rows = nrow(d)+1
 	cols = ncol(d)+1 
 	

@@ -10,6 +10,9 @@
 
   \item{bg}{if to use background corrected P-values to do
   the ranking (if available)}
+  
+  \item{by.top.motifs}{if to rank by the proportion of sequences 
+  where the motif is within 'top' percentage of motifs}
 
   \item{...}{unused}
 }

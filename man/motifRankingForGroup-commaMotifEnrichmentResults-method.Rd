@@ -22,8 +22,8 @@
   \item{...}{currently unused}
 }
 \value{
-  a vector of P-values or raw enrichments sorted such that
-  the first motif is most enriched
+  a vector of log(P-values), P-values or raw enrichments 
+  sorted such that the first motif is most enriched
 }
 \description{
   Get a ranking of motifs by their enrichment in the whole

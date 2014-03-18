@@ -102,7 +102,7 @@ plot(report[1:30], fontsize=8)
 
 The main function we used is \Robj{motifEnrichment} which took our sequence and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). This function returns a set of scores and P-values for our sequence. We then used the \Robj{sequenceReport} function that create a ranked list of motifs, which we then plot using \Robj{plot}. The first column is the rank, the second shows the target name, which is either a gene name, an isoform name (such as ttk-PF), or a dimer name (such as tgo\_sim not present in this list). The next column in the plot is the PWM logo, and after that the motif ID. This ID comes from the \Robj{MotifDb} package and can be used to look up further information about the motif (such as the motif source). The next-to-last column is the raw affinity score, and the last column is the P-value of motif enrichment. 
 
-As we can see, the top of the list is dominated by motifs similar to bcd. By further examining the list, we find we recovered the Kr, bcd and gt motifs, but not the vfl and gt motifs. These two TFs (vfl and gt) have the smallest number of annotated binding sites out of the five TFs in the stripe 2 enhancer. As a result, this affinity is not large enough to be picked up by motif enrichment. However, the other three motifs were picked up. We find this to be the typical case for many enhancers.  
+As we can see, the top of the list is dominated by motifs similar to bcd. By further examining the list, we find we recovered the Kr, bcd and gt motifs, but not the vfl and hb motifs. These two TFs (vfl and hb) have the smallest number of annotated binding sites out of the five TFs in the stripe 2 enhancer. As a result, this affinity is not large enough to be picked up by motif enrichment. However, the other three motifs were picked up. We find this to be the typical case for many enhancers.  
 
 \section{Use case 2: Examining the binding sites}
 
@@ -187,11 +187,19 @@ report
 plot(report[1:10], fontsize=8)
 @
 
-As in Use case 1, the main function is \Robj{motifEnrichment} which took our sequences and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). We then applied the \Robj{groupReport} function to calculate the enrichment over the whole group of sequences. This produced a ranked list of motifs according to the estimated P-values. Then we used \Robj{plot} to plot the top 10 enriched motifs. 
+As in Use case 1, the main function is \Robj{motifEnrichment} which took our sequences and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). We then applied the \Robj{groupReport} function to calculate the enrichment over the whole group of sequences. This produced a ranked list of motifs according to the estimated P-values. Then we used \Robj{plot} to plot the top 10 enriched motifs.  
 
-Please note that the P-value estimation for groups of sequences have changed in PWMEnrich 3.x (current) compared to PWMEnrich 2.x/1.x (Bioconductor 2.11-2.13). The new P-value estimation is more accurate and can lead to different ordering of motifs. The P-value estimation from the current version (PWMEnrich 3.x) is the one described in \citep{stojnic_2012}. 
+The first and second motifs are very similar and correspond to the tinman, which is the transcription factor for which the ChIP-chip experiment was performed. The first five columns are the same as before (see Use case 1). The sixth column gives the estimate P-value. The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. This column helps to differentiate cases where the motif enrichment is strongly focused to a small subset of sequences, versus being more widespread but weaker. 
 
-The most enriched motif is tin (tinman), which is the transcription factor for which the ChIP-chip experiment was performed. The first five columns are the same as before (see Use case 1). The sixth column gives the average lognormal score. The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. This column helps to differentiate cases where the motif enrichment is strongly focused to a small subset of sequences, versus being more widespread but weaker. 
+Ranking by P-value works well for fly PWMs. However, we found that for mouse and human PWMs applied to thousands of ChIP-chip/seq peak, ranking by the last column is more accurate:
+
+<<tinman-alt,echo=TRUE>>=
+report.top = groupReport(res, by.top.motifs=TRUE)
+
+report.top
+@
+
+Anything with the \Robj{top.motif.prop} above 0.05 can be considered to be enriched. This way of calculating enrichment should only be used when calculating motif enrichment with the whole set of PWMs for an organism and in a group of at least tens of sequences. 
 
 The object returned by \Robj{motifEnrichment} has more information in it, as can be seen below:
 

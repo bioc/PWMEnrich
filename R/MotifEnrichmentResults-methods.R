@@ -162,16 +162,12 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 			decreasing = TRUE
 		else
 			decreasing = FALSE
-			
-		if(res$score == "affinity")
-			warning("New in PWMEnrich 3.x: Please note that the P-value calculation algorithm for groups of sequences has changed since PWMEnrich 2.x/1.x. The P-values should be more accurate and give very similar motif ranking as before.")
 	} else {
 		#if(bg) 
 		#	warning("Parameter 'bg' is TRUE but this MotifEnrichmentResults object has no background correction, ignoring parameter.")
 		r = res$group.nobg
 		decreasing = TRUE
 	}
-	
 	
 	rankingProcessAndReturn(res, r, id, order, rank, unique, decreasing)
 })
@@ -314,8 +310,9 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #' @name groupReport,MotifEnrichmentResults-method
 #' @aliases groupReport
 #' @param obj a MotifEnrichmentResults object
-#' @param top what proportion of top motifs should be examined in each individual sequence (by default 5%)
+#' @param top what proportion of top motifs should be examined in each individual sequence (by default 0.05, i.e. 5%)
 #' @param bg if to use background corrected P-values to do the ranking (if available)
+#' @param by.top.motifs if to rank by the proportion of sequences where the motif is within 'top' percentage of motifs
 #' @param ... unused
 #' @return a MotifEnrichmentReport object containing a table with the following columns: 
 #' \itemize{
@@ -351,8 +348,9 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #'    plot(r[1:10])
 #' 
 #' }
-setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), function(obj, top=0.05, bg=TRUE, ...){
+setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), function(obj, top=0.05, bg=TRUE, by.top.motifs=FALSE, ...){
 	pwms = obj$pwms	
+	res = obj@res
 		
 	# correct ordering of motifs
 	o = motifRankingForGroup(obj, rank=TRUE, bg=bg)
@@ -369,10 +367,8 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 		p.value = as.numeric(NA)
 	}
 	
-	if(obj$score == "cutoff" | obj$bg == "ms"){
+	if(res$score == "cutoff" | res$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
-	} else if(obj$score == "affinity"){
-		df = data.frame(df, p.value=exp(p.value), log.p.value=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)
 	}
@@ -394,6 +390,12 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 	}
 	
 	df = data.frame(df, "top.motif.prop"=top.motif, stringsAsFactors=FALSE)
+	
+	if(by.top.motifs){
+		if(length(pwms) < 20)
+			warning("You are sorting by top motifs, but this can be unreliable when number of PWMs is small.")
+		df$rank = base::rank(-top.motif)
+	}
 	
 	# sort and return
 	correct.order = order(df$rank)
@@ -469,7 +471,7 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 		p.value = as.numeric(NA)
 	}
 
-	if(obj$score == "cutoff" | obj$bg == "ms"){
+	if(res$score == "cutoff" | res$bg == "ms"){
 		df = data.frame(df, z.score=p.value, stringsAsFactors=FALSE)
 	} else {
 		df = data.frame(df, p.value=p.value, stringsAsFactors=FALSE)

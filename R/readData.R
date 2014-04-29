@@ -66,8 +66,10 @@ readJASPAR = function(file, remove.ids=FALSE){
 		motif.matrix = t(sapply(strsplit(motif, "[ \t\\[]+"), function(x) as.integer(x[2:(length(x)-1)])))
 		nucleotides = sapply(strsplit(motif, "[ \t\\[]+"), function(x) x[1])
 		# in the new version of JASPAR format there is no ACGT... 
-		if(!all(nucleotides %in% norder))
+		if(!all(nucleotides %in% norder)){
 			nucleotides = norder
+			motif.matrix = t(sapply(strsplit(motif, "[ \t\\[]+"), function(x) as.integer(x)))
+		}	
 		# if the ordering is not the same, re-order into ACGT order
 		motif.matrix = motif.matrix[match(norder, nucleotides), ]
 		rownames(motif.matrix) = norder

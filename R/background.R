@@ -7,7 +7,7 @@
 	# check if the sequences are in the right format
 	if(class(bg.seq) != "DNAStringSet"){
 		if(class(bg.seq) == "list"){
-			if(class(bg.seq[[1]]) != "DNAString")
+			if(length(bg.seq)>0 && class(bg.seq[[1]]) != "DNAString")
 				stop("bg.seq needs to be a list of DNAString objects or a DNAStringSet object")
 		} else {
 			stop("bg.seq needs to be a list of DNAString objects or a DNAStringSet object")
@@ -478,45 +478,68 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 	new("PWMGEVBackground", bg.source=bg.source, bg.loc=bg.loc, bg.scale=bg.scale, bg.shape=bg.shape, pwms=pwms)
 }
 
-#' A helper function to pick a genome for an organism
+#' Get the promoter sequences either for a named organism such as "dm3" or a BSgenome object
 #' 
-#' @param organism either organism name (such as "dm3") or a BSgenome object
-#' @return a BSgenome object
-pickGenome = function(organism){
-	# pick the genome object based on the 
-	if(is(organism, "BSgenome")){ 
-		genome = organism
-	} else if(organism == "dm3"){
-		if(!require("BSgenome.Dmelanogaster.UCSC.dm3"))
-			stop("This functions requires the BSgenome.Dmelanogaster.UCSC.dm3 package to build background for D. melanogaster")
-		genome = Dmelanogaster
+#' @param organismOrGenome either organism name, e.g. "dm3", or BSgenome object
+#' @return a list of: promoters - DNAStringSet of (unique) promoters; organism - name of species; version - genome version
+getPromoters = function(organismOrGenome){
+	org = organismOrGenome
+	sek = NULL
+	org.valid = c("dm3", "mm9", "hg19")
+	
+	# check if it's a valid UCSC name
+	if(is.character(org)){
+		if(org %in% org.valid){
+			sel = org
+		} else {
+			stop(paste("Unrecognised organism name, valid values are:", paste(org.valid, collapse=", ")))
+		}
+	# check for a BSgenome object	
+	} else if(is(org, "BSgenome")){ 
+		if(providerVersion(org) %in% org.valid){
+			sel = providerVersion(org) 
+		} else {
+			stop(paste("Promoter sequences cannot be retrieved automatically for ",
+				providerVersion(org), ", please provide a set of background sequences explicitely.", sep=""))
+		}
 	} else {
-		stop("Please pick one of the valid organisms: \"dm3\" or provide a BSgenome object of the target genome.")
+		stop("The input parameter needs to be either genome name (e.g. 'dm3') or a BSgenome object.")
 	}
 	
-	genome
-}
-
-#' A helper function to select a set of non-redundant promoters from a genome object
-#'
-#' @param genome a BSgenome object
-#' @return a vector of inidicies of non-redundant promoters
-selectPromoters = function(genome){
-	promoters = genome$upstream2000
-	if(organism(genome) == "Drosophila melanogaster"){
-		# select one promoter per gene
-		promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
-		select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-	} else if(organism(genome) == "Homo sapiens" || organism(genome) == "Mus musculus"){
-		# only select non-duplicate promoters, assumes that the name is formatted like "NM_032291_up_2000_chr1_66997825_f chr1:66997825-66999824"
-		pnames = names(promoters)
-		pcoord = sapply(strsplit(pnames, " "), function(x) x[2])
-		select.one = match(unique(pcoord), pcoord)
+	e = new.env()
+	# get the promoter sequences from the saved object
+	if(sel == "dm3"){		
+		if(require("PWMEnrich.Dmelanogaster.background")){
+			data("dm3.upstream2000", envir=e)
+			promoters = e$dm3.upstream2000
+			organism = "D. melanogaster"
+			version = "dm3"
+		} else {
+			stop("This function requires the 'PWMEnrich.Dmelanogaster.background' package, please install it.")
+		}
+	} else if(sel == "mm9"){
+		if(require("PWMEnrich.Mmusculus.background")){
+			data("mm9.upstream2000", envir=e)
+			promoters = e$mm9.upstream2000
+			organism = "M. musculus"
+			version = "mm9"
+		} else {
+			stop("This function requires the 'PWMEnrich.Mmusculus.background' package, please install it.")
+		}
+	} else if(sel == "hg19"){
+		if(require("PWMEnrich.Hsapiens.background")){
+			data("hg19.upstream2000", envir=e)
+			promoters = e$hg19.upstream2000
+			organism = "H. sapiens"
+			version = "hg19"
+		} else {
+			stop("This function requires the 'PWMEnrich.Hsapiens.background' package, please install it.")
+		}
 	} else {
-		select.one = 1:length(promoters)
+		stop("Internal error, should never reach this point!")
 	}
 	
-	select.one
+	list(promoters=promoters, organism=organism, version=version)
 }
 
 #' Make a background for a set of position frequency matrices
@@ -526,7 +549,7 @@ selectPromoters = function(genome){
 #'
 #' @param motifs a list of position frequency matrices (4xL matrices)
 #' @param organism either a name of the organisms for which the background should be compiled 
-#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package). 
+#'                 (currently supported names are "dm3", "mm9" and "hg19"), or a \code{BSgenome} object (see \code{BSgenome} package). 
 #' @param type the type of background to be compiled. Possible types are: 
 #'             \itemize{
 #'                 \item "logn" - estimate a lognormal background
@@ -540,6 +563,7 @@ selectPromoters = function(genome){
 #'             }
 #' @param quick if to preform fitting on a reduced set of 100 promoters. This will not give as good results but is much quicker than fitting to all the promoters (~10k). 
 #'              Usage of this parameter is recommended only for testing and rough estimates. 
+#' @param bg.seq a set of background sequences to use. This parameter overrides the "organism" and "quick" parameters.
 #' @param ... other named parameters that backend function makePWM***Background functions take.
 #' @export
 #' @author Robert Stojnic, Diego Diez
@@ -564,50 +588,64 @@ selectPromoters = function(genome){
 #'   motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.pval)
 #' }
 #' 
-makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...){
+makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, bg.seq=NULL, ...){
 	# check input parameters
 	valid.types = c("logn", "cutoff", "pval", "empirical", "GEV")
 	if(!(type %in% valid.types)){
 		stop(paste("Invalid type, please choose from:", paste(valid.types, collapse=", ")))
 	}
 
-	if(!exists("bg.source"))
+	# make sure we have this defined.... 
+	if(!hasArg("bg.source"))
 		bg.source = NULL
+	else
+		bg.source = list(...)$bg.source
 
-	genome = pickGenome(organism)
-	
-	# take only a single promoter from each of the genes (this works only for Drosophila)
-	select.one = selectPromoters(genome)
-	
-	if(quick){
-		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
-		if(is.null(bg.source))
-			bg.source = paste(organism(genome), " (", providerVersion(genome), ") 100 unique 2kb promoters", sep="")
+	# use the explicitely set sequences
+	if(!is.null(bg.seq)){
+		bg.seq = .normalize.bg.seq(bg.seq)
 	} else {
-		if(type %in% c("pval")){
-			bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=500)]]
+		# get the promoters for the organism
+		promoters.all = getPromoters(organism)
+		promoters = promoters.all$promoters
+	
+		if(quick){
+			bg.seq = promoters[seq(1, length(promoters), length.out=100)]
 			if(is.null(bg.source))
-				bg.source = paste(organism(genome), " (", providerVersion(genome), ") 500 unique 2kb promoters", sep="")
+				bg.source = paste(promoters.all$organism, " (", promoters.all$version, ") 100 unique 2kb promoters", sep="")
 		} else {
-			bg.seq = genome$upstream2000[select.one]
-			if(is.null(bg.source))
-				bg.source = paste(organism(genome), " (", providerVersion(genome), ") ", length(select.one), " unique 2kb promoters", sep="")
+			if(type %in% c("pval")){
+				bg.seq = promoters[seq(1, length(promoters), length.out=500)]
+				if(is.null(bg.source))
+					bg.source = paste(promoters.all$organism, " (", promoters.all$version, ") 500 unique 2kb promoters", sep="")
+			} else {
+				bg.seq = promoters
+				if(is.null(bg.source))
+					bg.source = paste(promoters.all$organism, " (", promoters.all$version, ") ", length(promoters), " unique 2kb promoters", sep="")
+			}
 		}
 	}
 	
 	#bg.seq = DNAStringSetToList(bg.seq)
 	
+	# capture ... as parameters so we can remove bg.source if present
+	# and set the other parameters
+	params = list(...)	
+	params$bg.seq = bg.seq
+	params$motifs = motifs
+	params$bg.source = bg.source
+	
 	## now run the appropriate backend function
 	if(type == "logn"){
-		bg = makePWMLognBackground(bg.seq, motifs, bg.source=bg.source, ...)
+		bg = do.call("makePWMLognBackground", params)
 	} else if(type == "cutoff"){
-		bg = makePWMCutoffBackground(bg.seq, motifs, bg.source=bg.source, ...)
+		bg = do.call("makePWMCutoffBackground", params)
 	} else if(type == "pval"){
-		bg = makePWMPvalCutoffBackgroundFromSeq(bg.seq, motifs, bg.source=bg.source, ...)
+		bg = do.call("makePWMPvalCutoffBackgroundFromSeq", params)
 	} else if(type == "empirical"){
-		bg = makePWMEmpiricalBackground(bg.seq, motifs, bg.source=bg.source, ...)
+		bg = do.call("makePWMEmpiricalBackground", params)
 	} else if(type == "GEV"){
-		bg = makePWMGEVBackground(bg.seq, motifs, bg.source=bg.source, ...)
+		bg = do.call("makePWMGEVBackground", params)
 	}
 	
 	return(bg)
@@ -618,7 +656,7 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 #' Estimate the background frequencies of A,C,G,T on a set of promoters from an organism
 #'
 #' @param organism either a name of the organisms for which the background should be compiled 
-#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).
+#'                 (supported names are "dm3", "mm9" and "hg19"), or a \code{BSgenome} object (see \code{BSgenome} package).
 #' @param pseudo.count the number to which the frequencies sum up to, by default 1
 #' @param quick if to preform fitting on a reduced set of 100 promoters. This will not give as good results but is much quicker than fitting to all the promoters (~10k). 
 #'              Usage of this parameter is recommended only for testing and rough estimates.
@@ -630,15 +668,12 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, ...)
 #' }
 getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE){
 	# pick the set of background sequences
-	genome = pickGenome(organism)
-
-	# take only a single promoter from each of the genes
-	select.one = selectPromoters(genome)
+	promoters = getPromoters(organism)$promoters
 		
 	if(quick){
-		bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
+		bg.seq = promoters[seq(1, length(promoters), length.out=100)]
 	} else {
-		bg.seq = genome$upstream2000[select.one]
+		bg.seq = promoters
 	}
 	
 	#bg.seq = DNAStringSetToList(bg.seq)
@@ -651,7 +686,7 @@ getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE)
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
 #'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param organism either a name of the organisms for which the background should be compiled 
-#'                 (currently only supported name is "dm3" for Drosophila Melanogaster), or a \code{BSgenome} object (see \code{BSgenome} package).
+#'                 (supported names are "dm3", "mm9" and "hg19"), or a \code{BSgenome} object (see \code{BSgenome} package).
 #' @param bg.seq a set of background sequence (either this or organism needs to be specified!). Can be a DNAString or DNAStringSet object.
 #' @param quick if to do the fitting only on a small subset of the data (only in combination with \code{organism}). Useful only for code testing!
 #' @param pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
@@ -669,16 +704,13 @@ motifEcdf = function(motifs, organism=NULL, bg.seq=NULL, quick=FALSE, pseudo.cou
 		# check if the sequences are in the right format
 		bg.seq = .normalize.bg.seq(bg.seq)
 	} else {
-		# pick the set of background sequences
-		genome = pickGenome(organism)
-
 		# take only a single promoter from each of the genes
-		select.one = selectPromoters(genome)
-	
+		promoters = getPromoters(organism)$promoters
+		
 		if(quick){
-			bg.seq = genome$upstream2000[select.one[seq(1, length(select.one), length.out=100)]]
+			bg.seq = promoters[seq(1, length(promoters), length.out=100)]
 		} else {
-			bg.seq = genome$upstream2000[select.one]
+			bg.seq = promoters
 		}
 	}
 	

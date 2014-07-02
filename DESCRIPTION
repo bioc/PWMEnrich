@@ -15,14 +15,15 @@ Description: A toolkit of high-level functions for DNA motif scanning
         discovery, but is instead focused on using motifs that are
         either experimentally derived or computationally constructed by
         other tools.
-Version: 3.7.2
-Date: 2014-04-29
+Version: 3.7.3
+Date: 2014-07-01
 Depends: methods, grid, BiocGenerics, Biostrings,
 Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
-        PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel
+        PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel,
+        PWMEnrich.Hsapiens.background, PWMEnrich.Mmusculus.background
 Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
         'diff.R' 'misc.R' 'MotifEnrichmentResults-methods.R'
         'MotifEnrichmentReport-methods.R' 'options.R' 'plot.R'
         'PWMBackground-methods.R' 'PWM-methods.R' 'pwm.R' 'readData.R'
         'seqLogoSupp.R' 'similarity.R'
-biocViews: SequenceMatching,  Software
+biocViews: SequenceMatching, Software

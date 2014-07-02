@@ -3,15 +3,15 @@
 \title{Make a background for a set of position frequency matrices}
 \usage{
   makeBackground(motifs, organism = "dm3", type = "logn",
-    quick = FALSE, ...)
+    quick = FALSE, bg.seq=NULL, ...)
 }
 \arguments{
   \item{motifs}{a list of position frequency matrices (4xL
   matrices)}
 
   \item{organism}{either a name of the organisms for which
-  the background should be compiled (currently only
-  supported name is "dm3" for Drosophila Melanogaster), or
+  the background should be compiled (currently supported 
+  names are "dm3", "mm9" and "hg19"), or
   a \code{BSgenome} object (see \code{BSgenome} package).}
 
   \item{type}{the type of background to be compiled.
@@ -35,6 +35,10 @@
   much quicker than fitting to all the promoters (~10k).
   Usage of this parameter is recommended only for testing
   and rough estimates.}
+  
+  \item{bg.seq}{a set of background sequences to use. 
+  This parameter overrides the "organism" and "quick" 
+  parameters.}
 
   \item{...}{other named parameters that backend function
   makePWM***Background functions take.}

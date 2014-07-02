@@ -1,6 +1,5 @@
 library(PWMEnrich)
 library(testthat)
-library(BSgenome.Dmelanogaster.UCSC.dm3)
 
 # check if two things are numerically equal, e.g. to precision of 1e-8
 numEqual = function(x, y, prec=1e-8){
@@ -55,12 +54,8 @@ test_that("motifEnrichment for raw affinity and cutoff", {
 ###
 # make backgrounds and check scores
 
-# set of background sequences
-promoters = Dmelanogaster$upstream1000
-promoter.genes = sapply(strsplit(names(promoters), "-"), function(x) x[1])
-select.one = tapply(1:length(promoter.genes), promoter.genes, function(x) x[1])
-
-bg.seq = Dmelanogaster$upstream1000[select.one[seq(1, length(select.one), length.out=10)]]
+# load the testing bg.seq object
+load(system.file(package="PWMEnrich", dir="extdata", file="bg.seq-test.RData"))
 
 ## make diferent background distributions and use them to scan
 

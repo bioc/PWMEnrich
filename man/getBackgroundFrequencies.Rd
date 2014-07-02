@@ -7,8 +7,8 @@
 }
 \arguments{
   \item{organism}{either a name of the organisms for which
-  the background should be compiled (currently only
-  supported name is "dm3" for Drosophila Melanogaster), or
+  the background should be compiled (supported names are "dm3", 
+  "mm9" and "hg19") or
   a \code{BSgenome} object (see \code{BSgenome} package).}
 
   \item{pseudo.count}{the number to which the frequencies

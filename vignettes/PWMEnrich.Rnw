@@ -285,15 +285,16 @@ bg.denovo$bg.mean
 Low-level functions are available for constructing custom backgrounds. We start with the two de-novo motifs from previous section and fit the background to first 20 \textit{D. melanogaster} promoters. 
 
 <<pfmtopwm,echo=TRUE>>=
-library(BSgenome.Dmelanogaster.UCSC.dm3)
+library(PWMEnrich.Dmelanogaster.background)
+data(dm3.upstream2000)
 
 # make a lognormal background for the two motifs using only first 20 promoters
-bg.seq = Dmelanogaster$upstream2000[1:20]
+bg.seq = dm3.upstream2000[1:20]
 
 # the sequences are split into 100bp chunks and fitted
-bg.custom = makePWMLognBackground(bg.seq, pwms.denovo, bg.len=100, 
-    bg.source="20 promoters split into 100bp chunks")
-    
+bg.custom = makeBackground(pwms.denovo, bg.seq=bg.seq, type="logn", bg.len=100,
+	bg.source="20 promoters split into 100bp chunks")
+
 bg.custom
 @
 

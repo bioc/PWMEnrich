@@ -455,6 +455,7 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 	}
 
 	pwms = obj$pwms	
+	res = obj@res
 		
 	# correct ordering of motifs
 	o = motifRankingForSequence(obj, seq.id, rank=TRUE, bg=bg)

@@ -453,6 +453,7 @@ setMethod("sequenceReport", signature=signature(obj="MotifEnrichmentResults"), f
 	if(missing(seq.id)){
 		stop("Please specify the sequence number with 'seq.id'")
 	}
+	res = obj@res
 
 	pwms = obj$pwms	
 		

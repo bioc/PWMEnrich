@@ -66,9 +66,13 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #' @param motifs a set of motifs, either a list of frequency matrices, or a list of PWM objects. If
 #'               frequency matrices are given, the background distribution is fitted from bg.seq. 
 #' @param bg.pseudo.count the pseudo count which is shared between nucleotides when frequency matrices are given
-#' @param bg.len the length of background chunks
+#' @param bg.len background sequences will be split into tiles of this length (default: 250bp)
+#' @param bg.len.sizes background tiles will be joined into bigger tiles containing this much smaller tiles. 
+#'                     The default is \code{2^(0:4)}, which with \code{bg.len} translates into 
+#'                     250bp, 500bp, 1000bp, 1500bp, 2000bp, 4000bp. Note this is only used in the "human" algorithm.
 #' @param bg.source a free-form textual description of how the background was generated
 #' @param verbose if to produce verbose output
+#' @param algorithm type of algorithm to use, valid values are: "default" and "human".
 #' @export
 #' @examples
 #' \dontrun{
@@ -80,13 +84,26 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #'      makePWMLognBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 #' }
 #' }
-makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000, bg.source="", verbose=TRUE){
+makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, bg.len.sizes=2^(0:4), bg.source="", verbose=TRUE, algorithm="default"){
 	# check if the sequences are in the right format
 	bg.seq = .normalize.bg.seq(bg.seq)
 
 	# convert to list if a single motif is given
 	if(!is.list(motifs))
 		motifs = list(motifs)
+		
+	if(bg.len.sizes[1] != 1)
+		stop("First value of 'bg.len.sizes' needs to be 1")
+		
+	if(!(algorithm %in% c("default", "human")))
+		stop("Parameter 'algorithm' needs to be one of: ['default', 'human']")
+		
+	cat("NOTE: Using the '", 	algorithm, "' algorithm to infer background parameters,\n      ", sep="")
+	if(algorithm == "default"){
+		cat("appropriate for all organisms except human.\n")
+	} else {
+		cat("appropriate only for human data.\n")
+	}
 
 	# concatenate all the background sequences into a single long sequence
 	bg.seq.all = concatenateSequences(bg.seq)
@@ -112,11 +129,131 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=1000,
 	
 	# finally, do motif scanning and calculate mean and sd
 	bg.res = motifScores(bg, pwms, verbose=verbose)
-	bg.mean = colMeans(bg.res)
-	bg.sd = apply(bg.res, 2, sd)
 	
+	# pwm lengths and base lengths
 	pwm.len = sapply(pwms, length)
 	bg.len.real = bg.len - pwm.len + 1
+	
+	# do a robust estimate of parameters
+
+	#' dnorm with left-censored data and known meanlog
+	#'
+	#' @param x value for which dnorm is needed
+	#' @param cen logical vector if the value is censored
+	#' @param meanlog meanlog parameter
+	#' @param sdlog sdlog parameter
+	dlnorm.lcen = function(x, cen, meanlog, sdlog){
+		if(sdlog <= 0)
+			-Inf
+		xn = x[!cen]
+		xc = x[cen]
+
+		sum(dlnorm(xn, meanlog, sdlog, log=TRUE)) + sum(plnorm(xc, meanlog, sdlog, lower.tail=TRUE, log.p=TRUE))
+	}
+
+	#' Negative log-likelihood of left-censored data
+	#'
+	#' NOTE: this function assumes xc, cen and meanlog and in environment
+	#'
+	#' @param p set of parameters (in this case only sdlog)
+	ll.lcen = function(p){
+		-dlnorm.lcen(xc, cen, meanlog, p)
+	}	
+	
+	if(algorithm == "default"){
+		# the simple default algorithm
+		bg.mean = colMeans(bg.res)
+		bg.sd = apply(bg.res, 2, sd)
+		
+	} else {	
+		# a matrix of inferred values that will be averaged over
+		bg.mean.mat = bg.sd.mat = matrix(0, nrow=length(bg.len.sizes), ncol=ncol(bg.res))
+		colnames(bg.mean.mat) = colnames(bg.sd.mat) = colnames(bg.res)
+		if(verbose){
+			cat("Parameter estimation...\n")
+		}
+
+		# do estimation for different sizes of background
+		for(size.inx in 1:length(bg.len.sizes)){
+			# current size multiplier
+			cur.mul = bg.len.sizes[size.inx]
+		
+			if(verbose){
+				cat("Recording distribution properties for", bg.len * cur.mul, "bp tiles (this may take a while...)\n") 
+			}
+		
+			# summarise bg.res for the current size		
+			max.len = nrow(bg.res) %/% cur.mul * cur.mul
+			group = (0:(max.len-1)) %/% cur.mul
+		
+			# group by the groups and do an average
+			if(cur.mul == 1){
+				bg.res.size = bg.res
+			} else {
+				# new implementation for faster grouping!
+				out = matrix(0, nrow=length(unique(group)), ncol=ncol(bg.res))
+				for(i in 1:nrow(out)){
+					row.inx = (i-1)*cur.mul+1
+					r = bg.res[row.inx,]
+		
+					for(j in 1:(cur.mul-1)){
+						r = r + bg.res[row.inx+j,]
+					}
+					out[i,] = r / cur.mul
+				}
+			
+				bg.res.size = out
+			
+				# double-check just in case !
+				#bg.res.size = by(bg.res[1:max.len,], group, colMeans)
+				#bg.res.size = do.call("rbind", as.list(bg.res.size))
+			}
+		
+			# consistency check
+			stopifnot(nrow(bg.res.size) == max.len/cur.mul)
+		
+			# do robust estimate for each motif
+			for(i in 1:ncol(bg.res)){
+				if(verbose){
+					cat("Estimating parameters for motif", i, "/", ncol(bg.res), "\n")
+				}
+				x = bg.res.size[,i]
+		
+				# censor everything below the 75% quantile
+				b = quantile(x, 0.75)
+
+				# left-censor data
+				xc = x
+				xc[x<=b] = b
+				cen = rep(FALSE, length(x))
+				cen[x<=b] = TRUE
+
+				# meanlog based on median
+				meanlog = median(log(x))
+
+				# optimize sdlog
+				p = optimize(ll.lcen, c(1e-8, 1e5))
+		
+				# transform and save
+				ml = meanlog
+				sl = p$minimum
+				mx = exp(ml + (sl^2)/2)
+				sx = sqrt((exp(sl^2)-1)*exp(2*ml+sl^2))
+	
+				# save
+				bg.mean.mat[size.inx, i] = mx
+				bg.sd.mat[size.inx, i] = sx
+			}
+		}
+			
+		# record the values
+		bg.mean = bg.mean.mat
+		bg.sd = bg.sd.mat
+		
+		# record the sizes
+		bg.len.real = outer(bg.len.sizes, bg.len.real)
+		rownames(bg.len.real) = NULL
+	}
 	
 	new("PWMLognBackground", bg.source=bg.source, bg.len=bg.len.real, bg.mean=bg.mean, bg.sd=bg.sd, pwms=pwms)
 }
@@ -503,7 +640,7 @@ getPromoters = function(organismOrGenome){
 				providerVersion(org), ", please provide a set of background sequences explicitely.", sep=""))
 		}
 	} else {
-		stop("The input parameter needs to be either genome name (e.g. 'dm3') or a BSgenome object.")
+		stop("The input parameter needs to be a valid genome name ('dm3', 'mm9' or 'hg19') or a set of background sequences.")
 	}
 	
 	e = new.env()
@@ -634,6 +771,10 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, bg.s
 	params$bg.seq = bg.seq
 	params$motifs = motifs
 	params$bg.source = bg.source
+	
+	# select the human algorithm
+	if(type == "logn" && is.character(organism) && organism == "hg19" && !("algorithm" %in% names(params)))
+		params$algorithm = "human"
 	
 	## now run the appropriate backend function
 	if(type == "logn"){

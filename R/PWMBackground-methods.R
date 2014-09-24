@@ -133,14 +133,24 @@ setMethod("$", signature=signature(x="PWMGEVBackground"), function(x, name){
 #' @param drop unused
 #' @rdname subsetting-PWMLognBackground
 setMethod("[", "PWMLognBackground", 
-function(x, i, j, ..., drop = TRUE){		
-	new("PWMLognBackground",
-		pwms=x@pwms[i],
-		bg.mean=x@bg.mean[i],
-		bg.len=x@bg.len[i],
-		bg.sd=x@bg.sd[i],
-		bg.source=paste(x@bg.source, "--subset")
-	)
+function(x, i, j, ..., drop = TRUE){
+	if(is.matrix(x@bg.mean)){
+		new("PWMLognBackground",
+			pwms=x@pwms[i],
+			bg.mean=x@bg.mean[,i,drop=FALSE],
+			bg.len=x@bg.len[,i,drop=FALSE],
+			bg.sd=x@bg.sd[,i,drop=FALSE],
+			bg.source=paste(x@bg.source, "--subset")
+		)
+	} else {		
+		new("PWMLognBackground",
+			pwms=x@pwms[i],
+			bg.mean=x@bg.mean[i],
+			bg.len=x@bg.len[i],
+			bg.sd=x@bg.sd[i],
+			bg.source=paste(x@bg.source, "--subset")
+		)
+	}
 })
 
 #' Get the background for a subset of PWMs

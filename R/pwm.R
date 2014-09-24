@@ -79,11 +79,13 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
-#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
-#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
+#'    ttk = MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+#'
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
 #'
 #'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-#'    PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
 #' }
 #'
 PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), pseudo.count=prior.params, 
@@ -150,8 +152,10 @@ PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel)
 #'
-#'   scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
-#'   scanWithPWM(MotifDb.Dmel$ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
+#'    ttk = MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+#'
+#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
+#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
 #' }
 #' 
 scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FALSE, strand.fun="mean"){
@@ -201,6 +205,8 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 
 #' Convert frequencies into motifs using PWMUnscaled
 #'
+#' Note that this function is deprecated and replaced by \code{toPWM()}. 
+#'
 #' @param motifs a list of motifs represented as matrices of frequencies (PFM)
 #' @param id the set of IDs for the motifs (defaults to names of the 'motifs' list)
 #' @param name the set of names for the motifs (defaults to names of the 'motifs' list)
@@ -249,6 +255,85 @@ PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL
 		} else {
 			res[[i]] = PWMUnscaled(motifs[[i]], id=id[i], name=name[i], seq.count=seq.count[i], ...)
 		}
+	}
+	
+	names(res) = names(motifs)
+	
+	# convert back to single object if that's how the input was
+	if(!was.list){
+		return(res[[1]])
+	} else {
+		return(res)
+	}
+
+}
+
+#' Convert motifs into PWMs
+#'
+#' @param motifs a list of motifs either as position probability matrices (PPM) or frequency matirces (PFMs)
+#' @param ids the set of IDs for the motifs (defaults to names of the 'motifs' list)
+#' @param targets the set of target TF names for the motifs (defaults to names of the 'motifs' list)
+#' @param seq.count provides a vector of sequence counts for probability matrices (PPMs). Default it 50. 
+#' @param prior frequencies of the four letters in the genome. Default is uniform background.
+#' @param ... other parameters to PWMUnscaled
+#'
+#' @export
+#' @examples
+#'
+#' if(require("PWMEnrich.Dmelanogaster.background")){
+#'    data(MotifDb.Dmel.PFM)
+#'
+#'    toPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
+#'
+#'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
+#'    toPWM(MotifDb.Dmel.PFM, prior=prior) # convert with genomic background 
+#' }
+toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50, prior=c(A=0.25, C=0.25, G=0.25, T=0.25), ...){
+	if(!is.list(motifs)){
+		was.list = FALSE
+		motifs = list(motifs)
+	} else {
+		was.list = TRUE
+	}
+	
+	# extend seq.count if needed
+	if(length(seq.count) == 1 && length(seq.count) != length(motifs))
+		seq.count = rep(seq.count, length(motifs))
+	
+	# convert each individual motif into integers or multiply with seq.count
+	for(i in 1:length(motifs)){
+		m = motifs[[i]]
+		
+		mi = apply(m, 1:2, as.integer)
+		if(all(m == mi)){
+			# can be coersced to an integer matrix, use that
+			motifs[[i]] = mi
+		} else {
+			# if the values is NA use 50 as default
+			if(is.na(seq.count[i])){
+				motifs[[i]] = apply(round(m * 50), 1:2, as.integer)
+			} else {
+				motifs[[i]] = apply(round(m * seq.count[i]), 1:2, as.integer)
+			}
+		}
+		
+	}
+	
+	if(is.null(ids))
+		ids = rep("", length(motifs))
+	if(is.null(targets))
+		targets = rep("", length(motifs))
+	
+	if(length(ids) != length(motifs))
+		stop("The number of IDs (parameter 'ids') need to be the same as number of motifs (parameter 'motifs')")
+
+	if(length(targets) != length(motifs))
+		stop("The number of TF target names (parameter 'targets') need to be the same as number of motifs (parameter 'motifs')")
+	
+	# call PWMUnscaled
+	res = list()
+	for(i in 1:length(motifs)){
+		res[[i]] = PWMUnscaled(motifs[[i]], id=ids[i], name=targets[i], prior.params=prior, ...)
 	}
 	
 	names(res) = names(motifs)
@@ -616,8 +701,10 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 #'    data(MotifDb.Dmel)
 #'    data(MotifDb.Dmel.PFM)
 #'
-#'    motifIC(MotifDb.Dmel$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
-#'    motifIC(MotifDb.Dmel.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
+#'    # the nucleotide distribution is taken from the PWM (in this case genomic background)
+#'    motifIC(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+#'    # information content with default uniform background because the input is a matrix, not PWM object
+#'    motifIC(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
 #' }
 motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=FALSE){
 	if(class(motif) == "PWM"){
@@ -842,6 +929,10 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		stop(paste("Unknown scoring algorithm: '", score, "'. Please select one of: 'affinity', 'cutoff', 'clover'", sep=""))
 	}
 	
+	if(verbose){
+		cat("Calculating motif enrichment scores ...\n")
+	}
+	
 	# apply background correction if needed
 	if(bg == "none"){
 		res$sequence.bg = NULL
@@ -851,16 +942,21 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 		seq.len = sapply(sequences, length)
 		pwm.len = sapply(pwms, length)
 		# do it per sequence
-		res$sequence.bg = t(sapply(1:length(seq.len), 
-			function(i) logNormPval(res$sequence.nobg[i,], seq.len[i], pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)))
+		res$sequence.bg = logNormPval(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
 		colnames(res$sequence.bg) = names(pwms)
 		# convert logn P-values into normalized observations and run Clover on that
 		res$sequence.norm = apply(res$sequence.bg, 1:2, qlnorm, lower.tail=FALSE)
 		
 		if(score == "affinity"){
 			# and for the group
-			res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
-			res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
+			if(is.matrix(pwmobj@bg.mean)){
+				res$group.bg = colMeans(log(res$sequence.bg))
+				res$group.norm = res$group.bg
+			} else {
+				res$group.bg = logNormPvalSequenceSet(res$sequence.nobg, seq.len, pwm.len, pwmobj@bg.mean, pwmobj@bg.sd, pwmobj@bg.len)
+				res$group.norm = sapply(res$group.bg, qlnorm, lower.tail=FALSE)
+			}
+			
 		} else if(score == "clover"){
 			# now run Clover on normalized scores
 			res$group.bg = cloverScore(res$sequence.norm, verbose=verbose)
@@ -973,7 +1069,8 @@ matrixShuffleZscorePerSequence = function(scores, sequences, pwms, cutoff=NULL, 
 #' @param bg.mean the mean values from the background for PWMs
 #' @param bg.sd the sd values from the background
 #' @param bg.len the length distribution of the background (we currently support only constant length)
-logNormPval = function(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.len){
+#' @param log if to produce log p-values
+logNormPval = function(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.len, log=FALSE){
 	if(is.vector(scores)){
 		scores = matrix(scores, nrow=1, dimnames=list(NULL, names(scores)))
 	}
@@ -984,11 +1081,75 @@ logNormPval = function(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.len){
 		stop("The motifs column names in 'scores' and 'bg.mean' do not match")
 	}
 	
-	# calculate the expected sd values for the length distribution for each sequence
-	seq.sd = matrix(0, nrow=nrow(scores), ncol=ncol(scores))
+	seq.mean = seq.sd = matrix(0, nrow=nrow(scores), ncol=ncol(scores))
 
-	for(i in 1:nrow(seq.sd)){
-		seq.sd[i,] = bg.sd / sqrt( (seq.len[i]-pwm.len+1) / bg.len)
+	slen = matrix(seq.len, nrow=nrow(scores), ncol=ncol(scores)) - 
+		   matrix(pwm.len, nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE) + 1
+
+	# rows (i) - sequences
+	# cols (j) - motifs
+	if(is.matrix(bg.mean)){
+		# human implementation ... 
+		
+		bg.len.min = matrix(bg.len[1,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+		bg.len.max = matrix(bg.len[nrow(bg.len),], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+	
+		bg.len.all = lapply(1:nrow(bg.len), function(i) matrix(bg.len[i,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE))
+	
+		# split into three classes
+		min.inx = slen <= bg.len.min
+		max.inx = slen >= bg.len.max
+		int.inx = !min.inx & !max.inx
+
+		# bg.sd correction factor value
+		bgsd = bg.sd * sqrt(bg.len/matrix(bg.len[1,], nrow=nrow(bg.len), ncol=ncol(bg.len), byrow=TRUE))
+		bgsd = bgsd / matrix(bgsd[1,], nrow=nrow(bgsd), ncol=ncol(bgsd), byrow=TRUE)
+	
+		bgsd.all = lapply(1:nrow(bgsd), function(i) matrix(bgsd[i,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE))
+
+		# smaller
+		if(any(min.inx)){
+			bg.mean.min = matrix(bg.mean[1,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+			bg.sd.min = matrix(bg.sd[1,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+
+			# keep mean, use quadratic for sd
+			seq.mean[min.inx] = bg.mean.min[min.inx]
+			seq.sd[min.inx] = bg.sd.min[min.inx] / sqrt(slen[min.inx]/bg.len.min[min.inx])
+		} 
+		if(any(max.inx)){
+			bg.mean.max = matrix(bg.mean[nrow(bg.mean),], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+			bg.sd.max = matrix(bg.sd[nrow(bg.sd),], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+
+			# keep mean, use quadratic for sd
+			seq.mean[max.inx] = bg.mean.max[max.inx]
+			seq.sd[max.inx] = bg.sd.max[max.inx] / sqrt(slen[max.inx]/bg.len.max[max.inx])
+		}
+		if(any(int.inx)){
+			bg.mean.all = lapply(1:nrow(bg.mean), function(i) matrix(bg.mean[i,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE))
+			bg.sd.all = lapply(1:nrow(bg.sd), function(i) matrix(bg.sd[i,], nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE))
+			# interpolate!		
+			for(k in 1:(nrow(bg.mean)-1)){
+				a = bg.len.all[[k]]
+				b = bg.len.all[[k+1]]
+				inx = int.inx & slen >= a & slen < b
+				if(any(inx)){
+					# direct linear interpolation for mean
+					seq.mean[inx] = bg.mean.all[[k]][inx] + (bg.mean.all[[k+1]][inx] - bg.mean.all[[k]][inx])/(b[inx]-a[inx]) * (slen[inx]-a[inx])
+				
+					# base value of seq.sd
+					seq.sd[inx] = bg.sd.all[[1]][inx] / sqrt(slen[inx]/bg.len.all[[1]][inx])
+				
+					# this correction factor would ideally be 1
+					seq.sd[inx] = seq.sd[inx] * (bgsd.all[[k]][inx] + (bgsd.all[[k+1]][inx]-bgsd.all[[k]][inx])/(b[inx]-a[inx]) * (slen[inx]-a[inx]))
+				
+				}
+			}
+		}
+	} else {
+		# default implementation
+		seq.mean = matrix(bg.mean, nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE)
+		seq.sd = matrix(bg.sd, nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE) / 
+					sqrt(slen / matrix(bg.len, nrow=nrow(scores), ncol=ncol(scores), byrow=TRUE))
 	}
 	
 	# calculate p-values
@@ -996,19 +1157,18 @@ logNormPval = function(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.len){
 	colnames(seq.p) = colnames(scores)
 	rownames(seq.p) = rownames(scores)
 	
-	for(i in 1:nrow(seq.sd)){
-		for(j in 1:ncol(seq.sd)){
-			# calculate the mean/sd parameters of the lognormal distribution
-			mx = bg.mean[j]
-			sx = seq.sd[i,j]
-			
-			ml = 2*log(mx) - 0.5*log(mx^2+sx^2)
-			sl = sqrt(-2*log(mx) + log(mx^2+sx^2))
-			
-			seq.p[i,j] = plnorm(scores[i,j], meanlog=ml, sdlog=sl, lower.tail=FALSE)
-		}
-	}
+	# calculate the mean/sd parameters of the lognormal distribution
+	seq.ml = 2*log(seq.mean) - 0.5*log(seq.mean^2+seq.sd^2)
+	seq.sl = sqrt(-2*log(seq.mean) + log(seq.mean^2+seq.sd^2))
 	
+	# convert to z-scores so we can streamline... 
+	z = (log(scores) - seq.ml) / seq.sl
+	seq.p[,] = plnorm(exp(z), meanlog=0, sdlog=1, lower.tail=FALSE, log.p=log)
+	
+	# convert to log10 P-values
+	if(log)
+		seq.p = seq.p * log10(exp(1))
+		
 	seq.p
 }
 
@@ -1031,7 +1191,11 @@ logNormPvalSequenceSet = function(scores, seq.len, pwm.len, bg.mean, bg.sd, bg.l
 		
 		# sum over sequences then average by total length
 		s[i] = sum(scores[,i] * seq.len.pwm) / sum(seq.len.pwm)
-		res[i] = logNormPval(s[i], sum(seq.len.pwm)+pwm.len[i]-1, pwm.len[i], bg.mean[i], bg.sd[i], bg.len[i])
+		if(is.matrix(bg.mean)){
+			res[i] = logNormPval(s[i], sum(seq.len.pwm)+pwm.len[i]-1, pwm.len[i], bg.mean[,i,drop=FALSE], bg.sd[,i,drop=FALSE], bg.len[,i,drop=FALSE])
+		} else {
+			res[i] = logNormPval(s[i], sum(seq.len.pwm)+pwm.len[i]-1, pwm.len[i], bg.mean[i], bg.sd[i], bg.len[i])
+		}
 	}
 	
  	return(res)

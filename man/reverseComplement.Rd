@@ -17,7 +17,7 @@
 if(require("PWMEnrich.Dmelanogaster.background")){
    data(MotifDb.Dmel.PFM)
 
-   reverseComplement(MotifDb.Dmel.PFM$ttk) # reverse complement of the ttk PWM
+   reverseComplement(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) # reverse complement of the ttk PWM
 }
 }
 

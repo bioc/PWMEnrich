@@ -1,4 +1,6 @@
 
+setClassUnion("NumericOrMatrix", c("numeric", "matrix"))
+
 #' A class that represents a Position Weight Matrix (PWM)
 #'
 #' @aliases PWM-class
@@ -36,9 +38,9 @@ setClass("PWM",
 setClass("PWMLognBackground",
 	representation = representation(
 		bg.source = "character",
-		bg.len = "numeric",
-		bg.mean = "numeric",
-		bg.sd = "numeric",
+		bg.len = "NumericOrMatrix",
+		bg.mean = "NumericOrMatrix",
+		bg.sd = "NumericOrMatrix",
 		pwms = "list"				
 	)	
 )

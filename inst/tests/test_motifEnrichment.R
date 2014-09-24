@@ -59,7 +59,7 @@ load(system.file(package="PWMEnrich", dir="extdata", file="bg.seq-test.RData"))
 
 ## make diferent background distributions and use them to scan
 
-bg.logn = makePWMLognBackground(bg.seq, gata.pwm)
+bg.logn = makePWMLognBackground(bg.seq, gata.pwm, bg.len=1000)
 bg.z5 = makePWMCutoffBackground(bg.seq, gata.pwm, cutoff=log2(exp(5)))
 
 # check if the Z-score calculation works, on background the z-score should be 0 for the group

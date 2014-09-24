@@ -52,13 +52,15 @@
 }
 \examples{
 if(require("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+    data(MotifDb.Dmel.PFM)
 
-   PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
-   PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
+    ttk = MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
 
-   prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-   PWMUnscaled(MotifDb.Dmel.PFM$ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
+    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
+    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
+
+    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
+    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
 }
 }
 

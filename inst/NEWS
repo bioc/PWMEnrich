@@ -1,5 +1,9 @@
 PWMEnrich package
 
+Version 4:
+    o New algorithm for human backgrounds
+    o New function: toPWM() that takes both PFMs and PPMs
+
 Version 3.5:
     o After further testing revert back to PWMEnrich 2.x group P-value algorithm
     o Introduced group sorting by top motifs

@@ -23,11 +23,13 @@
 }
 \examples{
 if(require("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel)
-   data(MotifDb.Dmel.PFM)
+    data(MotifDb.Dmel)
+    data(MotifDb.Dmel.PFM)
 
-   motifIC(MotifDb.Dmel$ttk) # the nucleotide distribution is taken from the PWM (in this case genomic background)
-   motifIC(MotifDb.Dmel.PFM$ttk) # information content with default uniform background because the input is a matrix, not PWM object
+    # the nucleotide distribution is taken from the PWM (in this case genomic background)
+    motifIC(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+    # information content with default uniform background because the input is a matrix, not PWM object
+    motifIC(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
 }
 }
 

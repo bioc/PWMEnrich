@@ -21,7 +21,7 @@ plotPFM = function(pfm, ...){
 #'   data(MotifDb.Dmel)
 #'
 #'   # plot the tinman motif from MotifDb
-#'   plot(MotifDb.Dmel$tin)
+#'   plot(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]])
 #' }
 setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...){
 	pfm = x$pfm
@@ -89,6 +89,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 #' @param x a MotifEnrichmentReport object
 #' @param y unused
 #' @param fontsize font size to use in the plot
+#' @param id.fontsize font size to use for the motif IDs
 #' @param header.fontsize font size of the header
 #' @param widths the relative widths of columns
 #' @param ... unused
@@ -109,7 +110,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 #'    plot(r[1:10])
 #' 
 #' }
-setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), function(x, y, fontsize=14, header.fontsize=fontsize, widths=NULL, ...){
+setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), function(x, y, fontsize=14, id.fontsize=fontsize, header.fontsize=fontsize, widths=NULL, ...){
 	d = x@d
 	pwms = x@pwms
 	
@@ -118,7 +119,7 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 	
 	# some default widths
 	if(is.null(widths))
-		widths = c(0.05, 0.1, 0.2, 0.3, 0.1, 0.1, 0.1)[1:(ncol(d)+1)]
+		widths = c(0.05, 0.1, 0.2, 0.36, 0.08, 0.08, 0.08)[1:(ncol(d)+1)]
 		
 	widths = widths / sum(widths)
 	
@@ -164,6 +165,8 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 				} else {
 					if(inx == 6){
 						grid.text(paste(round(d[i,inx]*100), "%"), gp=gpar(fontsize=fontsize))
+					} else if(inx == 3){
+						grid.text(d[i,inx], gp=gpar(fontsize=id.fontsize))
 					} else if(inx > 3){
 						grid.text(signif(d[i,inx],3), gp=gpar(fontsize=fontsize))
 					} else {
@@ -311,7 +314,7 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #'    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    # select the tinman and snail motifs
-#'    pwms = MotifDb.Dmel[c("tin", "sna")]
+#'    pwms = MotifDb.Dmel[c("Dmelanogaster-JASPAR_CORE-tin-MA0247.1", "Dmelanogaster-JASPAR_CORE-sna-MA0086.1")]
 #'
 #'    # get the raw score that will be plotted
 #'    scores = motifScores(sequences, pwms, raw.scores=TRUE)

@@ -56,7 +56,7 @@
 
 The main functionality of the package is Position Weight Matrix (PWM)\footnote{In this vignette we use "PWM", "DNA motif" and "motif" interchangeably.} enrichment analysis in a single sequence (e.g. enhancer of interest) or a set of sequences (e.g. set of ChIP-chip/seq peaks). Note that this is not the same as \textit{de-novo} motif finding which discovers novel motifs, nor motif comparison which aligns motifs.  
 
-The package is build upon \Robj{Biostrings} and offers high-level functions to scan for DNA motif occurrences and compare them against a genomic background. There are multiple packages with pre-compiled genomic backgrounds such as \Robj{PWMEnrich.Dmelanogaster.background}, \Robj{PWMEnrich.Hsapiens.background} and \Robj{PWMEnrich.Mmusculus.background}. In these packages the genomic distribution is calculated for motifs from the \Robj{MotifDb} database. The \Robj{PWMEnrich} package contains all the functions used to create these packages, so you can calculate your own background distributions for your own set of motifs. In this vignette we will use the \textit{Drosophila} package, but the other background packages are used in the same way. 
+The package is built upon \Robj{Biostrings} and offers high-level functions to scan for DNA motif occurrences and compare them against a genomic background. There are multiple packages with pre-compiled genomic backgrounds such as \Robj{PWMEnrich.Dmelanogaster.background}, \Robj{PWMEnrich.Hsapiens.background} and \Robj{PWMEnrich.Mmusculus.background}. In these packages the genomic distribution is calculated for motifs from the \Robj{MotifDb} database. The \Robj{PWMEnrich} package contains all the functions used to create these packages, so you can calculate your own background distributions for your own set of motifs. In this vignette we will use the \textit{Drosophila} package, but the other background packages are used in the same way (see Section \ref{sec:human} for minor human-specific differences). 
 
 \subsection{Implemented algorithms}
 
@@ -74,9 +74,9 @@ The results of motif scanning are stored in objects of class \Robj{MotifEnrichme
 
 \section{Use case 1: Finding enrichment motifs in a single sequence}
 
-One of the most well-known example of combinatorial control by transcription factors in \textit{Drosophila} is the \textit{even skipped (eve)} stripe 2 enhancer. This well-studied enhancer has a number of annotated binding sites for TFs \textit{Kr}, \textit{vfl}, \textit{bcd}, \textit{gt}, \textit{hb} and \textit{gt}. We will use this enhancer as an example as we already know its functional structure.
+One of the most well-known example of combinatorial control by transcription factors in \textit{Drosophila} is the \textit{even skipped (eve)} stripe 2 enhancer. This well-studied enhancer has a number of annotated binding sites for TFs \textit{Kr}, \textit{vfl}, \textit{bcd}, \textit{hb} and \textit{gt}. We will use this enhancer as an example as we already know its functional structure.
 
-In order to predict which TFs are likely to functionally bind to the stripe 2 enhancer, we will calculate motif enrichment for a set of 650 experimentally derived motifs from the \Rpackage{MotifDb} database. We will do this by comparing the average affinity of each motif in the stripe 2 enhancers to the affinity over all \textit{D. melanogaster} promoters\footnote{For more information see \citep{stojnic_2012}}. These background distributions are already pre-calculated in the \Robj{PWMEnrich.Dmelanogaster.background} package which we will simply load and use. See the last section of this vignette for using your own motifs and background sequences. 
+In order to predict which TFs are likely to functionally bind to the stripe 2 enhancer, we will calculate motif enrichment for a set of experimentally derived motifs from the \Rpackage{MotifDb} database. We will do this by comparing the average affinity of each motif in the stripe 2 enhancers to the affinity over all \textit{D. melanogaster} promoters\footnote{For more information see \citep{stojnic_2012}}. These background distributions are already pre-calculated in the \Robj{PWMEnrich.Dmelanogaster.background} package which we will simply load and use. See the last section of this vignette for using your own motifs and background sequences. 
 
 <<simple,echo=TRUE,fig=TRUE>>=
 library(PWMEnrich)
@@ -97,7 +97,7 @@ report = sequenceReport(res, 1)
 report
 
 # plot the top 30 most enriched motifs
-plot(report[1:30], fontsize=8)
+plot(report[1:30], fontsize=7, id.fontsize=5)
 @
 
 The main function we used is \Robj{motifEnrichment} which took our sequence and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). This function returns a set of scores and P-values for our sequence. We then used the \Robj{sequenceReport} function that create a ranked list of motifs, which we then plot using \Robj{plot}. The first column is the rank, the second shows the target name, which is either a gene name, an isoform name (such as ttk-PF), or a dimer name (such as tgo\_sim not present in this list). The next column in the plot is the PWM logo, and after that the motif ID. This ID comes from the \Robj{MotifDb} package and can be used to look up further information about the motif (such as the motif source). The next-to-last column is the raw affinity score, and the last column is the P-value of motif enrichment. 
@@ -111,8 +111,11 @@ We continue with our example of the eve stripe 2 enhancer from the previous sect
 <<stripe2visual,echo=TRUE,fig=TRUE>>=
 
 # extract the 3 PWMs for the TFs we are interested in
-ids = c("bcd", "gt_FlyReg_FBgn0001150", "Kr")
+ids = c("Dmelanogaster-FlyFactorSurvey-bcd_FlyReg_FBgn0000166", 
+        "Dmelanogaster-FlyFactorSurvey-gt_FlyReg_FBgn0001150", 
+        "Dmelanogaster-JASPAR_CORE-Kr-MA0452.1")
 sel.pwms = PWMLogn.dm3.MotifDb.Dmel$pwms[ids]
+names(sel.pwms) = c("bcd", "gt", "Kr")
 
 # scan and get the raw scores
 scores = motifScores(sequence, sel.pwms, raw.scores=TRUE)
@@ -168,7 +171,7 @@ Note that \Robj{plotMotifScores} can also plot multiple sequences on a single pl
 
 So far we have only looked at motif enrichment in a single sequence, which was able to recover some but not all of the truly functional motifs. The power of the motif enrichment approach can be significantly boosted by performing it jointly on multiple sequences. 
 
-For this example we are going to use the top 20 ChIP-chip peaks for transcription factor Tinman in \textit{Drosophila} \citep{jin_genome-wide_2013}. We are going to scan these 20 ChIP-chip peaks with all the 650 motifs and then compare their enrichment to genomic background. Running on the whole set of peaks (i.e. thousands) is also possible but can take a long time (i.e. tens of minutes). The speed can be improved by using multiple CPU cores (see next section). 
+For this example we are going to use the top 20 ChIP-chip peaks for transcription factor Tinman in \textit{Drosophila} \citep{jin_genome-wide_2013}. We are going to scan these 20 ChIP-chip peaks with all the motifs and then compare their enrichment to genomic background. Running on the whole set of peaks (i.e. thousands) is also possible but can take a long time (i.e. tens of minutes). The speed can be improved by using multiple CPU cores (see next section). 
 
 <<tinman,echo=TRUE,fig=TRUE>>=
 library(PWMEnrich.Dmelanogaster.background)
@@ -184,14 +187,12 @@ res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 report = groupReport(res)
 report
 
-plot(report[1:10], fontsize=8)
+plot(report[1:10], fontsize=7, id.fontsize=5)
 @
 
 As in Use case 1, the main function is \Robj{motifEnrichment} which took our sequences and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). We then applied the \Robj{groupReport} function to calculate the enrichment over the whole group of sequences. This produced a ranked list of motifs according to the estimated P-values. Then we used \Robj{plot} to plot the top 10 enriched motifs.  
 
-The first and second motifs are very similar and correspond to the tinman, which is the transcription factor for which the ChIP-chip experiment was performed. The first five columns are the same as before (see Use case 1). The sixth column gives the estimate P-value. The last column indicates in how many sequences is the motif among the 5\% most enriched motifs. This column helps to differentiate cases where the motif enrichment is strongly focused to a small subset of sequences, versus being more widespread but weaker. 
-
-Ranking by P-value works well for fly PWMs. However, we found that for mouse and human PWMs applied to thousands of ChIP-chip/seq peak, ranking by the last column is more accurate:
+The first three motifs are very similar and correspond to the tinman, which is the transcription factor for which the ChIP-chip experiment was performed. The first five columns are the same as before (see Use case 1). The sixth column gives the estimate P-value. The last column indicates the breadth of enrichment using a 5\% ranking threshold. This column helps to differentiate cases where the motif enrichment is strongly focused to a small subset of sequences (in which case breadth is small), versus being more widespread but weaker (in which case breadth is bigger). We can also sort by this column:
 
 <<tinman-alt,echo=TRUE>>=
 report.top = groupReport(res, by.top.motifs=TRUE)
@@ -199,7 +200,7 @@ report.top = groupReport(res, by.top.motifs=TRUE)
 report.top
 @
 
-Anything with the \Robj{top.motif.prop} above 0.05 can be considered to be enriched. This way of calculating enrichment should only be used when calculating motif enrichment with the whole set of PWMs for an organism and in a group of at least tens of sequences. 
+This ranks motifs by breadth of enrichment, which is calculated by comparing enrichment \textit{between motifs} in individual sequences. This measure only makes sense when applied to a large number of sequence and when scanning with a large number of motifs (>20). 
 
 The object returned by \Robj{motifEnrichment} has more information in it, as can be seen below:
 
@@ -214,6 +215,12 @@ res$sequence.bg[1:5, 1:2]
 @
 
 In these two matrices the rows correspond to the different input sequences and the columns correspond to motifs. The first matrix (sequence.nobg) contains the raw affinity scores, while the second (sequence.bg) contains the corresponding P-values. If you are using a fixed threshold background (e.g. scanning with \Robj{PWMPvalueCutoff1e3.dm3.MotifDb.Dmel}) the first matrix will contain the number of motif hits, and the second the corresponding Z-scores. 
+
+\section{Using PWMEnrich on human sequences}\label{sec:human}
+
+Starting from PWMEnrich version 4.0 (October 2014) a new algorithm is used to better fit the background distributions in human sequences. From the usage perspective the only major difference is that the P-value of groups of sequences (i.e. groupReport()) is replaced with an average of log(P-values) of individual sequences. To get most complete results we recommend examining motif enrichment based on this score and breadth (last column of groupReport() output - see above).
+
+When compiling a new background for human sequences make sure to set parameter \Robj{algorithm="human"} in \Robj{makeBackground()}. 
 
 \section{Speeding up execution}
 
@@ -251,8 +258,8 @@ useBigMemoryPWMEnrich(FALSE)
 
 Background motif distributions for a custom set of PWMs can be easily calculated for all model organisms. We will illustrate this by creating a new lognormal background for two \textit{de-novo} motifs in Drosophila. To load in the motifs the package provides functions to read standard JASPAR and TRANSFAC formats. 
 
-<<read,echo=TRUE>>=
-library(BSgenome.Dmelanogaster.UCSC.dm3)
+<<readmotifs,echo=TRUE>>=
+library(PWMEnrich.Dmelanogaster.background)
 
 motifs.denovo = readMotifs(system.file(package="PWMEnrich", 
   dir="extdata", file="example.transfac"), remove.acc=TRUE)
@@ -260,10 +267,10 @@ motifs.denovo = readMotifs(system.file(package="PWMEnrich",
 motifs.denovo  
 
 # convert count matrices into PWMs
-genomic.acgt = getBackgroundFrequencies(Dmelanogaster)
-pwms.denovo = PFMtoPWM(motifs.denovo, prior=genomic.acgt)
+genomic.acgt = getBackgroundFrequencies("dm3")
+pwms.denovo = toPWM(motifs.denovo, prior=genomic.acgt)
 
-bg.denovo = makeBackground(pwms.denovo, organism=Dmelanogaster, type="logn", quick=TRUE)
+bg.denovo = makeBackground(pwms.denovo, organism="dm3", type="logn", quick=TRUE)
 
 # use new motifs for motif enrichment
 res.denovo = motifEnrichment(sequences[1:5], bg.denovo)
@@ -284,7 +291,7 @@ bg.denovo$bg.mean
 
 Low-level functions are available for constructing custom backgrounds. We start with the two de-novo motifs from previous section and fit the background to first 20 \textit{D. melanogaster} promoters. 
 
-<<pfmtopwm,echo=TRUE>>=
+<<custombg,echo=TRUE>>=
 library(PWMEnrich.Dmelanogaster.background)
 data(dm3.upstream2000)
 

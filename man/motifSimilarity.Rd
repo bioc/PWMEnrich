@@ -43,11 +43,11 @@
 if(require("PWMEnrich.Dmelanogaster.background")){
    data(MotifDb.Dmel.PFM)
 
-   # calculate the similarity of tin and vnd motifs (which are almost identical)
-   motifSimilarity(MotifDb.Dmel.PFM$tin, MotifDb.Dmel.PFM$vnd)
+    # calculate the similarity of tin and vnd motifs (which are almost identical)
+    motifSimilarity(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]], MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-vnd-MA0253.1"]])
 
-   # similarity of two unrelated motifs
-   motifSimilarity(MotifDb.Dmel.PFM$tin, MotifDb.Dmel.PFM$ttk)
+    # similarity of two unrelated motifs
+    motifSimilarity(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]], MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]])
 }
 }
 \references{

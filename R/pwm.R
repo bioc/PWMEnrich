@@ -392,7 +392,7 @@ toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50,
 	return(sequences)
 }
 
-#' Motif affinity of number of hits over a threshold
+#' Motif affinity or number of hits over a threshold
 #'
 #' Scan a number of sequences either to find overall affinity, or a number of hits over a score threshold. 
 #'

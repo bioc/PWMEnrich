@@ -1,5 +1,8 @@
 PWMEnrich package
 
+Version 4.5.1:
+    o Convert log(P-values) back to P-values for human using a chi-sq distribution
+
 Version 4:
     o New algorithm for human backgrounds
     o New function: toPWM() that takes both PFMs and PPMs

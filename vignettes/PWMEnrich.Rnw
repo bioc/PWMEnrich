@@ -162,11 +162,9 @@ threshold.1e3
 # replot only the bcd motif hits with the P-value cutoff of 1e-3 (0.001)
 plotMotifScores(scores, cols="green", sel.motifs="bcd", cutoff=threshold.1e3)
 
-# P-value at each position
+# Convert scores into P-values
 pvals = 1 - bcd.ecdf(scores[[1]][,"bcd"])
-
-# position where the P-value is smaller that 1e-3
-which(pvals < 1e-3)
+head(pvals)
 @
 
 Here we have used the \Robject{motifEcdf} function to create an empirical cumulative distribution function (ECDF) for the bcd motif score on Drosophila promoters. This function returns an \Robject{ecdf} object which is part of base R. We can then use the quantile function to find which scores correspond to a P-value of 0.001, or we can use it to convert all the scores into P-values (not shown above). To plot the individual motif hits with P-values smaller than 0.001 we again use the \Robject{plotMotifScores} function, but now we apply the threshold so that only those motif hits above the threshold are drawn.  
@@ -226,9 +224,7 @@ In these two matrices the rows correspond to the different input sequences and t
 
 \section{Using PWMEnrich on human sequences}\label{sec:human}
 
-Starting from PWMEnrich version 4.0 (October 2014) a new algorithm is used to better fit the background distributions in human sequences. From the usage perspective the only major difference is that the P-value of groups of sequences (i.e. groupReport()) is replaced with an average of log(P-values) of individual sequences. To get most complete results we recommend examining motif enrichment based on this score and breadth (last column of groupReport() output - see above).
-
-When compiling a new background for human sequences make sure to set parameter \Robject{algorithm="human"} in \Robject{makeBackground()}. 
+Starting from PWMEnrich version 4.0 (October 2014) a new algorithm is used to better fit the background distributions in human sequences. The only difference from the usage perspective is in creating new background files - please make sure to set the parameter \Robject{algorithm="human"} in \Robject{makeBackground()} (and other related functions for creating backgrounds). This will instruct the function to fit separate parameters for different sequence lengths. The sequence lengths are obtained by multiplying the parameters \Robject{bg.len} and \Robject{bg.len.sizes}. The defaults are \Robject{bg.len=250bp} and \Robject{bg.len.size=c(1, 2, 4, 8, 16)}. This means that the P-values are the most accurate for sequences that are in the range of 250bp - 4000bp and the closest in size to 250bp, 500bp, 1000bp, 2000bp and 4000bp. 
 
 \section{Speeding up execution}
 

@@ -8,8 +8,8 @@
 \arguments{
   \item{organism}{either a name of the organisms for which
   the background should be compiled (supported names are "dm3", 
-  "mm9" and "hg19") or
-  a \code{BSgenome} object (see \code{BSgenome} package).}
+  "mm9" and "hg19"),
+  a \code{BSgenome} object, \code{DNAStringSet}, or list of \code{DNAString} objects}
 
   \item{pseudo.count}{the number to which the frequencies
   sum up to, by default 1}

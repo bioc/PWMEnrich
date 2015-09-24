@@ -797,7 +797,8 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, bg.s
 #' Estimate the background frequencies of A,C,G,T on a set of promoters from an organism
 #'
 #' @param organism either a name of the organisms for which the background should be compiled 
-#'                 (supported names are "dm3", "mm9" and "hg19"), or a \code{BSgenome} object (see \code{BSgenome} package).
+#'                 (supported names are "dm3", "mm9" and "hg19"), a \code{BSgenome} object,
+#'                  \code{DNAStringSet}, or list of \code{DNAString} objects
 #' @param pseudo.count the number to which the frequencies sum up to, by default 1
 #' @param quick if to preform fitting on a reduced set of 100 promoters. This will not give as good results but is much quicker than fitting to all the promoters (~10k). 
 #'              Usage of this parameter is recommended only for testing and rough estimates.
@@ -808,15 +809,21 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, bg.s
 #'   getBackgroundFrequencies("dm3")
 #' }
 getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE){
-	# pick the set of background sequences
-	promoters = getPromoters(organism)$promoters
-		
-	if(quick){
-		bg.seq = promoters[seq(1, length(promoters), length.out=100)]
+	# bug reported on support.bioconductor.org
+	if(class(organism) == "DNAStringSet"){
+		bg.seq = organism
+	} else if(class(organism) == "list" && length(organism)>0 && class(organism[[1]]) == "DNAString" ){
+		bg.seq = organism
 	} else {
-		bg.seq = promoters
+		# pick the set of background sequences
+		promoters = getPromoters(organism)$promoters
+		
+		if(quick){
+			bg.seq = promoters[seq(1, length(promoters), length.out=100)]
+		} else {
+			bg.seq = promoters
+		}
 	}
-	
 	#bg.seq = DNAStringSetToList(bg.seq)
 	
 	makePriors(bg.seq, pseudo.count)

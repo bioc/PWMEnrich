@@ -15,8 +15,8 @@ Description: A toolkit of high-level functions for DNA motif scanning
         discovery, but is instead focused on using motifs that are
         either experimentally derived or computationally constructed by
         other tools.
-Version: 4.5.3
-Date: 2015-09-24
+Version: 4.5.5
+Date: 2015-09-25
 Depends: methods, grid, BiocGenerics, Biostrings,
 Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
         PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel,

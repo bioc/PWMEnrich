@@ -430,6 +430,19 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 	# check motifs format and convert to PWM
 	pwms = .inputParamMotifs(motifs)
 	sequences = .inputParamSequences(sequences)
+	
+	# check if any of the sequences is all Ns, if so, produce an error
+	if(is(sequences, "DNAStringSet")){
+		al = alphabetFrequency(sequences)
+	} else {
+		al = do.call("rbind", lapply(sequences, alphabetFrequency))
+	}
+	
+	# check if any of the sequences is all Ns
+	all.n = which(al[,"N"] == rowSums(al))
+	if(length(all.n) >0){
+		stop(paste("Sequence with index(es):", paste(all.n, collapse=","), "only contain N's. Please remove this sequence as the PWM score cannot be computed for any position."))
+	}
 		
 	pwms.rev = lapply(pwms, reverseComplement)
 	

@@ -54,7 +54,7 @@ if(require("PWMEnrich.Dmelanogaster.background")){
   data(MotifDb.Dmel)
 
   # plot the tinman motif from MotifDb
-  plot(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]])
+  plot(MotifDb.Dmel[["tin"]])
 }
 }
 

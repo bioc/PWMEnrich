@@ -118,10 +118,10 @@ tryAllMotifAlignments = function(m1, m2, min.align=2, exclude.zero=FALSE){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # calculate the similarity of tin and vnd motifs (which are almost identical)
-#'    motifSimilarity(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]], MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-vnd-MA0253.1"]])
+#'    motifSimilarity(MotifDb.Dmel.PFM[["tin"]], MotifDb.Dmel.PFM[["vnd"]])
 #'
 #'    # similarity of two unrelated motifs
-#'    motifSimilarity(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]], MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]])
+#'    motifSimilarity(MotifDb.Dmel.PFM[["tin"]], MotifDb.Dmel.PFM[["ttk"]])
 #' }
 motifSimilarity = function(m1, m2, trim=0.4, self.sim=FALSE){
 	# check input types

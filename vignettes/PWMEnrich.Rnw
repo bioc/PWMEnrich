@@ -104,8 +104,8 @@ res = motifEnrichment(sequence, PWMLogn.dm3.MotifDb.Dmel)
 report = sequenceReport(res, 1)
 report
 
-# plot the top 30 most enriched motifs
-plot(report[1:30], fontsize=7, id.fontsize=5)
+# plot the motif with P-value < 0.05
+plot(report[report$p.value < 0.05], fontsize=7, id.fontsize=6)
 @
 
 The main function we used is \Robject{motifEnrichment} which took our sequence and calculated motif enrichment using the lognormal affinity background distribution (fitted on a set of 10031 \textit{D. melanogaster} 2kb promoters). This function returns a set of scores and P-values for our sequence. We then used the \Robject{sequenceReport} function that create a ranked list of motifs, which we then plot using \Robject{plot}. The first column is the rank, the second shows the target name, which is either a gene name, an isoform name (such as ttk-PF), or a dimer name (such as tgo\_sim not present in this list). The next column in the plot is the PWM logo, and after that the motif ID. This ID comes from the \Robject{MotifDb} package and can be used to look up further information about the motif (such as the motif source). The next-to-last column is the raw affinity score, and the last column is the P-value of motif enrichment. 
@@ -119,9 +119,9 @@ We continue with our example of the eve stripe 2 enhancer from the previous sect
 <<stripe2visual,echo=TRUE,fig.width=4,fig.height=4,fig.align='center'>>=
 
 # extract the 3 PWMs for the TFs we are interested in
-ids = c("Dmelanogaster-FlyFactorSurvey-bcd_FlyReg_FBgn0000166", 
-        "Dmelanogaster-FlyFactorSurvey-gt_FlyReg_FBgn0001150", 
-        "Dmelanogaster-JASPAR_CORE-Kr-MA0452.1")
+ids = c("bcd_FlyReg_FBgn0000166", 
+        "gt_FlyReg_FBgn0001150", 
+        "Kr")
 sel.pwms = PWMLogn.dm3.MotifDb.Dmel$pwms[ids]
 names(sel.pwms) = c("bcd", "gt", "Kr")
 

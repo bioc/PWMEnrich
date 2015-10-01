@@ -54,7 +54,7 @@
 if(require("PWMEnrich.Dmelanogaster.background")){
     data(MotifDb.Dmel.PFM)
 
-    ttk = MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+    ttk = MotifDb.Dmel.PFM[["ttk"]]
 
     PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
     PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background

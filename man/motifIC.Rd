@@ -27,9 +27,9 @@ if(require("PWMEnrich.Dmelanogaster.background")){
     data(MotifDb.Dmel.PFM)
 
     # the nucleotide distribution is taken from the PWM (in this case genomic background)
-    motifIC(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+    motifIC(MotifDb.Dmel[["ttk"]]) 
     # information content with default uniform background because the input is a matrix, not PWM object
-    motifIC(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+    motifIC(MotifDb.Dmel.PFM[["ttk"]]) 
 }
 }
 

@@ -79,7 +79,7 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
-#'    ttk = MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+#'    ttk = MotifDb.Dmel.PFM[["ttk"]]
 #'
 #'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
 #'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
@@ -152,7 +152,7 @@ PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior
 #' if(require("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel)
 #'
-#'    ttk = MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+#'    ttk = MotifDb.Dmel[["ttk"]]
 #'
 #'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
 #'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
@@ -715,9 +715,9 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # the nucleotide distribution is taken from the PWM (in this case genomic background)
-#'    motifIC(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+#'    motifIC(MotifDb.Dmel[["ttk"]]) 
 #'    # information content with default uniform background because the input is a matrix, not PWM object
-#'    motifIC(MotifDb.Dmel.PFM[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]) 
+#'    motifIC(MotifDb.Dmel.PFM[["ttk"]]) 
 #' }
 motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=FALSE){
 	if(class(motif) == "PWM"){

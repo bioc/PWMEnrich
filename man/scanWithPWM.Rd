@@ -43,7 +43,7 @@
 if(require("PWMEnrich.Dmelanogaster.background")){
    data(MotifDb.Dmel)
 
-   ttk = MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-ttk-MA0460.1"]]
+   ttk = MotifDb.Dmel[["ttk"]]
 
    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands

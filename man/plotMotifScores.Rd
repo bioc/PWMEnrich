@@ -95,7 +95,7 @@ if(require("PWMEnrich.Dmelanogaster.background")){
    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 
    # select the tinman and snail motifs
-   pwms = MotifDb.Dmel[c("Dmelanogaster-JASPAR_CORE-tin-MA0247.1", "Dmelanogaster-JASPAR_CORE-sna-MA0086.1")]
+   pwms = MotifDb.Dmel[c("tin", "sna")]
 
    # get the raw score that will be plotted
    scores = motifScores(sequences, pwms, raw.scores=TRUE)

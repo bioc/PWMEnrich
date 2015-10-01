@@ -21,7 +21,7 @@ plotPFM = function(pfm, ...){
 #'   data(MotifDb.Dmel)
 #'
 #'   # plot the tinman motif from MotifDb
-#'   plot(MotifDb.Dmel[["Dmelanogaster-JASPAR_CORE-tin-MA0247.1"]])
+#'   plot(MotifDb.Dmel[["tin"]])
 #' }
 setMethod("plot", signature=signature(x="PWM", y="missing"), function(x, y, ...){
 	pfm = x$pfm
@@ -314,7 +314,7 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #'    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    # select the tinman and snail motifs
-#'    pwms = MotifDb.Dmel[c("Dmelanogaster-JASPAR_CORE-tin-MA0247.1", "Dmelanogaster-JASPAR_CORE-sna-MA0086.1")]
+#'    pwms = MotifDb.Dmel[c("tin", "sna")]
 #'
 #'    # get the raw score that will be plotted
 #'    scores = motifScores(sequences, pwms, raw.scores=TRUE)

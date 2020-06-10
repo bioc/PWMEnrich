@@ -1,6 +1,6 @@
 Package: PWMEnrich
 Imports: seqLogo, gdata, evd
-Maintainer: Robert Stojnic <robert.stojnic@gmail.com>
+Maintainer: Diego Diez <diego10ruiz@gmail.com>
 License: LGPL (>= 2)
 Title: PWM enrichment analysis
 Type: Package

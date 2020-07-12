@@ -79,9 +79,9 @@ tryAllMotifAlignments = function(m1, m2, min.align=2, exclude.zero=FALSE){
 #' @param m either a PWM object or a matrix
 #' @return corresponding PFM
 .inputPFMfromMatrixOrPWM = function(m){
-	if(class(m) == "PWM")
+	if(inherits(m, "PWM"))
 		return(m@pfm)
-	else if(class(m) == "matrix")
+	else if(is.matrix(m))
 		return(m)
 	else
 		stop("Input motif needs to be either of class PWM, or a frequency matrix")

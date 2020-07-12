@@ -5,9 +5,9 @@
 #' @param bg.seq a set of background sequences, either a list of DNAString object or DNAStringSet object
 .normalize.bg.seq = function(bg.seq){
 	# check if the sequences are in the right format
-	if(class(bg.seq) != "DNAStringSet"){
-		if(class(bg.seq) == "list"){
-			if(length(bg.seq)>0 && class(bg.seq[[1]]) != "DNAString")
+	if(!inherits(bg.seq, "DNAStringSet")) {
+		if(is.list(bg.seq)) {
+			if(length(bg.seq) > 0 && ! inherits(bg.seq[[1]], "DNAString"))
 				stop("bg.seq needs to be a list of DNAString objects or a DNAStringSet object")
 		} else {
 			stop("bg.seq needs to be a list of DNAString objects or a DNAStringSet object")
@@ -120,7 +120,7 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, 
 		warnings(paste("The number of chunks of size", bg.len, "is smaller than 1000. This might lead to an non-robust estimate of lognormal distribution parameters."))
 	
 	# convert motifs to PWM format if neccessary
-	if(class(motifs[[1]]) != "PWM"){
+	if(!inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(list(DNAString(bg.seq.all)), bg.pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {
@@ -290,7 +290,7 @@ makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseud
 		motifs = list(motifs)
 	
 	# make priors and PWMs
-	if(class(motifs[[1]]) != "PWM"){
+	if(!inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(bg.seq, bg.pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {
@@ -354,7 +354,7 @@ makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.sour
 		motifs = list(motifs)
 	
 	# make priors and PWMs
-	if(class(motifs[[1]]) != "PWM"){
+	if(!inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(bg.seq, bg.pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {
@@ -465,7 +465,7 @@ makePWMPvalCutoffBackgroundFromSeq = function(bg.seq, motifs, p.value=1e-3, bg.p
 		motifs = list(motifs)
 	
 	# make priors and PWMs
-	if(class(motifs[[1]]) != "PWM"){
+	if(!inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(bg.seq, bg.pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {
@@ -558,7 +558,7 @@ makePWMGEVBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=seq(20
 	bg.seq.all = concatenateSequences(bg.seq)
 	
 	# convert motifs to PWM format if neccessary
-	if(class(motifs[[1]]) != "PWM"){
+	if(!inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(list(DNAString(bg.seq.all)), bg.pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {
@@ -810,9 +810,9 @@ makeBackground = function(motifs, organism="dm3", type="logn", quick=FALSE, bg.s
 #' }
 getBackgroundFrequencies = function(organism="dm3", pseudo.count=1, quick=FALSE){
 	# bug reported on support.bioconductor.org
-	if(class(organism) == "DNAStringSet"){
+	if (inherits(organism, "DNAStringSet")) {
 		bg.seq = organism
-	} else if(class(organism) == "list" && length(organism)>0 && class(organism[[1]]) == "DNAString" ){
+	} else if (is.list(organism) && length(organism) > 0 && inherits(organism[[1]], "DNAString")) {
 		bg.seq = organism
 	} else {
 		# pick the set of background sequences
@@ -863,7 +863,7 @@ motifEcdf = function(motifs, organism=NULL, bg.seq=NULL, quick=FALSE, pseudo.cou
 	}
 	
 	# make priors and PWMs
-	if(class(motifs[[1]]) != "PWM"){
+	if(! inherits(motifs[[1]], "PWM")) {
 		prior = makePriors(bg.seq, pseudo.count)
 		pwms = PFMtoPWM(motifs, prior.params = prior)
 	} else {

@@ -162,7 +162,7 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 	if(is.character(dna))
 		dna = DNAString(dna)
 
-	if(!(class(dna) %in% c("DNAString", "DNAStringSet")))
+	if(!inherits(dna, c("DNAString", "DNAStringSet")))
 		stop("The input sequence needs to be either of type DNAString or DNAStringSet")
 	
 
@@ -358,7 +358,7 @@ toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50,
 		
 	if(is.matrix(motifs[[1]]))
 		pwms = PFMtoPWM(motifs)
-	else if(class(motifs[[1]]) == "PWM")
+	else if(inherits(motifs[[1]], "PWM"))
 		pwms = motifs
 	else
 		stop("motifs need to be either frequency matrices or PWM objects")
@@ -373,8 +373,8 @@ toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50,
 	if(is.character(sequences)){
 		sequences = readDNAStringSet(sequences)
 	}
-	# make sure sequences are in the right formar
-	if(!is.list(sequences) & class(sequences) != "DNAStringSet")
+	# make sure sequences are in the right format
+	if(!is.list(sequences) & !inherits(sequences, "DNAStringSet"))
 		sequences = list(sequences)
 	
 	if(is.list(sequences) & length(sequences)>0){
@@ -720,7 +720,7 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 #'    motifIC(MotifDb.Dmel.PFM[["ttk"]]) 
 #' }
 motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=FALSE){
-	if(class(motif) == "PWM"){
+	if(inherits(motif, "PWM")) {
 		p = PWMUnscaled(motif$pfm, type="prob", prior.params=motif$prior.params)
 		bg = motif$prior.params
 	} else {
@@ -877,9 +877,9 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 	
 	# detect scoring method
 	if(score == "autodetect"){
-		if(class(pwms) == "PWMLognBackground"){
+		if(inherits(pwms, "PWMLognBackground")) {
 			score = "affinity"
-		} else if(class(pwms) == "PWMCutoffBackground"){
+		} else if(inherits(pwms, "PWMCutoffBackground")) {
 			score = "cutoff"
 		} else {
 			score = "affinity"
@@ -894,19 +894,19 @@ motifEnrichment = function(sequences, pwms, score="autodetect", bg="autodetect",
 	
 	# detect background correction
 	if(!(bg %in% c("none", "ms"))){
-		if(class(pwms) == "PWMLognBackground"){
+		if(inherits(pwms, "PWMLognBackground")) {
 			bg = "logn"
 			pwmobj = pwms
 			pwms = pwmobj@pwms
-		} else if(class(pwms) == "PWMCutoffBackground"){
+		} else if(inherits(pwms, "PWMCutoffBackground")) {
 			bg = "z"
 			pwmobj = pwms
 			pwms = pwmobj@pwms
-		} else if(class(pwms) == "PWMEmpiricalBackground"){
+		} else if(inherits(pwms, "PWMEmpiricalBackground")) {
 			bg = "pval"
 			pwmobj = pwms
 			pwms = pwmobj@pwms
-		} else if(class(pwms) == "PWMGEVBackground"){
+		} else if(inherits(pwms, "PWMGEVBackground")) {
 			bg = "gev"
 			pwmobj = pwms
 			pwms = pwmobj@pwms

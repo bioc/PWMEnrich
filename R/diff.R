@@ -67,7 +67,7 @@
 motifDiffEnrichment = function(sequences1, sequences2, pwms, score="autodetect", bg="autodetect", cutoff=log2(exp(4)), verbose=TRUE,
 	res1=NULL, res2=NULL){
 	# check the input param constrains
-	if(!(class(pwms) %in% c("NULL", "list", "PWMLognBackground", "PWMCutoffBackground"))){
+	if(!inherits(pwms, c("NULL", "list", "PWMLognBackground", "PWMCutoffBackground"))) {
 		stop("pwms needs to be either a list of frequency matrices, list of PWM objects, or an object of class PWMLognBackground or PWMCutoffBackground.")
 	}
 	

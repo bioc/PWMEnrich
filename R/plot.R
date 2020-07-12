@@ -68,7 +68,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 			# only plot if available
 			if( inx <= length(pwms) ){
 				pwm = pwms[[inx]]
-				if(class(pwm) == "PWM")
+				if(inherits(pwm, "PWM"))
 					pwm = pwm$pfm
 				# use the backend functions to plot
 				seqLogoGrid(divideRows(pwm,colSums(pwm)), 
@@ -203,11 +203,11 @@ setMethod("plot", signature=signature(x="MotifEnrichmentReport", y="missing"), f
 seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10, yfontsize=10, xmargin.scale=1, ymargin.scale=1, title="",
 	titlefontsize=15){
 
-  if (class(pwm) == "pwm"){
+  if (inherits(pwm, "pwm")){
     pwm <- pwm@pwm    
-  }else if (class(pwm) == "data.frame"){
+  }else if (is.data.frame(pwm)){
     pwm <- as.matrix(pwm)
-  }else if (class(pwm) != "matrix"){
+  }else if (!is.matrix(pwm)){
     stop("pwm must be of class matrix or data.frame")
   }
 

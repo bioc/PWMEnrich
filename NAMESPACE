@@ -1,6 +1,7 @@
 import(methods)
 import(BiocGenerics)
 import(Biostrings)
+import(BSgenome)
 import(grid)
 importFrom(seqLogo, makePWM, plot)
 importFrom(evd, fgev, pgev)

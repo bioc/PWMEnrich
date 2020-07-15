@@ -1,5 +1,5 @@
 Package: PWMEnrich
-Imports: seqLogo, gdata, evd
+Imports: seqLogo, gdata, evd, BSgenome
 Maintainer: Diego Diez <diego10ruiz@gmail.com>
 License: LGPL (>= 2)
 Title: PWM enrichment analysis

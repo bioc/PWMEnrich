@@ -1,5 +1,5 @@
 Package: PWMEnrich
-Imports: seqLogo, gdata, evd, BSgenome
+Imports: seqLogo, gdata, evd, S4Vectors
 Maintainer: Diego Diez <diego10ruiz@gmail.com>
 License: LGPL (>= 2)
 Title: PWM enrichment analysis
@@ -17,8 +17,8 @@ Description: A toolkit of high-level functions for DNA motif scanning
         other tools.
 Version: 4.25.3
 Date: 2015-09-25
-Depends: methods, grid, BiocGenerics, Biostrings,
-Suggests: MotifDb, BSgenome.Dmelanogaster.UCSC.dm3,
+Depends: methods, grid, BiocGenerics, Biostrings
+Suggests: MotifDb, BSgenome, BSgenome.Dmelanogaster.UCSC.dm3,
         PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel,
         PWMEnrich.Hsapiens.background, PWMEnrich.Mmusculus.background,
         BiocStyle, knitr

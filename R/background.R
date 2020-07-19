@@ -632,12 +632,12 @@ getPromoters = function(organismOrGenome){
 			stop(paste("Unrecognised organism name, valid values are:", paste(org.valid, collapse=", ")))
 		}
 	# check for a BSgenome object	
-	} else if(is(org, "BSgenome")){ 
-		if(providerVersion(org) %in% org.valid){
-			sel = providerVersion(org) 
+	} else if(is(org, "BSgenome")){
+	  genome <- metadata(org)[["genome"]]
+		if(genome %in% org.valid){
+			sel = genome 
 		} else {
-			stop(paste("Promoter sequences cannot be retrieved automatically for ",
-				providerVersion(org), ", please provide a set of background sequences explicitely.", sep=""))
+			stop(paste("Promoter sequences cannot be retrieved automatically for ", genome, ", please provide a set of background sequences explicitely.", sep=""))
 		}
 	} else {
 		stop("The input parameter needs to be a valid genome name ('dm3', 'mm9' or 'hg19') or a set of background sequences.")

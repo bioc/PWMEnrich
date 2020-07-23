@@ -114,7 +114,7 @@ tryAllMotifAlignments = function(m1, m2, min.align=2, exclude.zero=FALSE){
 #' @export
 #' @examples
 #' 
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # calculate the similarity of tin and vnd motifs (which are almost identical)

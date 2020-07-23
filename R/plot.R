@@ -17,7 +17,7 @@ plotPFM = function(pfm, ...){
 #' @param ... other parameters to pass to seqLogo's \code{plot} function
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'   data(MotifDb.Dmel)
 #'
 #'   # plot the tinman motif from MotifDb
@@ -93,7 +93,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 #' @param header.fontsize font size of the header
 #' @param widths the relative widths of columns
 #' @param ... unused
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -305,7 +305,7 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #' @param shape the shape to use to draw motif occurances, valid values are "rectangle" (default), "line" and "triangle"
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # Load Drosophila PWMs
 #'    data(MotifDb.Dmel)

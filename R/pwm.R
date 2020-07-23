@@ -76,7 +76,7 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    ttk = MotifDb.Dmel.PFM[["ttk"]]
@@ -149,7 +149,7 @@ PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior
 #' @export
 #' @examples
 #' 
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel)
 #'
 #'    ttk = MotifDb.Dmel[["ttk"]]
@@ -216,7 +216,7 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    PFMtoPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
@@ -280,7 +280,7 @@ PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    toPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
@@ -410,7 +410,7 @@ toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50,
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel)
 #'
 #'    affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel) # affinity scores
@@ -710,7 +710,7 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel)
 #'    data(MotifDb.Dmel.PFM)
 #'
@@ -838,7 +838,7 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' }
 #' @examples 
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)

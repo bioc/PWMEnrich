@@ -22,7 +22,7 @@
 #' registerCoresPWMEnrich(NULL) # do not use parallel execution
 #' }
 registerCoresPWMEnrich = function(numCores=NA){
-	if (!require("parallel"))
+	if (!requireNamespace("parallel"))
 	    stop("Parallel execution requires package parallel")
 	
 	if(!is.null(numCores) && is.na(numCores))

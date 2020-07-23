@@ -76,11 +76,11 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
-#' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+#' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMLognBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 #' }
 #' }
@@ -273,11 +273,11 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, 
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
-#' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+#' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMCutoffBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM, cutoff=log2(exp(5)))
 #' }
 #' }
@@ -337,11 +337,11 @@ makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseud
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make empirical background by saving raw scores for each bp in the sequence - this can be very large in memory!
-#' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+#' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 #' }
 #' }
@@ -390,11 +390,11 @@ makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.sour
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make empirical background - here we use only 100 sequences for illustrative purposes
-#' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+#' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      bg.p = makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 #'
 #'    # use the empirical background to pick a threshold and make cutoff background
@@ -449,7 +449,7 @@ makePWMPvalCutoffBackground = function(bg.p, p.value=1e-3, bg.source=""){
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # use the empirical background to pick a threshold and make cutoff background
@@ -532,11 +532,11 @@ makeStartEndPos = function(total.len, len){
 #' @export
 #' @examples
 #' \dontrun{
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
-#' 	  if(require("BSgenome.Dmelanogaster.UCSC.dm3")) 
+#' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMGEVBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 #' }
 #' }
@@ -646,7 +646,7 @@ getPromoters = function(organismOrGenome){
 	e = new.env()
 	# get the promoter sequences from the saved object
 	if(sel == "dm3"){		
-		if(require("PWMEnrich.Dmelanogaster.background")){
+		if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 			data("dm3.upstream2000", envir=e)
 			promoters = e$dm3.upstream2000
 			organism = "D. melanogaster"
@@ -655,7 +655,7 @@ getPromoters = function(organismOrGenome){
 			stop("This function requires the 'PWMEnrich.Dmelanogaster.background' package, please install it.")
 		}
 	} else if(sel == "mm9"){
-		if(require("PWMEnrich.Mmusculus.background")){
+		if(requireNamespace("PWMEnrich.Mmusculus.background")){
 			data("mm9.upstream2000", envir=e)
 			promoters = e$mm9.upstream2000
 			organism = "M. musculus"
@@ -664,7 +664,7 @@ getPromoters = function(organismOrGenome){
 			stop("This function requires the 'PWMEnrich.Mmusculus.background' package, please install it.")
 		}
 	} else if(sel == "hg19"){
-		if(require("PWMEnrich.Hsapiens.background")){
+		if(requireNamespace("PWMEnrich.Hsapiens.background")){
 			data("hg19.upstream2000", envir=e)
 			promoters = e$hg19.upstream2000
 			organism = "H. sapiens"
@@ -714,7 +714,7 @@ getPromoters = function(organismOrGenome){
 #'   bg.logn = makeBackground(motifs, organism="dm3", type="logn")
 #'
 #'   # alternatively, any BSgenome object can also be used
-#'   if(require("BSgenome.Dmelanogaster.UCSC.dm3"))
+#'   if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3"))
 #'     bg.logn = makeBackground(motifs, organism=Dmelanogaster, type="logn")
 #'
 #'   # construct a Z-score of hits with P-value background

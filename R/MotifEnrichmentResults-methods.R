@@ -128,7 +128,7 @@ rankingProcessAndReturn = function(res, r, id, order, rank, unique, decreasing){
 #' @return a vector of P-values or raw enrichments sorted such that the first motif is most enriched
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -189,7 +189,7 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 #' @return a vector of P-values or raw enrichments sorted such that the first motif is most enriched
 #'
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -249,7 +249,7 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 #' @param ... other parameters passed to \code{plotMultipleMotifs()}
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -283,7 +283,7 @@ setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"
 #' @param ... other parameters passed to \code{plotMultipleMotifs()}
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -325,7 +325,7 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #' } 
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)
@@ -426,7 +426,7 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 #' } 
 #' @export
 #' @examples
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
 #'    data(PWMLogn.dm3.MotifDb.Dmel)

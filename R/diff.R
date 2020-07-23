@@ -51,7 +51,7 @@
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'   # load the background file for drosophila and lognormal correction
 #'   data(PWMLogn.dm3.MotifDb.Dmel)
 #'

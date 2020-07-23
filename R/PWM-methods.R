@@ -40,7 +40,7 @@ setMethod("length", signature=signature(x="PWM"), function(x){
 #' @export
 #' @examples
 #'
-#' if(require("PWMEnrich.Dmelanogaster.background")){
+#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    data(MotifDb.Dmel.PFM)
 #'
 #'    reverseComplement(MotifDb.Dmel.PFM[["ttk"]]) # reverse complement of the ttk PWM

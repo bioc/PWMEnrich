@@ -496,7 +496,7 @@ motifScores = function(sequences, motifs, raw.scores=FALSE, verbose=TRUE, cutoff
 	if(!is.null(.PWMEnrich.Options[["numCores"]])){
 		cat("Parallel scanning with", .PWMEnrich.Options[["numCores"]], "cores\n")
 		# do it in parallel
-		res = mclapply(1:length(sequences), motifScoresLoop, mc.cores = .PWMEnrich.Options[["numCores"]])
+		res = parallel::mclapply(1:length(sequences), motifScoresLoop, mc.cores = .PWMEnrich.Options[["numCores"]])
 		
 		if(is.list(res)){
 			if( any(sapply(res, is.null)) ){
@@ -664,7 +664,7 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 		end = sel[2:(cores+1)]
 		input = lapply(1:cores, function(i) list(start[i], end[i]))
 		# do it in parallel
-		res.parallel = mclapply(input, motifScoresLoop, mc.cores = cores)
+		res.parallel = parallel::mclapply(input, motifScoresLoop, mc.cores = cores)
 		
 		if(is.list(res.parallel)){
 			if( any(sapply(res.parallel, is.null)) ){

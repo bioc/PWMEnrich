@@ -26,7 +26,7 @@ registerCoresPWMEnrich = function(numCores=NA){
 	    stop("Parallel execution requires package parallel")
 	
 	if(!is.null(numCores) && is.na(numCores))
-		numCores = detectCores()
+		numCores = parallel::detectCores()
 	
 	assign("numCores", numCores, pos=.PWMEnrich.Options)
 }

@@ -1,5 +1,6 @@
 \name{names,PWMEmpiricalBackground}
 \alias{names,PWMEmpiricalBackground}
+\alias{[,PWMEmpiricalBackground,ANY,ANY,ANY-method}
 \alias{names,PWMEmpiricalBackground-method}
 \alias{$,PWMEmpiricalBackground-method}
 \title{Names of variables}

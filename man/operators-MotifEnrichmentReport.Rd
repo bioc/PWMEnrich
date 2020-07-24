@@ -1,5 +1,6 @@
 \name{names,MotifEnrichmentReport}
 \alias{[,MotifEnrichmentReport-method}
+\alias{[,MotifEnrichmentReport,ANY,ANY,ANY-method}
 \alias{$,MotifEnrichmentReport-method}
 \alias{names,MotifEnrichmentReport}
 \alias{names,MotifEnrichmentReport-method}

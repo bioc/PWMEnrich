@@ -1,4 +1,5 @@
 \name{names,PWMCutoffBackground}
+\alias{[,PWMCutoffBackground,ANY,ANY,ANY-method}
 \alias{names,PWMCutoffBackground}
 \alias{names,PWMCutoffBackground-method}
 \alias{$,PWMCutoffBackground-method}

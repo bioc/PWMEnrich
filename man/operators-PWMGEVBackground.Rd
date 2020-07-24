@@ -1,4 +1,5 @@
 \name{names,PWMGEVBackground}
+\alias{[,PWMGEVBackground,ANY,ANY,ANY-method}
 \alias{names,PWMGEVBackground}
 \alias{names,PWMGEVBackground-method}
 \alias{$,PWMGEVBackground-method}

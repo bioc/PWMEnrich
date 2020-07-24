@@ -1,4 +1,5 @@
 \name{names,PWMLognBackground}
+\alias{[,PWMLognBackground,ANY,ANY,ANY-method}
 \alias{names,PWMLognBackground}
 \alias{names,PWMLognBackground-method}
 \alias{$,PWMLognBackground-method}

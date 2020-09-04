@@ -15,7 +15,7 @@ Description: A toolkit of high-level functions for DNA motif scanning
         discovery, but is instead focused on using motifs that are
         either experimentally derived or computationally constructed by
         other tools.
-Version: 4.25.4
+Version: 4.25.5
 Date: 2015-09-25
 Depends: methods, grid, BiocGenerics, Biostrings
 Suggests: MotifDb, BSgenome, BSgenome.Dmelanogaster.UCSC.dm3,
@@ -29,4 +29,3 @@ Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
         'seqLogoSupp.R' 'similarity.R' 'zzz.R'
 biocViews: MotifAnnotation, SequenceMatching, Software
 VignetteBuilder: knitr
-PackageStatus: Deprecated

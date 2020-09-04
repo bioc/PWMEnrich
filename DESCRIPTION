@@ -26,6 +26,6 @@ Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
         'diff.R' 'misc.R' 'MotifEnrichmentResults-methods.R'
         'MotifEnrichmentReport-methods.R' 'options.R' 'plot.R'
         'PWMBackground-methods.R' 'PWM-methods.R' 'pwm.R' 'readData.R'
-        'seqLogoSupp.R' 'similarity.R' 'zzz.R'
+        'seqLogoSupp.R' 'similarity.R'
 biocViews: MotifAnnotation, SequenceMatching, Software
 VignetteBuilder: knitr

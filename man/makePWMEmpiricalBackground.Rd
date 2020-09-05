@@ -42,9 +42,10 @@ total length of all sequences in a group.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
-   # make empirical background by saving raw scores for each bp in the sequence - this can be very large in memory!
+   # make empirical background by saving raw scores for each bp in the sequence. This can be 
+   # very large in memory!
 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
      makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 }

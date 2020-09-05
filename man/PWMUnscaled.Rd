@@ -48,15 +48,22 @@ See ?PWM from Biostrings for more information on input arguments.
 \examples{
 
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    ttk = MotifDb.Dmel.PFM[["ttk"]]
+   
+   # make a PWM with uniform background
+   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk")
+   
+   # custom background
+   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", 
+     prior.params=c("A"= 0.2, "C" = 0.3, "G" = 0.3, "T" = 0.2))
 
-   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
-   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
-
-   prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
+   # get background for drosophila (quick mode on a reduced dataset)
+   prior = getBackgroundFrequencies("dm3", quick=TRUE)
+   
+   # convert using genomic background
+   PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior)
 }
 
 }

@@ -43,10 +43,11 @@ Get a ranking of motifs by their enrichment in one specific sequence
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
    ###
    # load the pre-compiled lognormal background
-   data(PWMLogn.dm3.MotifDb.Dmel)
+   data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    # scan two sequences for motif enrichment
-   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+     DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 
    # most enriched in the second sequences (sorted by lognormal background P-value)

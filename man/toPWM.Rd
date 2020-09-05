@@ -30,13 +30,15 @@ toPWM(
 Convert motifs into PWMs
 }
 \examples{
-
-if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+\dontrun{
+if (requireNamespace("PWMEnrich.Dmelanogaster.background")) {
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    toPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
 
-   prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
+   # get background for drosophila (quick mode on a reduced dataset)
+   prior = getBackgroundFrequencies("dm3", quick=TRUE)
    toPWM(MotifDb.Dmel.PFM, prior=prior) # convert with genomic background 
+}
 }
 }

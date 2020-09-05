@@ -36,7 +36,7 @@ This function creates a P-value cutoff background for motif enrichment.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    # use the empirical background to pick a threshold and make cutoff background
    makePWMPvalCutoffBackground(Dmelanogaster$upstream2000, 0.001)

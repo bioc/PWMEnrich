@@ -131,10 +131,11 @@ rankingProcessAndReturn = function(res, r, id, order, rank, unique, decreasing){
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
 #'    # most enriched in both sequences (sorted by lognormal background P-value)
@@ -192,10 +193,11 @@ setMethod("motifRankingForGroup", signature=signature(obj="MotifEnrichmentResult
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
 #'    # most enriched in the second sequences (sorted by lognormal background P-value)
@@ -252,10 +254,11 @@ setMethod("motifRankingForSequence", signature=signature(obj="MotifEnrichmentRes
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
@@ -286,10 +289,11 @@ setMethod("plotTopMotifsGroup", signature=signature(obj="MotifEnrichmentResults"
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
@@ -328,10 +332,11 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
@@ -429,10 +434,11 @@ setMethod("groupReport", signature=signature(obj="MotifEnrichmentResults"), func
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'

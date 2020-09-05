@@ -77,15 +77,22 @@ DNA_ALPHABET = c("A", "C", "G", "T", "M", "R", "W", "S", "Y", "K", "V", "H", "D"
 #' @examples
 #'
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    ttk = MotifDb.Dmel.PFM[["ttk"]]
+#'    
+#'    # make a PWM with uniform background
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk")
+#'    
+#'    # custom background
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", 
+#'      prior.params=c("A"= 0.2, "C" = 0.3, "G" = 0.3, "T" = 0.2))
 #'
-#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk") # make a PWM with uniform background
-#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=c("A"=0.2, "C"=0.3, "G"=0.3, "T"=0.2)) # custom background
-#'
-#'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior) # convert using genomic background
+#'    # get background for drosophila (quick mode on a reduced dataset)
+#'    prior = getBackgroundFrequencies("dm3", quick=TRUE)
+#'    
+#'    # convert using genomic background
+#'    PWMUnscaled(ttk, id="ttk-JASPAR", name="ttk", prior.params=prior)
 #' }
 #'
 PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), pseudo.count=prior.params, 
@@ -150,12 +157,15 @@ PWMUnscaled = function(x, id="", name="", type=c("log2probratio", "prob"), prior
 #' @examples
 #' 
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel)
+#'    data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    ttk = MotifDb.Dmel[["ttk"]]
 #'
-#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
-#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
+#'    # odds average over the two strands expressed as log2-odds
+#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"))
+#'    
+#'    # log2-odds scores on both strands
+#'    scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE)
 #' }
 #' 
 scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FALSE, strand.fun="mean"){
@@ -215,14 +225,19 @@ scanWithPWM = function(pwm, dna, pwm.rev=NULL, odds.score=FALSE, both.strands=FA
 #'
 #' @export
 #' @examples
+#' \dontrun{
+#' if (requireNamespace("PWMEnrich.Dmelanogaster.background")) {
+#'   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
-#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'   # convert to PWM with uniform background
+#'   PFMtoPWM(MotifDb.Dmel.PFM)
 #'
-#'    PFMtoPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
-#'
-#'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-#'    PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior) # convert with genomic background 
+#'   # get background for drosophila (quick mode on a reduced dataset)
+#'   prior = getBackgroundFrequencies("dm3", quick=TRUE)
+#'    
+#'   # convert with genomic background 
+#'   PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior)
+#' }
 #' }
 PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL, ...){
 	if(!is.list(motifs)){
@@ -279,14 +294,16 @@ PFMtoPWM = function(motifs, id=names(motifs), name=names(motifs), seq.count=NULL
 #'
 #' @export
 #' @examples
-#'
-#' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#' \dontrun{
+#' if (requireNamespace("PWMEnrich.Dmelanogaster.background")) {
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    toPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
 #'
-#'    prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
+#'    # get background for drosophila (quick mode on a reduced dataset)
+#'    prior = getBackgroundFrequencies("dm3", quick=TRUE)
 #'    toPWM(MotifDb.Dmel.PFM, prior=prior) # convert with genomic background 
+#' }
 #' }
 toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50, prior=c(A=0.25, C=0.25, G=0.25, T=0.25), ...){
 	if(!is.list(motifs)){
@@ -411,15 +428,21 @@ toPWM = function(motifs, ids=names(motifs), targets=names(motifs), seq.count=50,
 #' @examples
 #'
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel)
+#'    data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
-#'    affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel) # affinity scores
-#'    counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, cutoff=log2(exp(4))) # motif hit count with Patser score of 4
+#'    # affinity scores
+#'    affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel)
+#'    
+#'    # motif hit count with Patser score of 4
+#'    counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, 
+#'      cutoff=log2(exp(4)))
+#'    
 #'    print(affinity)
 #'    print(counts)
 #'
 #'    # scanning multiple sequences
-#'    sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
+#'    sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), 
+#'      DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
 #'    affinity2 = motifScores(sequences, MotifDb.Dmel)
 #'    print(affinity2)
 #' }
@@ -711,12 +734,13 @@ motifScoresBigMemory = function(sequences, motifs, raw.scores=FALSE, verbose=TRU
 #' @examples
 #'
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel)
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # the nucleotide distribution is taken from the PWM (in this case genomic background)
 #'    motifIC(MotifDb.Dmel[["ttk"]]) 
-#'    # information content with default uniform background because the input is a matrix, not PWM object
+#'    # information content with default uniform background because the input is a matrix, 
+#'    # not PWM object
 #'    motifIC(MotifDb.Dmel.PFM[["ttk"]]) 
 #' }
 motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=FALSE){
@@ -841,10 +865,11 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
 #'    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 #'
 #'    # most enriched in both sequences (lognormal background P-value)
@@ -861,7 +886,7 @@ motifIC = function(motif, prior.params=c(A=0.25, C=0.25, G=0.25, T=0.25), bycol=
 #'
 #'    ###
 #'    # Load the pre-compiled background for hit-based motif counts with cutoff of P-value = 0.001 
-#'    data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
+#'    data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
 #'

@@ -53,10 +53,11 @@
 #'
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'   # load the background file for drosophila and lognormal correction
-#'   data(PWMLogn.dm3.MotifDb.Dmel)
+#'   data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'   # get the differential enrichment
-#'   diff = motifDiffEnrichment(DNAString("TGCATCAAGTGTGTAGTGTGAGATTAGT"), DNAString("TGAACGAGTAGGACGATGAGAGATTGATG"), PWMLogn.dm3.MotifDb.Dmel, verbose=FALSE)
+#'   diff = motifDiffEnrichment(DNAString("TGCATCAAGTGTGTAGTGTGAGATTAGT"), 
+#'     DNAString("TGAACGAGTAGGACGATGAGAGATTGATG"), PWMLogn.dm3.MotifDb.Dmel, verbose=FALSE)
 #'
 #'   # motifs differentially enriched in the first sequence (with lognormal background correction)
 #'   head(sort(diff$group.bg, decreasing=TRUE))

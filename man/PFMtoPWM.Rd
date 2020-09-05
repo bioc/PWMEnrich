@@ -27,13 +27,18 @@ PFMtoPWM(
 Note that this function is deprecated and replaced by \code{toPWM()}.
 }
 \examples{
+\dontrun{
+if (requireNamespace("PWMEnrich.Dmelanogaster.background")) {
+  data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
-if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+  # convert to PWM with uniform background
+  PFMtoPWM(MotifDb.Dmel.PFM)
 
-   PFMtoPWM(MotifDb.Dmel.PFM) # convert to PWM with uniform background
-
-   prior = getBackgroundFrequencies("dm3", quick=TRUE) # get background for drosophila (quick mode on a reduced dataset)
-   PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior) # convert with genomic background 
+  # get background for drosophila (quick mode on a reduced dataset)
+  prior = getBackgroundFrequencies("dm3", quick=TRUE)
+   
+  # convert with genomic background 
+  PFMtoPWM(MotifDb.Dmel.PFM, prior.params=prior)
+}
 }
 }

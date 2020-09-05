@@ -45,7 +45,8 @@ Currently only supports D. melanogaster, but in the future should support other 
 \examples{
 
 # load in the two example de-novo motifs
-motifs = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="example.transfac"), remove.acc=TRUE)
+motifs = readMotifs(system.file(package = "PWMEnrich", dir = "extdata", file = "example.transfac"), 
+  remove.acc = TRUE)
 
 \dontrun{
   # construct lognormal background
@@ -58,7 +59,8 @@ motifs = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="exampl
   # construct a Z-score of hits with P-value background
   bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)
 
-  # now we can use them to scan for enrichment in sequences (in this case there is a consensus Tin binding site)
+  # now we can use them to scan for enrichment in sequences (in this case there is a consensus 
+  # Tin binding site).
   motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.logn)
   motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.pval)
 }

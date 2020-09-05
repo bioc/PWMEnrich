@@ -26,12 +26,13 @@ Information content for a PWM or PFM
 \examples{
 
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel)
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    # the nucleotide distribution is taken from the PWM (in this case genomic background)
    motifIC(MotifDb.Dmel[["ttk"]]) 
-   # information content with default uniform background because the input is a matrix, not PWM object
+   # information content with default uniform background because the input is a matrix, 
+   # not PWM object
    motifIC(MotifDb.Dmel.PFM[["ttk"]]) 
 }
 }

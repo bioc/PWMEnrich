@@ -18,7 +18,7 @@ plotPFM = function(pfm, ...){
 #' @export
 #' @examples
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'   data(MotifDb.Dmel)
+#'   data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'   # plot the tinman motif from MotifDb
 #'   plot(MotifDb.Dmel[["tin"]])
@@ -96,7 +96,7 @@ plotMultipleMotifs = function(pwms, titles=names(pwms), rows=ceiling(sqrt(length
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # load the pre-compiled lognormal background
-#'    data(PWMLogn.dm3.MotifDb.Dmel)
+#'    data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # scan two sequences for motif enrichment
 #'    sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
@@ -308,10 +308,11 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 #'    ###
 #'    # Load Drosophila PWMs
-#'    data(MotifDb.Dmel)
+#'    data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # two sequences of interest
-#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+#'    sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), 
+#'      DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 #'
 #'    # select the tinman and snail motifs
 #'    pwms = MotifDb.Dmel[c("tin", "sna")]

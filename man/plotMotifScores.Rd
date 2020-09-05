@@ -70,10 +70,11 @@ have the same y-axis, so the heights of bars are comparable between sequences an
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
    ###
    # Load Drosophila PWMs
-   data(MotifDb.Dmel)
+   data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    # two sequences of interest
-   sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+   sequences = list(DNAString("GAAGTATCAAGTGACCAGGTGAAGTCCCAGATGA"), 
+     DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 
    # select the tinman and snail motifs
    pwms = MotifDb.Dmel[c("tin", "sna")]

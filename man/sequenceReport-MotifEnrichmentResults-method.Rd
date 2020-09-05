@@ -33,10 +33,11 @@ Generate a motif enrichment report for a single sequence
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
    ###
    # load the pre-compiled lognormal background
-   data(PWMLogn.dm3.MotifDb.Dmel)
+   data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    # scan two sequences for motif enrichment
-   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
+   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAAGTCCCAGATGA"), 
+     DNAString("AGGTAGATAGAACAGTAGGCAATGAAGCCGATG"))
 
    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 

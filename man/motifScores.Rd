@@ -37,15 +37,21 @@ Scan a number of sequences either to find overall affinity, or a number of hits 
 \examples{
 
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel)
+   data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
-   affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel) # affinity scores
-   counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, cutoff=log2(exp(4))) # motif hit count with Patser score of 4
+   # affinity scores
+   affinity = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel)
+   
+   # motif hit count with Patser score of 4
+   counts = motifScores(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), MotifDb.Dmel, 
+     cutoff=log2(exp(4)))
+   
    print(affinity)
    print(counts)
 
    # scanning multiple sequences
-   sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
+   sequences = list(DNAString("CGTAGGATAAAGTAACTAGTTGATGATGAAAG"), 
+     DNAString("TGAGACGAAGGGGATGAGATGCGGAAGAGTGAAA"))
    affinity2 = motifScores(sequences, MotifDb.Dmel)
    print(affinity2)
 }

@@ -23,7 +23,7 @@ cutoff for each motif based on P-value cutoff for individual sites.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    # make empirical background - here we use only 100 sequences for illustrative purposes
 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 

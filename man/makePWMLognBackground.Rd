@@ -34,19 +34,6 @@ The default is \code{2^(0:4)}, which with \code{bg.len} translates into
 \item{verbose}{if to produce verbose output}
 
 \item{algorithm}{type of algorithm to use, valid values are: "default" and "human".}
-
-\item{x}{value for which dnorm is needed}
-
-\item{cen}{logical vector if the value is censored}
-
-\item{meanlog}{meanlog parameter}
-
-\item{sdlog}{sdlog parameter
-Negative log-likelihood of left-censored data
-
-NOTE: this function assumes xc, cen and meanlog and in environment}
-
-\item{p}{set of parameters (in this case only sdlog)}
 }
 \description{
 Construct a lognormal background distribution for a set of sequences. 
@@ -56,13 +43,11 @@ fitted to them.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
      makePWMLognBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM)
 }
 }
-dnorm with left-censored data and known meanlog
-
 }

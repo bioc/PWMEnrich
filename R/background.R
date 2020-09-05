@@ -77,7 +77,7 @@ makePriors = function(bg.seq, bg.pseudo.count){
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 #' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
@@ -136,12 +136,12 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, 
 	
 	# do a robust estimate of parameters
 
-	#' dnorm with left-censored data and known meanlog
-	#'
-	#' @param x value for which dnorm is needed
-	#' @param cen logical vector if the value is censored
-	#' @param meanlog meanlog parameter
-	#' @param sdlog sdlog parameter
+	# dnorm with left-censored data and known meanlog
+	#
+	# x value for which dnorm is needed
+	# cen logical vector if the value is censored
+	# meanlog meanlog parameter
+	# sdlog sdlog parameter
 	dlnorm.lcen = function(x, cen, meanlog, sdlog){
 		if(sdlog <= 0)
 			-Inf
@@ -151,11 +151,11 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, 
 		sum(dlnorm(xn, meanlog, sdlog, log=TRUE)) + sum(plnorm(xc, meanlog, sdlog, lower.tail=TRUE, log.p=TRUE))
 	}
 
-	#' Negative log-likelihood of left-censored data
-	#'
-	#' NOTE: this function assumes xc, cen and meanlog and in environment
-	#'
-	#' @param p set of parameters (in this case only sdlog)
+	# Negative log-likelihood of left-censored data
+	#
+	# NOTE: this function assumes xc, cen and meanlog and in environment
+	#
+	# p set of parameters (in this case only sdlog)
 	ll.lcen = function(p){
 		-dlnorm.lcen(xc, cen, meanlog, p)
 	}	
@@ -274,9 +274,10 @@ makePWMLognBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.len=250, 
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
-#'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
+#'    # make background for MotifDb motifs using 2Kb promoters of all D. melanogaster transcripts 
+#'    # using a cutoff of 5
 #' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMCutoffBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM, cutoff=log2(exp(5)))
 #' }
@@ -338,9 +339,10 @@ makePWMCutoffBackground = function(bg.seq, motifs, cutoff=log2(exp(4)), bg.pseud
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
-#'    # make empirical background by saving raw scores for each bp in the sequence - this can be very large in memory!
+#'    # make empirical background by saving raw scores for each bp in the sequence. This can be 
+#'    # very large in memory!
 #' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
 #'      makePWMEmpiricalBackground(Dmelanogaster$upstream2000[1:100], MotifDb.Dmel.PFM)
 #' }
@@ -391,7 +393,7 @@ makePWMEmpiricalBackground = function(bg.seq, motifs, bg.pseudo.count=1, bg.sour
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # make empirical background - here we use only 100 sequences for illustrative purposes
 #' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
@@ -450,7 +452,7 @@ makePWMPvalCutoffBackground = function(bg.p, p.value=1e-3, bg.source=""){
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # use the empirical background to pick a threshold and make cutoff background
 #'    makePWMPvalCutoffBackground(Dmelanogaster$upstream2000, 0.001)
@@ -533,7 +535,7 @@ makeStartEndPos = function(total.len, len){
 #' @examples
 #' \dontrun{
 #' if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-#'    data(MotifDb.Dmel.PFM)
+#'    data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 #'
 #'    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 #' 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
@@ -647,7 +649,7 @@ getPromoters = function(organismOrGenome){
 	# get the promoter sequences from the saved object
 	if(sel == "dm3"){		
 		if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-			data("dm3.upstream2000", envir=e)
+			data("dm3.upstream2000", package = "PWMEnrich.Dmelanogaster.background", envir=e)
 			promoters = e$dm3.upstream2000
 			organism = "D. melanogaster"
 			version = "dm3"
@@ -656,7 +658,7 @@ getPromoters = function(organismOrGenome){
 		}
 	} else if(sel == "mm9"){
 		if(requireNamespace("PWMEnrich.Mmusculus.background")){
-			data("mm9.upstream2000", envir=e)
+			data("mm9.upstream2000", package = "PWMEnrich.Mmusculus.background", envir=e)
 			promoters = e$mm9.upstream2000
 			organism = "M. musculus"
 			version = "mm9"
@@ -665,7 +667,7 @@ getPromoters = function(organismOrGenome){
 		}
 	} else if(sel == "hg19"){
 		if(requireNamespace("PWMEnrich.Hsapiens.background")){
-			data("hg19.upstream2000", envir=e)
+			data("hg19.upstream2000", package = "PWMEnrich.Hsapiens.background", envir=e)
 			promoters = e$hg19.upstream2000
 			organism = "H. sapiens"
 			version = "hg19"
@@ -707,7 +709,8 @@ getPromoters = function(organismOrGenome){
 #' @examples
 #' 
 #' # load in the two example de-novo motifs
-#' motifs = readMotifs(system.file(package="PWMEnrich", dir="extdata", file="example.transfac"), remove.acc=TRUE)
+#' motifs = readMotifs(system.file(package = "PWMEnrich", dir = "extdata", file = "example.transfac"), 
+#'   remove.acc = TRUE)
 #' 
 #' \dontrun{
 #'   # construct lognormal background
@@ -720,7 +723,8 @@ getPromoters = function(organismOrGenome){
 #'   # construct a Z-score of hits with P-value background
 #'   bg.pval = makeBackground(motifs, organism="dm3", type="pval", p.value=1e-3)
 #'
-#'   # now we can use them to scan for enrichment in sequences (in this case there is a consensus Tin binding site)
+#'   # now we can use them to scan for enrichment in sequences (in this case there is a consensus 
+#'   # Tin binding site).
 #'   motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.logn)
 #'   motifEnrichment(DNAString("TGCATCAAGTGTGTAGTG"), bg.pval)
 #' }

@@ -33,9 +33,10 @@ Make a background based on number of motifs hits above a certain threshold.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
-   # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts using cutoff of 5
+   # make background for MotifDb motifs using 2Kb promoters of all D. melanogaster transcripts 
+   # using a cutoff of 5
 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 
      makePWMCutoffBackground(Dmelanogaster$upstream2000, MotifDb.Dmel.PFM, cutoff=log2(exp(5)))
 }

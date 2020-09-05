@@ -15,10 +15,12 @@
 #' @examples
 #'
 #' # read in example TRANSFAC motifs without accession codes (just IDs)
-#' readMotifs(system.file(package="PWMEnrich", dir="extdata", file="example.transfac"), remove.acc=TRUE)
+#' readMotifs(system.file(package = "PWMEnrich", dir = "extdata", file = "example.transfac"), 
+#'   remove.acc = TRUE)
 #'
 #' # read in the JASPAR insects motifs provided as example
-#' readMotifs(system.file(package="PWMEnrich", dir="extdata", file="jaspar-insecta.jaspar"), remove.acc=TRUE)               
+#' readMotifs(system.file(package = "PWMEnrich", dir = "extdata", file = "jaspar-insecta.jaspar"), 
+#'   remove.acc = TRUE)
 readMotifs = function(file, remove.acc=FALSE){
 	t = readLines(file)
 	

@@ -18,7 +18,7 @@ This function produces a sequence logo (via package seqLogo).
 }
 \examples{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-  data(MotifDb.Dmel)
+  data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
   # plot the tinman motif from MotifDb
   plot(MotifDb.Dmel[["tin"]])

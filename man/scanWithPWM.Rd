@@ -42,12 +42,15 @@ The function by default returns the score in log2 following the package \code{Bi
 \examples{
 
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel)
+   data(MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    ttk = MotifDb.Dmel[["ttk"]]
 
-   scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT")) # odds average over the two strands expressed as log2-odds
-   scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE) # log2-odds scores on both strands
+   # odds average over the two strands expressed as log2-odds
+   scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"))
+   
+   # log2-odds scores on both strands
+   scanWithPWM(ttk, DNAString("CGTAGGATAAAGTAACT"), both.strands=TRUE)
 }
 
 }

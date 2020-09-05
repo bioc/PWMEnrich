@@ -38,7 +38,7 @@ fitted to them.
 \examples{
 \dontrun{
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
-   data(MotifDb.Dmel.PFM)
+   data(MotifDb.Dmel.PFM, package = "PWMEnrich.Dmelanogaster.background")
 
    # make background for MotifDb motifs using 2kb promoters of all D. melanogaster transcripts 
 	  if(requireNamespace("BSgenome.Dmelanogaster.UCSC.dm3")) 

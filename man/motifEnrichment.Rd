@@ -127,10 +127,11 @@ Please refer to (Stojnic & Adryan, 2012) for more details on the algorithms.
 if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
    ###
    # load the pre-compiled lognormal background
-   data(PWMLogn.dm3.MotifDb.Dmel)
+   data(PWMLogn.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    # scan two sequences for motif enrichment
-   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
+   sequences = list(DNAString("GAAGTATCAAGTGACCAGTAGATTGAAGTAGACCAGTC"), 
+     DNAString("AGGTAGATAGAACAGTAGGCAATGGGGGAAATTGAGAGTC"))
    res = motifEnrichment(sequences, PWMLogn.dm3.MotifDb.Dmel)
 
    # most enriched in both sequences (lognormal background P-value)
@@ -147,7 +148,7 @@ if(requireNamespace("PWMEnrich.Dmelanogaster.background")){
 
    ###
    # Load the pre-compiled background for hit-based motif counts with cutoff of P-value = 0.001 
-   data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
+   data(PWMPvalueCutoff1e3.dm3.MotifDb.Dmel, package = "PWMEnrich.Dmelanogaster.background")
 
    res.count = motifEnrichment(sequences, PWMPvalueCutoff1e3.dm3.MotifDb.Dmel)
 

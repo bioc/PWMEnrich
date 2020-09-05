@@ -22,10 +22,7 @@ Suggests: MotifDb, BSgenome, BSgenome.Dmelanogaster.UCSC.dm3,
         PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel,
         PWMEnrich.Hsapiens.background, PWMEnrich.Mmusculus.background,
         BiocStyle, knitr
-Collate: 'AllDataClasses.R' 'AllGenerics.R' 'background.R' 'clover.R'
-        'diff.R' 'misc.R' 'MotifEnrichmentResults-methods.R'
-        'MotifEnrichmentReport-methods.R' 'options.R' 'plot.R'
-        'PWMBackground-methods.R' 'PWM-methods.R' 'pwm.R' 'readData.R'
-        'seqLogoSupp.R' 'similarity.R'
 biocViews: MotifAnnotation, SequenceMatching, Software
 VignetteBuilder: knitr
+RoxygenNote: 7.1.1
+Encoding: UTF-8

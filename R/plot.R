@@ -294,10 +294,10 @@ seqLogoGrid <- function(pwm, ic.scale=TRUE, xaxis=TRUE, yaxis=TRUE, xfontsize=10
 #'               If a single values is specified, it will be used for all PWMs, otherwise the vector needs to specify one cutoff per PWM. 
 #' @param log.fun the logarithm function to use to calculate log-odds. By default log2 is used for consistency with Biostrings.               
 #' @param main the main title
-#' @param legend.space the proportion of horizontal space to reserve for the legend. The default is 30%.
+#' @param legend.space the proportion of horizontal space to reserve for the legend. The default is 30\%.
 #' @param max.score the maximal log-odds score used to scale all other scores. By default this values is automatically determined, but it can
 #'                  also be set manually to make multiple plots comparable. 
-#' @param trans the level of transparency. By default 50% transparency to be able to see overlapping binding sites
+#' @param trans the level of transparency. By default 50\% transparency to be able to see overlapping binding sites
 #' @param text.cex the scaling factor for sequence names
 #' @param legend.cex the scaling factor for the legend
 #' @param motif.names optional vector of motif names to show instead of those present as column names in \code{scores}

@@ -310,7 +310,7 @@ setMethod("plotTopMotifsSequence", signature=signature(obj="MotifEnrichmentResul
 #' @name groupReport,MotifEnrichmentResults-method
 #' @aliases groupReport
 #' @param obj a MotifEnrichmentResults object
-#' @param top what proportion of top motifs should be examined in each individual sequence (by default 0.05, i.e. 5%)
+#' @param top what proportion of top motifs should be examined in each individual sequence (by default 0.05, i.e. 5\%)
 #' @param bg if to use background corrected P-values to do the ranking (if available)
 #' @param by.top.motifs if to rank by the proportion of sequences where the motif is within 'top' percentage of motifs
 #' @param ... unused

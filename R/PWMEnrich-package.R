@@ -4,7 +4,8 @@
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
-#' @import BiocGenerics Biostrings grid methods
+#' @import BiocGenerics Biostrings methods
+#' @importFrom grid grid.newpage grid.text grid.polygon grid.xaxis grid.yaxis grid.layout gpar viewport plotViewport dataViewport pushViewport popViewport unit
 #' @importFrom grDevices col2rgb palette rgb
 #' @importFrom graphics lines par polygon rect text
 #' @importFrom stats cor dlnorm ecdf lm median na.omit optimize pchisq plnorm predict.lm qlnorm quantile

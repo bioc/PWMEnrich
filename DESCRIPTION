@@ -16,8 +16,8 @@ Description: A toolkit of high-level functions for DNA motif scanning
         either experimentally derived or computationally constructed by
         other tools.
 License: LGPL (>= 2)
-Depends: R (>= 3.5.0), methods, grid, BiocGenerics, Biostrings
-Imports: seqLogo, gdata, evd, S4Vectors
+Depends: R (>= 3.5.0), methods, BiocGenerics, Biostrings
+Imports: grid, seqLogo, gdata, evd, S4Vectors
 Suggests: MotifDb, BSgenome, BSgenome.Dmelanogaster.UCSC.dm3,
         PWMEnrich.Dmelanogaster.background, testthat, gtools, parallel,
         PWMEnrich.Hsapiens.background, PWMEnrich.Mmusculus.background,

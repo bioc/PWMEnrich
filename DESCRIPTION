@@ -1,7 +1,7 @@
 Package: PWMEnrich
 Type: Package
 Title: PWM enrichment analysis
-Version: 4.35.0
+Version: 4.36.0
 Date: 2015-09-25
 Author: Robert Stojnic, Diego Diez
 Maintainer: Diego Diez <diego10ruiz@gmail.com>
